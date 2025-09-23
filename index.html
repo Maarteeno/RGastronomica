@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ruleta Gastronómica</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Lexend', sans-serif;
+      background: linear-gradient(135deg, #0d0d0d, #1a1a2e, #16213e, #0f3460);
+      background-size: 400% 400%;
+      animation: gradientBG 12s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+      color: white;
+      padding: 15px;
+      box-sizing: border-box;
+      position: relative;
+    }
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 15px;
+      text-align: center;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #00aaff, 0 0 20px #00aaff; }
+      to   { text-shadow: 0 0 20px #00ddff, 0 0 40px #00ddff; }
+    }
+    .container {
+      display: flex;
+      flex-direction: row; /* Desktop: lado a lado */
+      justify-content: center;
+      align-items: flex-start;
+      gap: 30px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      backdrop-filter: blur(8px);
+      max-width: 1100px;
+      width: 100%;
+    }
+    #wheelCanvas {
+      border-radius: 50%;
+      box-shadow: 0 0 15px rgba(0,0,0,0.6);
+      max-width: 100%;
+      height: auto;
+    }
+    .wheel-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .selector {
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-top: 30px solid #ffdd00;
+      position: absolute;
+      top: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      filter: drop-shadow(0 0 5px black);
+    }
+    .buttons {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button {
+      padding: 10px 20px;
+      background: linear-gradient(90deg, #1565c0, #1e88e5);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.3s;
+    }
+    button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(90deg, #1e88e5, #42a5f5);
+    }
+    .active-mode {
+      background: linear-gradient(90deg, #0d47a1, #1976d2) !important;
+      box-shadow: 0 0 10px #42a5f5;
+    }
+    .info-panel {
+      text-align: center;
+      animation: fadeIn 1s ease;
+      color: white;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease;
+      flex: 1;
+    }
+    .info-panel.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .info-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .flag-img {
+      width: 60px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 4px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.3);
+    }
+    .country-name {
+      font-size: 26px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    h3 {
+      margin-top: 15px;
+      color: #00e5ff;
+      font-size: 17px;
+    }
+    .pill {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 6px 12px;
+      border-radius: 20px;
+      margin: 5px;
+      font-size: 14px;
+    }
+    .history-panel {
+      margin-top: 20px;
+      max-height: 150px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.4);
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 14px;
+      text-align: left;
+    }
+    /* Marca de agua */
+    .watermark {
+      position: absolute;
+      bottom: 60px;
+      right: 20px;
+      font-size: 18px;
+      color: rgba(255,255,255,0.2);
+      transform: rotate(-20deg);
+      pointer-events: none;
+      user-select: none;
+    }
+    /* Copyright */
+    footer {
+      margin-top: 15px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+    }
+    /* 📱 Adaptación móvil */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column; /* En móviles se apilan */
+        align-items: center;
+        text-align: center;
+      }
+      #wheelCanvas {
+        width: 90vw;  /* Más grande en móvil */
+        height: auto;
+      }
+      .info-panel {
+        margin-top: 20px;
+        font-size: 18px;
+      }
+      .country-name {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🌍 Gastronomía Mundial</h1>
+  <div class="container">
+    <!-- Ruleta izquierda en desktop / arriba en móvil -->
+    <div class="wheel-wrapper">
+      <div class="selector"></div>
+      <canvas id="wheelCanvas" width="350" height="350"></canvas>
+      <div class="buttons">
+        <button id="spinButton">🎡 ¡Girar!</button>
+        <div class="row">
+          <button id="historyButton">📜 Ver historial</button>
+          <button id="clearHistory">🧹 Borrar historial</button>
+        </div>
+        <div class="row">
+          <button id="resetWheel">🔄 Reiniciar ruleta</button>
+          <button id="toggleMode">🎲 Modo sin repetición</button>
+        </div>
+      </div>
+    </div>
+    <!-- Panel de resultados -->
+    <div class="info-panel" id="infoPanel">
+      <h2>A ver qué toca cocinar</h2>
+    </div>
+  </div>
+  <div class="history-panel" id="historyPanel" style="display:none;"></div>
+
+  <!-- Marca de agua -->
+  <div class="watermark">Maarteeno © 2025</div>
+  <!-- Footer -->
+  <footer>Maarteeno © 2025</footer>
+
+  <!-- Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <script>
+    let countries = [
+      {name:"España",continent:"Europa",region:"Sur",code:"es",foods:["Paella","Jamón ibérico"],drinks:["Sangría","Cava"]},
+      {name:"Perú",continent:"América",region:"Sur",code:"pe",foods:["Ceviche","Lomo saltado"],drinks:["Pisco Sour","Chicha morada"]},
+      {name:"México",continent:"América",region:"Norte",code:"mx",foods:["Tacos","Mole"],drinks:["Tequila","Margarita"]},
+      {name:"Chile",continent:"América",region:"Sur",code:"cl",foods:["Empanadas","Pastel de choclo"],drinks:["Vino chileno","Pisco"]},
+      {name:"China",continent:"Asia",region:"Este",code:"cn",foods:["Dim sum","Pato pekinés"],drinks:["Té verde","Baijiu"]},
+      {name:"Japón",continent:"Asia",region:"Este",code:"jp",foods:["Sushi","Ramen"],drinks:["Sake","Té matcha"]},
+      {name:"Italia",continent:"Europa",region:"Sur",code:"it",foods:["Pizza","Pasta"],drinks:["Vino tinto","Limoncello"]},
+      {name:"Tailandia",continent:"Asia",region:"Sudeste",code:"th",foods:["Pad Thai","Curry verde"],drinks:["Té helado","Agua de coco"]},
+      {name:"Argentina",continent:"América",region:"Sur",code:"ar",foods:["Asado","Empanadas"],drinks:["Fernet","Malbec"]},
+      {name:"Brasil",continent:"América",region:"Sur",code:"br",foods:["Feijoada","Pão de queijo"],drinks:["Caipirinha","Guaraná"]},
+      {name:"Estados Unidos",continent:"América",region:"Norte",code:"us",foods:["Hamburguesa","BBQ ribs"],drinks:["Coca-Cola","Root beer"]},
+      {name:"Francia",continent:"Europa",region:"Oeste",code:"fr",foods:["Croissant","Coq au vin"],drinks:["Champagne","Vino blanco"]},
+      {name:"Grecia",continent:"Europa",region:"Sur",code:"gr",foods:["Gyros","Moussaka"],drinks:["Ouzo","Vino griego"]},
+      {name:"Marruecos",continent:"África",region:"Norte",code:"ma",foods:["Cuscús","Tajín"],drinks:["Té de menta","Jugo de naranja"]},
+      {name:"Turquía",continent:"Eurasia",region:"Occidental",code:"tr",foods:["Kebab","Baklava"],drinks:["Ayran","Café turco"]},
+      {name:"Corea del Sur",continent:"Asia",region:"Este",code:"kr",foods:["Kimchi","Bibimbap"],drinks:["Soju","Té de cebada"]},
+      {name:"Vietnam",continent:"Asia",region:"Sudeste",code:"vn",foods:["Pho","Banh mi"],drinks:["Café vietnamita","Té helado"]},
+      {name:"India",continent:"Asia",region:"Sur",code:"in",foods:["Curry","Biryani"],drinks:["Lassi","Chai"]},
+      {name:"Rusia",continent:"Europa/Asia",region:"Este",code:"ru",foods:["Borsch","Pelmeni"],drinks:["Vodka","Kvas"]},
+      {name:"Egipto",continent:"África",region:"Norte",code:"eg",foods:["Koshari","Falafel"],drinks:["Hibiscus","Cerveza local"]}
+    ];
+
+    const canvas = document.getElementById("wheelCanvas");
+    const ctx = canvas.getContext("2d");
+    const spinButton = document.getElementById("spinButton");
+    const infoPanel = document.getElementById("infoPanel");
+    const historyButton = document.getElementById("historyButton");
+    const clearHistory = document.getElementById("clearHistory");
+    const resetWheel = document.getElementById("resetWheel");
+    const toggleMode = document.getElementById("toggleMode");
+    const historyPanel = document.getElementById("historyPanel");
+
+    let originalCountries = [...countries];
+    let currentAngle = 0;
+    let isSpinning = false;
+    let history = JSON.parse(localStorage.getItem("ruletaHistory")) || [];
+    let modeSinRepeticion = false;
+
+    function drawWheel(highlightIndex = -1) {
+      const slices = countries.length;
+      const sliceAngle = 2 * Math.PI / slices;
+      for (let i = 0; i < slices; i++) {
+        const angle = i * sliceAngle;
+        ctx.beginPath();
+        ctx.moveTo(175, 175);
+        ctx.arc(175, 175, 175, angle, angle + sliceAngle);
+        ctx.fillStyle = (i === highlightIndex) ? "#ffd600" : (i % 2 === 0 ? "#1e88e5" : "#3949ab");
+        ctx.fill();
+        ctx.save();
+        ctx.translate(175, 175);
+        ctx.rotate(angle + sliceAngle / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "white";
+        ctx.font = "13px Lexend";
+        ctx.fillText(countries[i].name, 155, 0);
+        ctx.restore();
+      }
+    }
+
+    function lanzarConfeti() {
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+    }
+
+    function spinWheel() {
+      if (isSpinning || countries.length === 0) return;
+      isSpinning = true;
+      let rotation = Math.random() * 360 + 360 * 5;
+      let start = null;
+
+      function animate(timestamp) {
+        if (!start) start = timestamp;
+        let progress = timestamp - start;
+        let easeOut = rotation * (1 - Math.pow(1 - progress / 2000, 3));
+        currentAngle = (currentAngle + easeOut) % 360;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
+        ctx.translate(175, 175);
+        ctx.rotate(currentAngle * Math.PI / 180);
+        ctx.translate(-175, -175);
+        drawWheel();
+        ctx.restore();
+
+        if (progress < 2000) {
+          requestAnimationFrame(animate);
+        } else {
+          isSpinning = false;
+          let finalRad = (currentAngle * Math.PI / 180) % (2 * Math.PI);
+          let selectorAngle = 1.5 * Math.PI;
+          let diff = (selectorAngle - finalRad + 2 * Math.PI) % (2 * Math.PI);
+          let selectedIndex = Math.floor(diff / (2 * Math.PI / countries.length)) % countries.length;
+          let selectedCountry = countries[selectedIndex];
+
+          infoPanel.classList.add("show");
+          showCountryInfo(selectedCountry);
+
+          history.push(selectedCountry.name);
+          localStorage.setItem("ruletaHistory", JSON.stringify(history));
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.save();
+          ctx.translate(175, 175);
+          ctx.rotate(currentAngle * Math.PI / 180);
+          ctx.translate(-175, -175);
+          drawWheel(selectedIndex);
+          ctx.restore();
+
+          if (modeSinRepeticion) {
+            countries.splice(selectedIndex, 1);
+          }
+
+          lanzarConfeti();
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+
+    function showCountryInfo(country) {
+      infoPanel.innerHTML = `
+        <div class="info-header">
+          <img class="flag-img" src="https://flagcdn.com/w80/${country.code}.png" alt="Bandera de ${country.name}">
+          <span class="country-name">${country.name}</span>
+        </div>
+        <p>${country.continent} – ${country.region}</p>
+        <h3>🍽️ Comidas típicas</h3>
+        <div class="pill">${country.foods[0]}</div>
+        <div class="pill">${country.foods[1]}</div>
+        <h3>🥂 Bebidas típicas</h3>
+        <div class="pill">${country.drinks[0]}</div>
+        <div class="pill">${country.drinks[1]}</div>
+      `;
+    }
+
+    historyButton.addEventListener("click", () => {
+      historyPanel.style.display = historyPanel.style.display === "none" ? "block" : "none";
+      historyPanel.innerHTML = "<strong>Historial:</strong><br>" + (history.length ? history.join("<br>") : "Vacío");
+    });
+
+    clearHistory.addEventListener("click", () => {
+      history = [];
+      localStorage.removeItem("ruletaHistory");
+      historyPanel.innerHTML = "";
+    });
+
+    resetWheel.addEventListener("click", () => {
+      countries = [...originalCountries];
+      history = [];
+      localStorage.removeItem("ruletaHistory");
+      drawWheel();
+      infoPanel.innerHTML = "<h2>A ver qué toca cocinar</h2>";
+    });
+
+    toggleMode.addEventListener("click", () => {
+      modeSinRepeticion = !modeSinRepeticion;
+      toggleMode.classList.toggle("active-mode", modeSinRepeticion);
+      toggleMode.textContent = modeSinRepeticion ? "✅ Modo sin repetición" : "🎲 Modo sin repetición";
+    });
+
+    spinButton.addEventListener("click", spinWheel);
+    drawWheel();
+  </script>
+</body>
+</html>
