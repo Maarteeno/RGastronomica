@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Brain Gym 15.0</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Brain Buddy">
+    <meta name="theme-color" content="#ffffff">
+
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%236c5ce7'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-size='250'%3E🧠%3C/text%3E%3C/svg%3E">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%236c5ce7'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-size='250'%3E🧠%3C/text%3E%3C/svg%3E">
+
+    <title>Brain Buddy</title>
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -12,7 +21,7 @@
             --text-light: #636e72;
             --radius: 24px;
             --shadow: 0 15px 35px rgba(0,0,0,0.2);
-            /* Paleta de Juegos */
+            /* Paleta */
             --c-wordle: #27ae60;
             --c-sopa: #2980b9;
             --c-sudoku: #e67e22;
@@ -49,6 +58,9 @@
             padding: 10px;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            /* Safe area para iPhone */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .app {
@@ -69,8 +81,8 @@
             display: none;
             flex-direction: column;
             align-items: center;
-            /* Padding superior para evitar solapamiento con botón tema */
-            padding: 60px 20px 40px 20px; 
+            /* Espacio superior para botón tema y barra estado */
+            padding: 70px 20px 50px 20px; 
             width: 100%;
             height: 100%;
             box-sizing: border-box;
@@ -105,25 +117,26 @@
 
         .nav-controls { display: flex; gap: 8px; z-index: 2; }
 
-        /* --- BOTÓN TEMA (IZQUIERDA) --- */
+        /* --- BOTÓN TEMA --- */
         .theme-switch {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            width: 40px; height: 40px;
+            top: 20px;
+            left: 20px;
+            width: 42px; height: 42px;
             background: rgba(128,128,128,0.15);
             border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             cursor: pointer;
             z-index: 1000;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
         }
 
         /* --- COPYRIGHT --- */
         .copyright {
             position: absolute;
-            bottom: 10px;
+            bottom: 15px;
             left: 0;
             width: 100%;
             text-align: center;
@@ -178,19 +191,18 @@
             border-radius: 16px;
             padding: 15px;
             margin-top: auto;
-            margin-bottom: 25px; /* Espacio extra para copyright */
+            margin-bottom: 30px; 
             font-size: 0.85rem;
         }
         .record-title { text-align: center; font-weight: bold; margin-bottom: 8px; letter-spacing: 1px; color: var(--text-light); }
         .record-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .record-item { display: flex; justify-content: space-between; padding: 6px 10px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .rec-name { font-weight: bold; color: var(--c-sopa); }
-        
+        .records-note { text-align: center; margin-top: 10px; opacity: 0.6; font-size: 0.75rem; font-style: italic; }
         .cloud-actions { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
         .btn-cloud { background: transparent; border: 1px solid rgba(128,128,128,0.3); padding: 8px 12px; border-radius: 8px; color: var(--text); font-size: 0.8rem; cursor: pointer; }
-        .records-note { text-align: center; margin-top: 10px; opacity: 0.6; font-size: 0.75rem; font-style: italic; }
 
-        /* --- JUEGOS STYLES --- */
+        /* --- JUEGOS --- */
         
         /* Wordle */
         .wordle-grid { display: grid; gap: 5px; margin-bottom: 15px; justify-content: center; }
@@ -214,40 +226,15 @@
         .cell { background: rgba(128,128,128,0.1); border-radius: 3px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 0.9rem; cursor: pointer; }
         .cell.highlight { background: var(--c-sopa); color: white; } .cell.found { background: #27ae60; color: white; }
 
-        /* Sudoku (MEJORADO) */
-        #sudoku-board { 
-            display: grid; 
-            grid-template-columns: repeat(9, 1fr); 
-            gap: 1px; 
-            background: var(--sudo-border); 
-            border: 2px solid var(--sudo-border); 
-            width: 100%; 
-            max-width: 360px; 
-            aspect-ratio: 1; 
-            margin-bottom: 10px;
-        }
-        .sudo-cell { 
-            background: var(--card-bg); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            font-size: 1.3rem; 
-            cursor: pointer; 
-            color: var(--text); 
-        }
-        .sudo-cell.fixed { 
-            background: var(--sudo-fixed-bg); 
-            font-weight: 800; 
-            color: var(--sudo-fixed-text); 
-        } 
-        .sudo-cell.selected { 
-            background: var(--c-sudoku) !important; 
-            color: white !important; 
-        }
+        /* Sudoku */
+        #sudoku-board { display: grid; grid-template-columns: repeat(9, 1fr); gap: 1px; background: var(--sudo-border); border: 2px solid var(--sudo-border); width: 100%; max-width: 360px; aspect-ratio: 1; margin-bottom: 10px; }
+        .sudo-cell { background: var(--card-bg); display: flex; justify-content: center; align-items: center; font-size: 1.3rem; cursor: pointer; color: var(--text); }
+        .sudo-cell.fixed { background: var(--sudo-fixed-bg); font-weight: 800; color: var(--sudo-fixed-text); } 
+        .sudo-cell.selected { background: var(--c-sudoku) !important; color: white !important; }
         .numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; width: 100%; max-width: 360px; margin-top: 10px; }
         .num-btn { padding: 12px; background: var(--card-bg); border: 1px solid rgba(128,128,128,0.3); border-radius: 8px; font-size: 1.3rem; cursor: pointer; color: var(--text); font-weight: bold; }
 
-        /* Memory */
+        /* Memory (4x4) */
         #memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; max-width: 360px; }
         .card { aspect-ratio: 1; background: var(--c-memo); border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 2.2rem; color: transparent; transition: transform 0.2s; }
         .card.flipped { background: white; border: 2px solid var(--c-memo); color: initial; transform: rotateY(180deg); }
@@ -266,7 +253,7 @@
     <div class="theme-switch" onclick="toggleTheme()">🌓</div>
 
     <div id="screen-home" class="screen active">
-        <h1>🧠 Brain Gym</h1>
+        <h1>🧠 Brain Buddy</h1>
         
         <div class="menu-grid">
             <button class="menu-btn bg-wordle" onclick="showWordleMenu()">
@@ -292,7 +279,7 @@
         <div class="records-box">
             <div class="record-title">🏆 TUS RÉCORDS</div>
             <div id="rec-list" class="record-list"></div>
-            <div class="records-note">Los récords se guardan en este dispositivo.</div>
+            <div class="records-note">Los récords se guardan localmente en este dispositivo.</div>
             <div class="cloud-actions">
                 <button class="btn-cloud" onclick="exportData()">☁️ Guardar</button>
                 <button class="btn-cloud" onclick="importData()">📥 Cargar</button>
@@ -778,4 +765,3 @@
 </script>
 </body>
 </html>
-
