@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Brain Gym 8.0</title>
+    <title>Brain Gym 9.1</title>
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -14,10 +14,9 @@
             --secondary: #00cec9;
             --accent: #ff7675;
             --shadow: 0 8px 30px rgba(0,0,0,0.12);
-            --radius: 24px;
+            --radius: 20px;
         }
 
-        /* MODO OSCURO (Por defecto basado en tu imagen) */
         body.dark-mode {
             --bg-gradient: linear-gradient(135deg, #1e272e 0%, #000000 100%);
             --card-bg: rgba(30, 39, 46, 0.98);
@@ -27,7 +26,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             background: var(--bg-gradient);
             color: var(--text);
             margin: 0;
@@ -35,142 +34,126 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 15px;
+            padding: 10px;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
-            transition: background 0.5s;
         }
 
         .app {
             background: var(--card-bg);
             width: 100%;
             max-width: 500px;
-            min-height: 90vh;
+            height: 90vh;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             position: relative;
-            transition: background 0.3s, color 0.3s;
         }
 
         .screen {
             display: none;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
             width: 100%;
             height: 100%;
             box-sizing: border-box;
-            animation: fadeIn 0.4s ease;
+            animation: fadeIn 0.3s ease;
             overflow-y: auto;
         }
         .screen.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        h1 { margin: 0 0 5px 0; font-size: 2.2rem; background: -webkit-linear-gradient(45deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center;}
-        h2 { font-size: 1.2rem; color: var(--text); margin: 0; text-align: left; flex: 1; }
-        
+        h1 { margin: 30px 0 10px 0; font-size: 2rem; background: -webkit-linear-gradient(45deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; }
+        h2 { font-size: 1.2rem; margin: 0; color: var(--text); flex: 1; }
+
         /* BOTONES */
         .btn {
-            background: var(--card-bg);
-            border: 1px solid rgba(128,128,128,0.2);
-            color: var(--text);
-            padding: 18px;
-            border-radius: 16px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 12px;
+            background: var(--card-bg); border: 1px solid rgba(128,128,128,0.2);
+            color: var(--text); padding: 16px; border-radius: 12px;
+            font-size: 1.1rem; font-weight: 700; cursor: pointer;
+            width: 100%; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .btn:active { transform: scale(0.97); }
-        .btn-primary { background: var(--primary); color: white; border: none; box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4); }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: white; border: none; }
+
+        .nav { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 2px solid rgba(128,128,128,0.1); }
+        .nav-controls { display: flex; gap: 5px; }
         
         .btn-icon {
-            width: 40px; height: 40px; border-radius: 12px; border: none;
+            width: 36px; height: 36px; border-radius: 8px; border: none;
             display: flex; justify-content: center; align-items: center;
-            font-size: 1.2rem; cursor: pointer; margin-left: 8px;
-            transition: background 0.2s;
+            font-size: 1.2rem; cursor: pointer;
         }
-        .btn-exit { background: rgba(255, 118, 117, 0.15); color: var(--accent); }
         .btn-restart { background: rgba(0, 206, 201, 0.15); color: var(--secondary); }
-        .btn-back { background: rgba(128,128,128,0.1); color: var(--text); width: auto; padding: 0 15px; font-size: 0.9rem; }
+        .btn-exit { background: rgba(255, 118, 117, 0.15); color: var(--accent); }
+        .btn-back { background: rgba(128,128,128,0.1); width: auto; padding: 0 12px; font-size: 0.9rem; color: var(--text); }
 
-        .nav { 
-            width: 100%; display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid rgba(128,128,128,0.1); 
+        .timer-badge { font-family: monospace; font-size: 1.2rem; color: var(--primary); background: rgba(128,128,128,0.1); padding: 5px 10px; border-radius: 8px; margin-right: 5px; }
+        
+        /* BOTÓN DE TEMA CENTRADO */
+        .theme-switch { 
+            position: absolute; 
+            top: 15px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            font-size: 1.5rem; 
+            cursor: pointer; 
+            z-index: 999; 
         }
-        .nav-controls { display: flex; align-items: center; }
 
-        .timer-badge { font-family: monospace; font-size: 1.2rem; color: var(--primary); background: rgba(128,128,128,0.1); padding: 5px 12px; border-radius: 8px; margin-right: 5px; font-weight: bold; }
-
-        .theme-switch { position: absolute; top: 15px; right: 15px; font-size: 1.5rem; cursor: pointer; z-index: 100; }
-
-        /* LISTA DE RÉCORDS */
-        .records-box {
-            width: 100%;
-            margin-top: 10px;
-            background: rgba(0,0,0,0.03);
-            border-radius: 16px;
-            padding: 15px;
-            font-size: 0.9rem;
-        }
-        .record-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(128,128,128,0.1);
-        }
-        .record-item:last-child { border-bottom: none; }
-        .rec-name { font-weight: bold; color: var(--primary); margin-left: 5px; }
-        .rec-val { font-family: monospace; font-weight: bold; }
+        /* RECORDS */
+        .records-box { width: 100%; background: rgba(0,0,0,0.03); border-radius: 12px; padding: 10px; font-size: 0.9rem; margin-top: 10px; }
+        .record-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(128,128,128,0.1); }
+        .rec-val { font-weight: bold; font-family: monospace; }
+        .rec-name { color: var(--primary); margin-left: 5px; font-weight: bold; }
 
         /* JUEGOS */
         /* Sopa */
-        #sopa-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; width: 100%; aspect-ratio: 1; touch-action: none; margin-bottom: 15px; }
-        .cell { background: rgba(128,128,128,0.1); border-radius: 4px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 1rem; color: var(--text-light); cursor: pointer; }
-        .cell.highlight { background: var(--secondary); color: white; transform: scale(1.1); z-index: 2; }
+        #sopa-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; width: 100%; aspect-ratio: 1; margin-bottom: 10px; }
+        .cell { background: rgba(128,128,128,0.1); border-radius: 4px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 0.9rem; color: var(--text-light); cursor: pointer; }
+        .cell.highlight { background: var(--secondary); color: white; }
         .cell.found { background: var(--primary); color: white; }
 
         /* Sudoku */
-        #sudoku-board { display: grid; grid-template-columns: repeat(9, 1fr); gap: 1px; background: var(--text); border: 2px solid var(--text); margin-bottom: 15px; border-radius: 4px; overflow: hidden; width: 100%; max-width: 400px; }
-        .sudo-cell { background: var(--card-bg); aspect-ratio: 1; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: var(--text); cursor: pointer; }
+        #sudoku-board { display: grid; grid-template-columns: repeat(9, 1fr); gap: 1px; background: var(--text); border: 2px solid var(--text); width: 100%; max-width: 380px; margin-bottom: 10px; border-radius: 4px; overflow: hidden; }
+        .sudo-cell { background: var(--card-bg); aspect-ratio: 1; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; cursor: pointer; color: var(--text); }
         .sudo-cell:nth-child(3n) { border-right: 2px solid var(--text); } .sudo-cell:nth-child(9n) { border-right: none; }
         .sudo-cell:nth-child(n+19):nth-child(-n+27), .sudo-cell:nth-child(n+46):nth-child(-n+54) { border-bottom: 2px solid var(--text); }
-        .sudo-cell.fixed { background: rgba(128,128,128,0.2); font-weight: bold; }
+        .sudo-cell.fixed { background: rgba(128,128,128,0.15); font-weight: bold; }
         .sudo-cell.selected { background: var(--secondary); color: white; }
-        .sudo-cell.error { color: var(--accent); background: rgba(255, 118, 117, 0.2); }
-        .numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; width: 100%; max-width: 400px; }
-        .num-btn { padding: 12px; font-size: 1.2rem; background: var(--card-bg); border: 1px solid rgba(128,128,128,0.3); border-radius: 8px; color: var(--text); }
+        .sudo-cell.error { background: rgba(255, 118, 117, 0.2); }
+        .numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; width: 100%; max-width: 380px; }
+        .num-btn { padding: 10px; font-size: 1.2rem; background: var(--card-bg); border: 1px solid rgba(128,128,128,0.3); border-radius: 6px; color: var(--text); }
 
         /* Memoria */
         #memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; padding: 10px 0; }
-        .card { aspect-ratio: 1; background: var(--primary); border-radius: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 2.2rem; color: white; transition: transform 0.4s; transform-style: preserve-3d; }
-        .card.flipped { background: white; transform: rotateY(180deg); }
-        .card-content { display: none; }
-        .card.flipped .card-content { display: block; transform: rotateY(180deg); }
-
+        .card { 
+            aspect-ratio: 1; background: var(--primary); border-radius: 8px; cursor: pointer; 
+            display: flex; justify-content: center; align-items: center; font-size: 2rem; color: transparent;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .card.flipped { background: white; border: 2px solid var(--primary); color: initial; }
+        
         /* Simon */
-        .simon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 300px; height: 300px; margin: 20px auto; }
-        .simon-btn { border-radius: 20px; cursor: pointer; opacity: 0.6; transition: 0.1s; border: none; box-shadow: 0 5px 0 rgba(0,0,0,0.1); }
-        .simon-btn:active, .simon-btn.active { opacity: 1; transform: scale(0.95); box-shadow: 0 0 20px currentColor; }
-        .s-green { background: #00b894; color: #00b894; } .s-red { background: #ff7675; color: #ff7675; }
-        .s-yellow { background: #fdcb6e; color: #fdcb6e; } .s-blue { background: #0984e3; color: #0984e3; }
+        .simon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 280px; height: 280px; margin: 20px auto; }
+        .simon-btn { border-radius: 16px; cursor: pointer; opacity: 0.5; border: none; }
+        .simon-btn.active { opacity: 1; transform: scale(0.95); box-shadow: 0 0 15px currentColor; }
+        .s-0 { background-color: #00b894; color: #00b894; } .s-1 { background-color: #ff7675; color: #ff7675; }
+        .s-2 { background-color: #fdcb6e; color: #fdcb6e; } .s-3 { background-color: #0984e3; color: #0984e3; }
 
         /* Math */
-        .math-box { background: rgba(128,128,128,0.05); padding: 30px; border-radius: 20px; text-align: center; margin-bottom: 20px; width: 100%; }
+        .math-box { background: rgba(128,128,128,0.05); padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 20px; width: 100%; }
         .math-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
 
-        .confetti { position: absolute; width: 10px; height: 10px; animation: fall linear forwards; }
+        .confetti { position: absolute; width: 10px; height: 10px; animation: fall linear forwards; pointer-events: none; z-index: 999; }
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
     </style>
 </head>
-<body class="dark-mode">
+<body>
 
 <div class="app">
     <div class="theme-switch" onclick="toggleTheme()">🌓</div>
@@ -178,7 +161,7 @@
     <div id="screen-home" class="screen active">
         <div style="flex:1; display:flex; flex-direction:column; justify-content:center; width:100%">
             <h1>🧠 Brain Gym</h1>
-            <p style="text-align:center; color:var(--text-light); margin-bottom:20px;">Versión 8.0</p>
+            <p style="text-align:center; color:var(--text-light); margin-bottom:20px;">Versión 9.1</p>
             
             <button class="btn" onclick="showSopaMenu()"><span>🔤</span> Sopa de Letras</button>
             <button class="btn" onclick="initSudoku()"><span>🔢</span> Sudoku</button>
@@ -187,15 +170,17 @@
             <button class="btn" onclick="initMath()"><span>🧮</span> Cálculo</button>
             
             <div class="records-box">
-                <div style="text-align:center; margin-bottom:10px; font-weight:bold; color:var(--text-light)">🏆 MEJORES RÉCORDS</div>
-                <div id="rec-list">
-                    </div>
+                <div style="text-align:center; margin-bottom:5px; font-weight:bold;">🏆 RÉCORDS</div>
+                <div id="rec-list"></div>
+                <div style="text-align:center; margin-top:5px;">
+                    <button class="btn-back" onclick="clearRecords()">Borrar Récords</button>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="screen-sopa-menu" class="screen">
-        <div class="nav"><h2>Sopa de Letras</h2><button class="btn-icon btn-back" onclick="goHome()">Volver</button></div>
+        <div class="nav"><h2>Sopa de Letras</h2><button class="btn-icon btn-back" onclick="goHome()">Back</button></div>
         <button class="btn" onclick="initSopa('paises')">🌍 Países</button>
         <button class="btn" onclick="initSopa('comidas')">🍕 Comidas</button>
         <button class="btn" onclick="initSopa('animales')">🐶 Animales</button>
@@ -204,15 +189,15 @@
 
     <div id="screen-sopa-game" class="screen">
         <div class="nav">
-            <h2 id="sopa-cat-title" style="font-size:1rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></h2>
+            <h2 id="sopa-title" style="font-size:1rem; white-space:nowrap; overflow:hidden;"></h2>
             <div class="nav-controls">
                 <div id="timer-sopa" class="timer-badge">00:00</div>
-                <button class="btn-icon btn-restart" onclick="restartSopa()">↺</button>
-                <button class="btn-icon btn-exit" onclick="stopGame(); showSopaMenu()">✖</button>
+                <button class="btn-icon btn-restart" onclick="initSopa(sCurrentCat)">↺</button>
+                <button class="btn-icon btn-exit" onclick="goHome()">✖</button>
             </div>
         </div>
         <div id="sopa-grid"></div>
-        <div id="sopa-words" style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center;"></div>
+        <div id="sopa-words" style="display:flex; flex-wrap:wrap; gap:4px; justify-content:center;"></div>
     </div>
 
     <div id="screen-sudoku" class="screen">
@@ -221,7 +206,7 @@
             <div class="nav-controls">
                 <div id="timer-sudoku" class="timer-badge">00:00</div>
                 <button class="btn-icon btn-restart" onclick="initSudoku()">↺</button>
-                <button class="btn-icon btn-exit" onclick="stopGame(); goHome()">✖</button>
+                <button class="btn-icon btn-exit" onclick="goHome()">✖</button>
             </div>
         </div>
         <div id="sudoku-board"></div>
@@ -232,9 +217,7 @@
             <button class="num-btn" onclick="fillSudoku(7)">7</button><button class="num-btn" onclick="fillSudoku(8)">8</button>
             <button class="num-btn" onclick="fillSudoku(9)">9</button><button class="num-btn" style="color:var(--accent)" onclick="fillSudoku(null)">⌫</button>
         </div>
-        <div style="margin-top:15px; width:100%">
-            <button class="btn btn-primary" onclick="checkSudoku()">Verificar</button>
-        </div>
+        <div style="margin-top:10px; width:100%"><button class="btn btn-primary" onclick="checkSudoku()">Verificar</button></div>
     </div>
 
     <div id="screen-memory" class="screen">
@@ -243,139 +226,152 @@
             <div class="nav-controls">
                 <div id="timer-memory" class="timer-badge">00:00</div>
                 <button class="btn-icon btn-restart" onclick="initMemory()">↺</button>
-                <button class="btn-icon btn-exit" onclick="stopGame(); goHome()">✖</button>
+                <button class="btn-icon btn-exit" onclick="goHome()">✖</button>
             </div>
         </div>
         <div id="memory-grid"></div>
     </div>
 
     <div id="screen-simon" class="screen">
-        <div class="nav">
-            <h2>Simon</h2>
-            <div class="nav-controls">
-                <button class="btn-icon btn-restart" onclick="initSimon()">↺</button>
-                <button class="btn-icon btn-exit" onclick="goHome()">✖</button>
-            </div>
-        </div>
-        <div style="text-align:center; font-size:1.5rem; margin-bottom:10px">Nivel: <span id="simon-level" style="color:var(--primary); font-weight:bold">1</span></div>
+        <div class="nav"><h2>Simon</h2><div class="nav-controls"><button class="btn-icon btn-restart" onclick="initSimon()">↺</button><button class="btn-icon btn-exit" onclick="goHome()">✖</button></div></div>
+        <div style="text-align:center; margin-bottom:20px; font-size:1.5rem;">Nivel: <span id="simon-level" style="color:var(--primary); font-weight:bold;">1</span></div>
         <div class="simon-grid">
-            <button id="s-0" class="simon-btn s-green" onclick="handleSimonInput(0)"></button>
-            <button id="s-1" class="simon-btn s-red" onclick="handleSimonInput(1)"></button>
-            <button id="s-2" class="simon-btn s-yellow" onclick="handleSimonInput(2)"></button>
-            <button id="s-3" class="simon-btn s-blue" onclick="handleSimonInput(3)"></button>
+            <button id="sb-0" class="simon-btn s-0" onclick="handleSimon(0)"></button>
+            <button id="sb-1" class="simon-btn s-1" onclick="handleSimon(1)"></button>
+            <button id="sb-2" class="simon-btn s-2" onclick="handleSimon(2)"></button>
+            <button id="sb-3" class="simon-btn s-3" onclick="handleSimon(3)"></button>
         </div>
-        <button id="start-simon" class="btn btn-primary" onclick="startSimonRound()">Comenzar</button>
+        <button id="simon-start-btn" class="btn btn-primary" onclick="startSimonRound()">Comenzar</button>
     </div>
 
     <div id="screen-math" class="screen">
-        <div class="nav">
-            <h2>Cálculo</h2>
-            <div class="nav-controls">
-                <button class="btn-icon btn-restart" onclick="initMath()">↺</button>
-                <button class="btn-icon btn-exit" onclick="stopGame(); goHome()">✖</button>
-            </div>
-        </div>
+        <div class="nav"><h2>Cálculo</h2><div class="nav-controls"><button class="btn-icon btn-restart" onclick="initMath()">↺</button><button class="btn-icon btn-exit" onclick="stopGame(); goHome()">✖</button></div></div>
         <div class="math-box">
-            <div style="font-size:3rem; font-weight:bold; margin-bottom:10px" id="math-eq"></div>
-            <div style="color:var(--text-light)">Puntos: <span id="math-score">0</span> | Tiempo: <span id="math-time">30</span></div>
+            <div id="math-eq" style="font-size:2.5rem; font-weight:bold; margin-bottom:5px;"></div>
+            <div>Puntos: <span id="math-score">0</span> | Tiempo: <span id="math-time">30</span></div>
         </div>
-        <div class="math-options" id="math-opts"></div>
+        <div id="math-opts" class="math-options"></div>
     </div>
 
 </div>
 
 <script>
-    // --- GESTIÓN DE RÉCORDS ---
-    const GAMES = {
-        sopa:   { title: "Sopa",   type: "time" }, // Menor es mejor
-        sudoku: { title: "Sudoku", type: "time" },
-        memory: { title: "Memoria",type: "time" },
-        simon:  { title: "Simon",  type: "score" }, // Mayor es mejor
-        math:   { title: "Cálculo",type: "score" }
+    /* ================= GESTOR GLOBAL ================= */
+    let gameInterval = null;
+    let timeElapsed = 0;
+    
+    // DEFINICIÓN DE JUEGOS Y RÈCORDS
+    const GAMES_CONFIG = {
+        sopa:   { label: "Sopa", type: "min" },
+        sudoku: { label: "Sudoku", type: "min" },
+        memory: { label: "Memoria", type: "min" },
+        simon:  { label: "Simon", type: "max" },
+        math:   { label: "Cálculo", type: "max" }
     };
 
-    function checkRecord(gameKey, value) {
-        let rec = JSON.parse(localStorage.getItem('bg_rec_'+gameKey)) || { name: '-', val: (GAMES[gameKey].type==='time' ? 999999 : 0) };
-        let isBetter = false;
+    function showScreen(id) { 
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        updateRecordDisplay();
+    }
+    function goHome() { stopGame(); showScreen('screen-home'); }
+    function showSopaMenu() { stopGame(); showScreen('screen-sopa-menu'); }
+    function toggleTheme() { document.body.classList.toggle('dark-mode'); }
+    
+    function stopGame() {
+        clearInterval(gameInterval);
+        clearInterval(simonTimer);
+        clearInterval(mathTimer);
+    }
 
-        if (GAMES[gameKey].type === 'time') {
-            if (value < rec.val) isBetter = true;
-        } else {
-            if (value > rec.val) isBetter = true;
+    function startTimer(displayId) {
+        stopGame();
+        timeElapsed = 0;
+        const el = document.getElementById(displayId);
+        if(el) el.textContent = "00:00";
+        gameInterval = setInterval(() => {
+            timeElapsed++;
+            let m = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
+            let s = (timeElapsed % 60).toString().padStart(2, '0');
+            if(el) el.textContent = `${m}:${s}`;
+        }, 1000);
+    }
+
+    function fireConfetti() {
+        for(let i=0; i<40; i++) {
+            let c = document.createElement('div'); c.className = 'confetti';
+            c.style.left = Math.random()*100 + '%'; c.style.top = '-10px';
+            c.style.backgroundColor = `hsl(${Math.random()*360},100%,50%)`;
+            c.style.animationDuration = (Math.random()*2+1) + 's';
+            document.body.appendChild(c);
+            setTimeout(() => c.remove(), 3000);
+        }
+    }
+
+    // --- GESTIÓN DE RÉCORDS ---
+    function checkRecord(gameKey, score) {
+        let key = 'bg_record_' + gameKey;
+        let saved = JSON.parse(localStorage.getItem(key));
+        
+        // Si no hay record, creamos uno por defecto malo
+        if (!saved) {
+            saved = { name: '-', val: (GAMES_CONFIG[gameKey].type === 'min' ? 999999 : 0) };
         }
 
-        if (isBetter) {
-            let name = prompt(`¡NUEVO RÉCORD!\n\n${GAMES[gameKey].title}: ${formatVal(value, GAMES[gameKey].type)}\n\nIngresa tu nombre:`);
+        let isNewRecord = false;
+        if (GAMES_CONFIG[gameKey].type === 'min') {
+            if (score < saved.val) isNewRecord = true;
+        } else {
+            if (score > saved.val) isNewRecord = true;
+        }
+
+        if (isNewRecord) {
+            let displayScore = (GAMES_CONFIG[gameKey].type === 'min') ? formatTime(score) : score;
+            let name = prompt(`¡NUEVO RÉCORD!\nJuego: ${GAMES_CONFIG[gameKey].label}\nPuntaje: ${displayScore}\n\nEscribe tu nombre:`);
             if (name) {
-                localStorage.setItem('bg_rec_'+gameKey, JSON.stringify({ name: name.substring(0,12), val: value }));
-                updateHomeRecords();
-                alert("¡Récord Guardado!");
+                localStorage.setItem(key, JSON.stringify({ name: name.substring(0,10), val: score }));
+                alert("Récord guardado.");
             }
         }
+        updateRecordDisplay();
     }
 
-    function formatVal(val, type) {
-        if (type === 'score') return val + ' pts';
-        if (val === 999999) return '-';
-        let m = Math.floor(val/60).toString().padStart(2,'0');
-        let s = (val%60).toString().padStart(2,'0');
-        return `${m}:${s}`;
+    function formatTime(s) {
+        let m = Math.floor(s / 60).toString().padStart(2, '0');
+        let sec = (s % 60).toString().padStart(2, '0');
+        return `${m}:${sec}`;
     }
 
-    function updateHomeRecords() {
+    function updateRecordDisplay() {
         const list = document.getElementById('rec-list');
         list.innerHTML = '';
-        for (let key in GAMES) {
-            let rec = JSON.parse(localStorage.getItem('bg_rec_'+key)) || { name: 'Nadie', val: (GAMES[key].type==='time' ? 999999 : 0) };
-            let displayVal = (rec.name === 'Nadie') ? '--' : formatVal(rec.val, GAMES[key].type);
+        for (let k in GAMES_CONFIG) {
+            let saved = JSON.parse(localStorage.getItem('bg_record_' + k));
+            let valText = '--';
+            let nameText = 'Nadie';
             
+            if (saved) {
+                nameText = saved.name;
+                valText = (GAMES_CONFIG[k].type === 'min') ? formatTime(saved.val) : saved.val;
+            }
+
             list.innerHTML += `
                 <div class="record-item">
-                    <span>${GAMES[key].title}</span>
-                    <span>
-                        <span class="rec-val">${displayVal}</span>
-                        <span class="rec-name">${rec.name}</span>
-                    </span>
+                    <span>${GAMES_CONFIG[k].label}</span>
+                    <span><span class="rec-val">${valText}</span> <span class="rec-name">${nameText}</span></span>
                 </div>
             `;
         }
     }
 
-    // --- SISTEMA GENERAL ---
-    let gameTimerInterval;
-    let timeElapsed = 0;
-
-    function showScreen(id) { 
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); 
-        document.getElementById(id).classList.add('active'); 
-        updateHomeRecords();
-    }
-    function goHome() { stopGame(); showScreen('screen-home'); }
-    function showSopaMenu() { stopGame(); showScreen('screen-sopa-menu'); }
-    function toggleTheme() { document.body.classList.toggle('dark-mode'); }
-    function fireConfetti() {
-        for(let i=0; i<50; i++) {
-            let c=document.createElement('div'); c.className='confetti'; c.style.left=Math.random()*100+'%'; c.style.top='-10px';
-            c.style.backgroundColor=`hsl(${Math.random()*360},100%,50%)`; c.style.animationDuration=(Math.random()*2+1)+'s';
-            document.body.appendChild(c); setTimeout(()=>c.remove(),3000);
+    function clearRecords() {
+        if(confirm("¿Borrar todos los récords?")) {
+            localStorage.clear();
+            updateRecordDisplay();
         }
     }
-    
-    // Timer global para juegos de tiempo
-    function startGlobalTimer(displayId) {
-        stopGame(); // Limpia anteriores
-        timeElapsed = 0;
-        document.getElementById(displayId).textContent = "00:00";
-        gameTimerInterval = setInterval(() => {
-            timeElapsed++;
-            let m=Math.floor(timeElapsed/60).toString().padStart(2,'0');
-            let s=(timeElapsed%60).toString().padStart(2,'0');
-            document.getElementById(displayId).textContent = `${m}:${s}`;
-        }, 1000);
-    }
-    function stopGame() { clearInterval(gameTimerInterval); clearInterval(simonInterval); clearInterval(mathInterval); }
 
-    // --- 1. SOPA ---
+    /* ================= 1. SOPA DE LETRAS ================= */
     const sopaDB = {
         paises: ["ARGENTINA","BOLIVIA","BRASIL","CHILE","COLOMBIA","ECUADOR","ESPAÑA","FRANCIA","ITALIA","JAPON","CHINA","ALEMANIA"],
         comidas: ["PIZZA","HAMBURGUESA","SUSHI","TACOS","PASTA","ARROZ","POLLO","ENSALADA","HELADO","FRUTA"],
@@ -383,67 +379,74 @@
         todo: []
     };
     sopaDB.todo = [].concat(...Object.values(sopaDB));
-    let sGrid=12, sMatrix=[], sWords=[], sFound=[], sCurrentCat='todo', swipe=false, sStart=null, sHigh=[];
+
+    let sGrid=12, sMatrix=[], sWords=[], sFound=[], sCurrentCat='todo', sSwipe=false, sStart=null, sHigh=[];
 
     function initSopa(cat) {
-        sCurrentCat = cat; 
+        sCurrentCat = cat;
         showScreen('screen-sopa-game');
-        document.getElementById('sopa-cat-title').textContent = cat.toUpperCase();
-        
-        // Init Timer (starts on first interaction actually, but logic simplified here)
-        startGlobalTimer('timer-sopa'); 
+        document.getElementById('sopa-title').textContent = cat.toUpperCase();
+        startTimer('timer-sopa');
         
         let pool = sopaDB[cat].sort(()=>Math.random()-0.5);
-        let count = Math.floor(Math.random()*5) + 8; 
-        sWords = pool.slice(0, count); sFound=[];
-        genSopa(); renderSopa();
+        sWords = pool.slice(0, 10);
+        sFound = [];
+        
+        genSopaGrid();
+        renderSopa();
     }
-    function restartSopa() { initSopa(sCurrentCat); }
 
-    function genSopa() {
+    function genSopaGrid() {
         sMatrix = Array(sGrid).fill().map(()=>Array(sGrid).fill(''));
-        let placedWords = [];
-        for(let w of sWords) {
-            if(w.length>sGrid) continue;
-            let placed=false, tries=0;
+        let placedList = [];
+        sWords.forEach(w => {
+            if(w.length > sGrid) return;
+            let placed = false, tries=0;
             while(!placed && tries++<100) {
-                let dir=Math.floor(Math.random()*3), r=Math.floor(Math.random()*sGrid), c=Math.floor(Math.random()*sGrid);
-                if(checkFit(w,r,c,dir)) {
-                    for(let i=0; i<w.length; i++) sMatrix[r+(dir===1||dir===2?i:0)][c+(dir===0||dir===2?i:0)] = w[i];
-                    placed=true; placedWords.push(w);
+                let dir = Math.floor(Math.random()*3); // 0:H, 1:V, 2:D
+                let r = Math.floor(Math.random()*sGrid);
+                let c = Math.floor(Math.random()*sGrid);
+                if(canPlace(w,r,c,dir)) {
+                    for(let i=0; i<w.length; i++) sMatrix[r + (dir>0?i:0)][c + (dir%2===0?i:0)] = w[i];
+                    placed = true;
+                    placedList.push(w);
                 }
             }
-        }
-        sWords = placedWords;
+        });
+        sWords = placedList;
         const abc = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
         for(let r=0; r<sGrid; r++) for(let c=0; c<sGrid; c++) if(!sMatrix[r][c]) sMatrix[r][c] = abc[Math.floor(Math.random()*abc.length)];
     }
-    function checkFit(w,r,c,d) {
-        let len=w.length, er=r+(d!==0?len-1:0), ec=c+(d!==1?len-1:0);
+
+    function canPlace(w,r,c,d) {
+        let len=w.length, er=r+(d>0?len-1:0), ec=c+(d%2===0?len-1:0);
         if(er>=sGrid || ec>=sGrid) return false;
         for(let i=0; i<len; i++) {
-            let nr=r+(d!==0?i:0), nc=c+(d!==1?i:0);
+            let nr=r+(d>0?i:0), nc=c+(d%2===0?i:0);
             if(sMatrix[nr][nc]!=='' && sMatrix[nr][nc]!==w[i]) return false;
         }
         return true;
     }
+
     function renderSopa() {
         const g = document.getElementById('sopa-grid'); g.innerHTML='';
         for(let r=0; r<sGrid; r++) for(let c=0; c<sGrid; c++) {
             let d=document.createElement('div'); d.className='cell'; d.textContent=sMatrix[r][c];
             d.dataset.r=r; d.dataset.c=c;
-            d.onmousedown=hStart; d.onmouseenter=hMove; d.onmouseup=hEnd;
-            d.ontouchstart=(e)=>{e.preventDefault(); hStart.call(d)};
+            d.onmousedown=hSopaStart; d.onmouseenter=hSopaMove; d.onmouseup=hSopaEnd;
+            d.ontouchstart=(e)=>{e.preventDefault(); hSopaStart.call(d)};
             g.appendChild(d);
         }
-        g.ontouchmove=(e)=>{e.preventDefault(); let el=document.elementFromPoint(e.touches[0].clientX,e.touches[0].clientY); if(el?.classList.contains('cell')) hMove.call(el)};
-        g.ontouchend=hEnd;
-        const l=document.getElementById('sopa-words'); l.innerHTML='';
-        sWords.forEach(w => { let s=document.createElement('span'); s.id='w-'+w; s.textContent=w; s.style.padding="4px 8px"; s.style.background="rgba(128,128,128,0.1)"; s.style.borderRadius="4px"; s.style.fontSize="0.8rem"; l.appendChild(s); });
+        g.ontouchmove=(e)=>{e.preventDefault(); let el=document.elementFromPoint(e.touches[0].clientX,e.touches[0].clientY); if(el && el.classList.contains('cell')) hSopaMove.call(el)};
+        g.ontouchend=hSopaEnd;
+        
+        const l = document.getElementById('sopa-words'); l.innerHTML='';
+        sWords.forEach(w => { let s=document.createElement('div'); s.id='w-'+w; s.textContent=w; s.style.padding="2px 6px"; s.style.background="#eee"; s.style.borderRadius="4px"; s.style.fontSize="0.8rem"; s.style.color="#333"; l.appendChild(s); });
     }
-    function hStart() { swipe=true; sStart=this; hl(this); }
-    function hMove() { if(swipe && sStart) hl(this); }
-    function hl(end) {
+
+    function hSopaStart() { sSwipe=true; sStart=this; hlSopa(this); }
+    function hSopaMove() { if(sSwipe && sStart) hlSopa(this); }
+    function hlSopa(end) {
         sHigh.forEach(c=>c.classList.remove('highlight')); sHigh=[];
         let r1=+sStart.dataset.r, c1=+sStart.dataset.c, r2=+end.dataset.r, c2=+end.dataset.c;
         let dr=r2-r1, dc=c2-c1, st=Math.max(Math.abs(dr),Math.abs(dc));
@@ -454,147 +457,167 @@
             if(c) { c.classList.add('highlight'); sHigh.push(c); }
         }
     }
-    function hEnd() {
-        if(!swipe) return; swipe=false;
-        let w=sHigh.map(c=>c.textContent).join(''), rev=w.split('').reverse().join('');
-        let m=(sWords.includes(w)&&!sFound.includes(w))?w:(sWords.includes(rev)&&!sFound.includes(rev)?rev:null);
-        if(m) {
-            sFound.push(m); sHigh.forEach(c=>{c.classList.remove('highlight'); c.classList.add('found')});
-            let el=document.getElementById('w-'+m); el.style.background="var(--primary)"; el.style.color="white"; el.style.textDecoration="line-through";
-            if(sFound.length===sWords.length) { 
-                stopGame(); 
-                fireConfetti(); 
-                setTimeout(() => checkRecord('sopa', timeElapsed), 500); 
+    function hSopaEnd() {
+        if(!sSwipe) return; sSwipe=false;
+        let w = sHigh.map(c=>c.textContent).join('');
+        let rev = w.split('').reverse().join('');
+        let match = (sWords.includes(w) && !sFound.includes(w)) ? w : (sWords.includes(rev) && !sFound.includes(rev) ? rev : null);
+        
+        if(match) {
+            sFound.push(match); sHigh.forEach(c=>{c.classList.remove('highlight'); c.classList.add('found')});
+            let lbl = document.getElementById('w-'+match);
+            if(lbl) { lbl.style.background="var(--primary)"; lbl.style.color="white"; lbl.style.textDecoration="line-through"; }
+            if(sFound.length === sWords.length) {
+                stopGame(); fireConfetti();
+                setTimeout(()=>checkRecord('sopa', timeElapsed), 500);
             }
-        } else sHigh.forEach(c=>c.classList.remove('highlight'));
+        } else {
+            sHigh.forEach(c=>c.classList.remove('highlight'));
+        }
         sHigh=[]; sStart=null;
     }
 
-    // --- 2. SUDOKU ---
+    /* ================= 2. SUDOKU ================= */
     let suSol=[], suPuz=[], suSel=null;
     function initSudoku() {
-        showScreen('screen-sudoku');
-        startGlobalTimer('timer-sudoku');
+        showScreen('screen-sudoku'); startTimer('timer-sudoku');
         let b=[[1,2,3,4,5,6,7,8,9],[4,5,6,7,8,9,1,2,3],[7,8,9,1,2,3,4,5,6],[2,3,4,5,6,7,8,9,1],[5,6,7,8,9,1,2,3,4],[8,9,1,2,3,4,5,6,7],[3,4,5,6,7,8,9,1,2],[6,7,8,9,1,2,3,4,5],[9,1,2,3,4,5,6,7,8]];
         let m=[1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-0.5);
         suSol=b.map(r=>r.map(n=>m[n-1])); suPuz=suSol.map(r=>[...r]);
-        let h=40; while(h>0){ let r=Math.floor(Math.random()*9),c=Math.floor(Math.random()*9); if(suPuz[r][c]!==0){suPuz[r][c]=0;h--}}
-        const bd=document.getElementById('sudoku-board'); bd.innerHTML=''; suSel=null;
+        let h=40; while(h>0){ let r=Math.floor(Math.random()*9),c=Math.floor(Math.random()*9); if(suPuz[r][c]!==0){suPuz[r][c]=0;h--;}}
+        
+        const db=document.getElementById('sudoku-board'); db.innerHTML=''; suSel=null;
         for(let i=0; i<81; i++) {
             let d=document.createElement('div'); d.className='sudo-cell';
             let r=Math.floor(i/9), c=i%9, v=suPuz[r][c];
             if(v!==0) { d.textContent=v; d.classList.add('fixed'); }
             else d.onclick=()=>{ if(suSel) suSel.classList.remove('selected'); suSel=d; d.classList.add('selected'); };
-            bd.appendChild(d);
+            db.appendChild(d);
         }
     }
     function fillSudoku(n) { if(suSel) { suSel.textContent=n?n:''; suSel.classList.remove('error'); } }
     function checkSudoku() {
-        let err=0, mt=0, cs=document.querySelectorAll('.sudo-cell');
-        cs.forEach((c,i)=>{
+        let err=0, mt=0, cells=document.querySelectorAll('.sudo-cell');
+        cells.forEach((c,i)=>{
             let v=parseInt(c.textContent)||0;
             if(v===0) mt++;
             else if(v!==suSol[Math.floor(i/9)][i%9] && !c.classList.contains('fixed')) { c.classList.add('error'); err++; }
         });
-        if(err===0 && mt===0) { 
-            stopGame();
-            fireConfetti(); 
-            setTimeout(() => checkRecord('sudoku', timeElapsed), 500);
-        } else alert(`Errores: ${err}, Vacíos: ${mt}`);
+        if(err===0 && mt===0) { stopGame(); fireConfetti(); setTimeout(()=>checkRecord('sudoku', timeElapsed), 500); }
+        else alert(`Errores: ${err}, Vacíos: ${mt}`);
     }
 
-    // --- 3. MEMORIA ---
+    /* ================= 3. MEMORIA (FIXED) ================= */
     const memIcons = ["🍎","🍌","🍒","🍇","🍉","🍓","🍑","🍍"];
-    let memFlips=[], memLock=false;
+    let memCards=[], memLock=false;
     function initMemory() {
-        showScreen('screen-memory');
-        startGlobalTimer('timer-memory');
-        const g=document.getElementById('memory-grid'); g.innerHTML=''; memFlips=[]; memLock=false;
-        let deck=[...memIcons, ...memIcons].sort(()=>Math.random()-0.5);
-        deck.forEach(i => {
-            let c=document.createElement('div'); c.className='card'; c.innerHTML=`<div class="card-content">${i}</div>`;
-            c.onclick=()=>{
+        showScreen('screen-memory'); startTimer('timer-memory');
+        const g=document.getElementById('memory-grid'); g.innerHTML=''; memCards=[]; memLock=false;
+        let deck = [...memIcons, ...memIcons].sort(()=>Math.random()-0.5);
+        deck.forEach(icon => {
+            let c = document.createElement('div'); c.className = 'card';
+            // Simple structure: no nested 3d nonsense, just text content
+            c.textContent = icon; 
+            
+            c.onclick = () => {
                 if(memLock || c.classList.contains('flipped')) return;
-                c.classList.add('flipped'); memFlips.push({c,i});
-                if(memFlips.length===2) {
-                    memLock=true;
-                    if(memFlips[0].i === memFlips[1].i) { 
-                        memFlips=[]; memLock=false; 
-                        if(!document.querySelectorAll('.card:not(.flipped)').length) { 
-                            stopGame();
-                            fireConfetti(); 
-                            setTimeout(() => checkRecord('memory', timeElapsed), 500);
-                        } 
-                    } else setTimeout(()=>{memFlips[0].c.classList.remove('flipped'); memFlips[1].c.classList.remove('flipped'); memFlips=[]; memLock=false;},1000);
+                c.classList.add('flipped');
+                memCards.push({ el: c, icon: icon });
+                
+                if(memCards.length === 2) {
+                    memLock = true;
+                    if(memCards[0].icon === memCards[1].icon) {
+                        memCards = []; memLock = false;
+                        if(document.querySelectorAll('.card.flipped').length === deck.length) {
+                            stopGame(); fireConfetti(); setTimeout(()=>checkRecord('memory', timeElapsed), 500);
+                        }
+                    } else {
+                        setTimeout(() => {
+                            memCards[0].el.classList.remove('flipped');
+                            memCards[1].el.classList.remove('flipped');
+                            memCards = []; memLock = false;
+                        }, 1000);
+                    }
                 }
             };
             g.appendChild(c);
         });
     }
 
-    // --- 4. SIMON ---
-    let simonSeq=[], simonInput=[], simonLevel=1, simonActive=false, simonInterval;
+    /* ================= 4. SIMON ================= */
+    let sSeq=[], sInput=[], sLevel=1, simonTimer=null, sActive=false;
     function initSimon() {
-        stopGame();
-        showScreen('screen-simon'); simonSeq=[]; simonLevel=1; 
-        document.getElementById('simon-level').textContent=simonLevel; 
-        document.getElementById('start-simon').style.display='block'; 
+        stopGame(); showScreen('screen-simon'); 
+        sSeq=[]; sLevel=1; document.getElementById('simon-level').textContent=1;
+        document.getElementById('simon-start-btn').style.display='inline-block';
     }
     function startSimonRound() {
-        document.getElementById('start-simon').style.display='none';
-        simonInput=[]; simonSeq.push(Math.floor(Math.random()*4)); playSimonSeq();
+        document.getElementById('simon-start-btn').style.display='none';
+        sInput=[]; sSeq.push(Math.floor(Math.random()*4));
+        playSeq();
     }
-    function playSimonSeq() {
-        simonActive=false; let i=0;
-        simonInterval = setInterval(()=>{
-            flashSimon(simonSeq[i]); i++;
-            if(i>=simonSeq.length) { clearInterval(simonInterval); simonActive=true; }
+    function playSeq() {
+        sActive=false; let i=0;
+        simonTimer = setInterval(() => {
+            flashBtn(sSeq[i]); i++;
+            if(i>=sSeq.length) { clearInterval(simonTimer); sActive=true; }
         }, 800);
     }
-    function flashSimon(idx) {
-        let btn = document.getElementById('s-'+idx);
-        btn.classList.add('active'); setTimeout(()=>btn.classList.remove('active'), 400);
+    function flashBtn(idx) {
+        let b = document.getElementById('sb-'+idx);
+        b.classList.add('active'); setTimeout(()=>b.classList.remove('active'), 400);
     }
-    function handleSimonInput(idx) {
-        if(!simonActive) return;
-        flashSimon(idx); simonInput.push(idx);
-        if(simonInput[simonInput.length-1] !== simonSeq[simonInput.length-1]) {
-            simonActive=false; 
-            alert(`¡Perdiste! Nivel: ${simonLevel}`);
-            checkRecord('simon', simonLevel);
+    function handleSimon(idx) {
+        if(!sActive) return;
+        flashBtn(idx); sInput.push(idx);
+        if(sInput[sInput.length-1] !== sSeq[sInput.length-1]) {
+            sActive=false; alert(`¡Perdiste! Nivel: ${sLevel}`);
+            checkRecord('simon', sLevel);
             initSimon(); return;
         }
-        if(simonInput.length === simonSeq.length) {
-            simonActive=false; simonLevel++; document.getElementById('simon-level').textContent=simonLevel;
+        if(sInput.length === sSeq.length) {
+            sActive=false; sLevel++; document.getElementById('simon-level').textContent=sLevel;
             setTimeout(startSimonRound, 1000);
         }
     }
 
-    // --- 5. MATH ---
-    let mScore=0, mTime=30, mInterval, mAns=0;
+    /* ================= 5. MATH ================= */
+    let mScore=0, mTime=30, mAns=0, mathTimer=null;
     function initMath() {
-        stopGame();
-        showScreen('screen-math'); mScore=0; mTime=30;
-        document.getElementById('math-score').textContent="0"; document.getElementById('math-time').textContent="30";
+        stopGame(); showScreen('screen-math');
+        mScore=0; mTime=30; 
+        document.getElementById('math-score').textContent="0";
+        document.getElementById('math-time').textContent="30";
         nextMath();
-        mInterval = setInterval(()=>{ mTime--; document.getElementById('math-time').textContent=mTime; if(mTime<=0){ stopGame(); alert(`Tiempo. Puntos: ${mScore}`); checkRecord('math', mScore); goHome(); } }, 1000);
+        mathTimer = setInterval(() => {
+            mTime--; document.getElementById('math-time').textContent=mTime;
+            if(mTime<=0) { stopGame(); alert("Tiempo!"); checkRecord('math', mScore); goHome(); }
+        }, 1000);
     }
     function nextMath() {
-        let a=Math.floor(Math.random()*12)+1, b=Math.floor(Math.random()*12)+1, op=Math.random()<0.5?'+':(Math.random()<0.5?'-':'*');
+        let a=Math.floor(Math.random()*12)+1, b=Math.floor(Math.random()*12)+1, op=Math.random()<0.5?'+':'-';
+        if(Math.random()>0.7) op='*';
         if(op==='*'){a=Math.floor(Math.random()*9)+1; b=Math.floor(Math.random()*9)+1;}
-        mAns=eval(`${a}${op}${b}`); document.getElementById('math-eq').textContent=`${a} ${op} ${b}`;
-        let opts=[mAns]; while(opts.length<4){let f=mAns+Math.floor(Math.random()*10)-5; if(f!==mAns && !opts.includes(f)) opts.push(f);}
+        mAns = eval(`${a}${op}${b}`);
+        document.getElementById('math-eq').textContent = `${a} ${op} ${b}`;
+        
+        let opts = [mAns];
+        while(opts.length<4) { let f=mAns+Math.floor(Math.random()*10)-5; if(f!==mAns && !opts.includes(f)) opts.push(f); }
         opts.sort(()=>Math.random()-0.5);
-        let c=document.getElementById('math-opts'); c.innerHTML='';
-        opts.forEach(o=>{
+        
+        const c = document.getElementById('math-opts'); c.innerHTML='';
+        opts.forEach(o => {
             let b=document.createElement('button'); b.className='btn btn-primary'; b.textContent=o; b.style.fontSize="1.5rem";
-            b.onclick=()=>{ if(o===mAns){mScore+=10; document.getElementById('math-score').textContent=mScore; nextMath();} else {mScore=Math.max(0,mScore-5); document.getElementById('math-score').textContent=mScore;} };
+            b.onclick=()=>{ 
+                if(o===mAns) { mScore+=10; document.getElementById('math-score').textContent=mScore; nextMath(); }
+                else { mScore=Math.max(0,mScore-5); document.getElementById('math-score').textContent=mScore; }
+            };
             c.appendChild(b);
         });
     }
-    
+
     // Init
-    updateHomeRecords();
+    updateRecordDisplay();
 </script>
 </body>
 </html>
