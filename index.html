@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Brain Gym 9.1</title>
+    <title>Brain Gym 11.0</title>
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -13,6 +13,8 @@
             --primary: #6c5ce7;
             --secondary: #00cec9;
             --accent: #ff7675;
+            --success: #00b894;
+            --warning: #fdcb6e;
             --shadow: 0 8px 30px rgba(0,0,0,0.12);
             --radius: 20px;
         }
@@ -67,58 +69,63 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         h1 { margin: 30px 0 10px 0; font-size: 2rem; background: -webkit-linear-gradient(45deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; }
-        h2 { font-size: 1.2rem; margin: 0; color: var(--text); flex: 1; }
-
+        
         /* BOTONES */
         .btn {
             background: var(--card-bg); border: 1px solid rgba(128,128,128,0.2);
-            color: var(--text); padding: 16px; border-radius: 12px;
+            color: var(--text); padding: 15px; border-radius: 12px;
             font-size: 1.1rem; font-weight: 700; cursor: pointer;
-            width: 100%; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            width: 100%; margin-bottom: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             display: flex; align-items: center; justify-content: center; gap: 10px;
         }
         .btn:active { transform: scale(0.98); }
         .btn-primary { background: var(--primary); color: white; border: none; }
+        .btn-cloud { background: rgba(128,128,128,0.1); font-size: 0.9rem; padding: 10px; }
 
         .nav { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 2px solid rgba(128,128,128,0.1); }
         .nav-controls { display: flex; gap: 5px; }
-        
-        .btn-icon {
-            width: 36px; height: 36px; border-radius: 8px; border: none;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 1.2rem; cursor: pointer;
-        }
+        .btn-icon { width: 36px; height: 36px; border-radius: 8px; border: none; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; }
         .btn-restart { background: rgba(0, 206, 201, 0.15); color: var(--secondary); }
         .btn-exit { background: rgba(255, 118, 117, 0.15); color: var(--accent); }
         .btn-back { background: rgba(128,128,128,0.1); width: auto; padding: 0 12px; font-size: 0.9rem; color: var(--text); }
-
-        .timer-badge { font-family: monospace; font-size: 1.2rem; color: var(--primary); background: rgba(128,128,128,0.1); padding: 5px 10px; border-radius: 8px; margin-right: 5px; }
         
-        /* BOTÓN DE TEMA CENTRADO */
-        .theme-switch { 
-            position: absolute; 
-            top: 15px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            font-size: 1.5rem; 
-            cursor: pointer; 
-            z-index: 999; 
-        }
+        .timer-badge { font-family: monospace; font-size: 1.2rem; color: var(--primary); background: rgba(128,128,128,0.1); padding: 5px 10px; border-radius: 8px; margin-right: 5px; }
+        .theme-switch { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); font-size: 1.5rem; cursor: pointer; z-index: 999; }
 
-        /* RECORDS */
-        .records-box { width: 100%; background: rgba(0,0,0,0.03); border-radius: 12px; padding: 10px; font-size: 0.9rem; margin-top: 10px; }
-        .record-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(128,128,128,0.1); }
+        .records-box { width: 100%; background: rgba(0,0,0,0.03); border-radius: 12px; padding: 10px; font-size: 0.85rem; margin-top: 10px; }
+        .record-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(128,128,128,0.1); }
         .rec-val { font-weight: bold; font-family: monospace; }
         .rec-name { color: var(--primary); margin-left: 5px; font-weight: bold; }
+        .cloud-actions { display: flex; gap: 10px; margin-top: 10px; width: 100%; }
 
-        /* JUEGOS */
-        /* Sopa */
+        /* --- WORDLE STYLES --- */
+        .wordle-grid { display: grid; grid-template-rows: repeat(6, 1fr); gap: 5px; margin-bottom: 15px; }
+        .wordle-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+        .wordle-cell { 
+            width: 45px; height: 45px; border: 2px solid rgba(128,128,128,0.3); border-radius: 4px; 
+            display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: bold; text-transform: uppercase;
+        }
+        .wordle-cell.correct { background: var(--success); color: white; border-color: var(--success); }
+        .wordle-cell.present { background: var(--warning); color: white; border-color: var(--warning); }
+        .wordle-cell.absent { background: #7f8c8d; color: white; border-color: #7f8c8d; }
+        
+        .keyboard { display: flex; flex-direction: column; gap: 5px; width: 100%; }
+        .key-row { display: flex; justify-content: center; gap: 4px; }
+        .key { 
+            padding: 10px 0; width: 30px; background: rgba(128,128,128,0.2); border-radius: 4px; 
+            text-align: center; cursor: pointer; font-weight: bold; font-size: 0.9rem; flex: 1;
+        }
+        .key-big { flex: 1.5; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; }
+        .key.correct { background: var(--success); color: white; }
+        .key.present { background: var(--warning); color: white; }
+        .key.absent { background: #7f8c8d; color: white; opacity: 0.5; }
+
+        /* OTROS JUEGOS */
         #sopa-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; width: 100%; aspect-ratio: 1; margin-bottom: 10px; }
         .cell { background: rgba(128,128,128,0.1); border-radius: 4px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 0.9rem; color: var(--text-light); cursor: pointer; }
         .cell.highlight { background: var(--secondary); color: white; }
         .cell.found { background: var(--primary); color: white; }
 
-        /* Sudoku */
         #sudoku-board { display: grid; grid-template-columns: repeat(9, 1fr); gap: 1px; background: var(--text); border: 2px solid var(--text); width: 100%; max-width: 380px; margin-bottom: 10px; border-radius: 4px; overflow: hidden; }
         .sudo-cell { background: var(--card-bg); aspect-ratio: 1; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; cursor: pointer; color: var(--text); }
         .sudo-cell:nth-child(3n) { border-right: 2px solid var(--text); } .sudo-cell:nth-child(9n) { border-right: none; }
@@ -129,23 +136,16 @@
         .numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; width: 100%; max-width: 380px; }
         .num-btn { padding: 10px; font-size: 1.2rem; background: var(--card-bg); border: 1px solid rgba(128,128,128,0.3); border-radius: 6px; color: var(--text); }
 
-        /* Memoria */
         #memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; padding: 10px 0; }
-        .card { 
-            aspect-ratio: 1; background: var(--primary); border-radius: 8px; cursor: pointer; 
-            display: flex; justify-content: center; align-items: center; font-size: 2rem; color: transparent;
-            transition: transform 0.2s, background 0.2s;
-        }
+        .card { aspect-ratio: 1; background: var(--primary); border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 2rem; color: transparent; transition: transform 0.2s, background 0.2s; }
         .card.flipped { background: white; border: 2px solid var(--primary); color: initial; }
         
-        /* Simon */
         .simon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 280px; height: 280px; margin: 20px auto; }
         .simon-btn { border-radius: 16px; cursor: pointer; opacity: 0.5; border: none; }
         .simon-btn.active { opacity: 1; transform: scale(0.95); box-shadow: 0 0 15px currentColor; }
         .s-0 { background-color: #00b894; color: #00b894; } .s-1 { background-color: #ff7675; color: #ff7675; }
         .s-2 { background-color: #fdcb6e; color: #fdcb6e; } .s-3 { background-color: #0984e3; color: #0984e3; }
 
-        /* Math */
         .math-box { background: rgba(128,128,128,0.05); padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 20px; width: 100%; }
         .math-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
 
@@ -161,8 +161,9 @@
     <div id="screen-home" class="screen active">
         <div style="flex:1; display:flex; flex-direction:column; justify-content:center; width:100%">
             <h1>🧠 Brain Gym</h1>
-            <p style="text-align:center; color:var(--text-light); margin-bottom:20px;">Versión 9.1</p>
+            <p style="text-align:center; color:var(--text-light); margin-bottom:20px;">Edición Completa</p>
             
+            <button class="btn" onclick="initWordle()"><span>🟩</span> Palabra Oculta</button>
             <button class="btn" onclick="showSopaMenu()"><span>🔤</span> Sopa de Letras</button>
             <button class="btn" onclick="initSudoku()"><span>🔢</span> Sudoku</button>
             <button class="btn" onclick="initMemory()"><span>🃏</span> Memoria</button>
@@ -172,15 +173,29 @@
             <div class="records-box">
                 <div style="text-align:center; margin-bottom:5px; font-weight:bold;">🏆 RÉCORDS</div>
                 <div id="rec-list"></div>
-                <div style="text-align:center; margin-top:5px;">
-                    <button class="btn-back" onclick="clearRecords()">Borrar Récords</button>
+                <div class="cloud-actions">
+                    <button class="btn btn-cloud" onclick="exportData()">☁️ Guardar</button>
+                    <button class="btn btn-cloud" onclick="importData()">📥 Cargar</button>
+                    <button class="btn btn-cloud" style="background:rgba(255,100,100,0.1); color:var(--accent)" onclick="clearRecords()">🗑️</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <div id="screen-wordle" class="screen">
+        <div class="nav">
+            <h2>Palabra</h2>
+            <div class="nav-controls">
+                <button class="btn-icon btn-restart" onclick="initWordle()">↺</button>
+                <button class="btn-icon btn-exit" onclick="goHome()">✖</button>
+            </div>
+        </div>
+        <div class="wordle-grid" id="wordle-board"></div>
+        <div class="keyboard" id="keyboard"></div>
+    </div>
+
     <div id="screen-sopa-menu" class="screen">
-        <div class="nav"><h2>Sopa de Letras</h2><button class="btn-icon btn-back" onclick="goHome()">Back</button></div>
+        <div class="nav"><h2>Sopa de Letras</h2><button class="btn-icon btn-back" onclick="goHome()">Volver</button></div>
         <button class="btn" onclick="initSopa('paises')">🌍 Países</button>
         <button class="btn" onclick="initSopa('comidas')">🍕 Comidas</button>
         <button class="btn" onclick="initSopa('animales')">🐶 Animales</button>
@@ -229,6 +244,7 @@
                 <button class="btn-icon btn-exit" onclick="goHome()">✖</button>
             </div>
         </div>
+        <div style="text-align:center; margin-bottom:10px; color:var(--text-light); font-weight:bold;" id="memo-theme-label"></div>
         <div id="memory-grid"></div>
     </div>
 
@@ -256,12 +272,12 @@
 </div>
 
 <script>
-    /* ================= GESTOR GLOBAL ================= */
+    /* ================= SISTEMA ================= */
     let gameInterval = null;
     let timeElapsed = 0;
     
-    // DEFINICIÓN DE JUEGOS Y RÈCORDS
     const GAMES_CONFIG = {
+        wordle: { label: "Palabra", type: "score" }, // Score será racha o partidas ganadas
         sopa:   { label: "Sopa", type: "min" },
         sudoku: { label: "Sudoku", type: "min" },
         memory: { label: "Memoria", type: "min" },
@@ -308,15 +324,36 @@
         }
     }
 
-    // --- GESTIÓN DE RÉCORDS ---
+    /* ================= CLOUD MANUAL ================= */
+    function exportData() {
+        let data = {};
+        for(let k in GAMES_CONFIG) {
+            let key = 'bg_record_' + k;
+            let val = localStorage.getItem(key);
+            if(val) data[key] = JSON.parse(val);
+        }
+        let jsonStr = JSON.stringify(data);
+        let encoded = btoa(unescape(encodeURIComponent(jsonStr)));
+        prompt("Copia este código y pégalo en tu otro dispositivo:", encoded);
+    }
+
+    function importData() {
+        let code = prompt("Pega aquí el código que copiaste:");
+        if(!code) return;
+        try {
+            let decoded = decodeURIComponent(escape(atob(code)));
+            let data = JSON.parse(decoded);
+            for(let key in data) localStorage.setItem(key, JSON.stringify(data[key]));
+            alert("¡Récords actualizados correctamente!");
+            updateRecordDisplay();
+        } catch(e) { alert("Error: El código no es válido."); }
+    }
+
+    /* ================= RECORDS ================= */
     function checkRecord(gameKey, score) {
         let key = 'bg_record_' + gameKey;
         let saved = JSON.parse(localStorage.getItem(key));
-        
-        // Si no hay record, creamos uno por defecto malo
-        if (!saved) {
-            saved = { name: '-', val: (GAMES_CONFIG[gameKey].type === 'min' ? 999999 : 0) };
-        }
+        if (!saved) saved = { name: '-', val: (GAMES_CONFIG[gameKey].type === 'min' ? 999999 : 0) };
 
         let isNewRecord = false;
         if (GAMES_CONFIG[gameKey].type === 'min') {
@@ -349,181 +386,205 @@
             let saved = JSON.parse(localStorage.getItem('bg_record_' + k));
             let valText = '--';
             let nameText = 'Nadie';
-            
             if (saved) {
                 nameText = saved.name;
                 valText = (GAMES_CONFIG[k].type === 'min') ? formatTime(saved.val) : saved.val;
+                if(k === 'wordle') valText = saved.val + ' wins';
             }
-
-            list.innerHTML += `
-                <div class="record-item">
-                    <span>${GAMES_CONFIG[k].label}</span>
-                    <span><span class="rec-val">${valText}</span> <span class="rec-name">${nameText}</span></span>
-                </div>
-            `;
+            list.innerHTML += `<div class="record-item"><span>${GAMES_CONFIG[k].label}</span><span><span class="rec-val">${valText}</span> <span class="rec-name">${nameText}</span></span></div>`;
         }
     }
 
     function clearRecords() {
-        if(confirm("¿Borrar todos los récords?")) {
-            localStorage.clear();
-            updateRecordDisplay();
-        }
+        if(confirm("¿Borrar todos los récords?")) { localStorage.clear(); updateRecordDisplay(); }
     }
 
-    /* ================= 1. SOPA DE LETRAS ================= */
-    const sopaDB = {
-        paises: ["ARGENTINA","BOLIVIA","BRASIL","CHILE","COLOMBIA","ECUADOR","ESPAÑA","FRANCIA","ITALIA","JAPON","CHINA","ALEMANIA"],
-        comidas: ["PIZZA","HAMBURGUESA","SUSHI","TACOS","PASTA","ARROZ","POLLO","ENSALADA","HELADO","FRUTA"],
-        animales: ["PERRO","GATO","LEON","TIGRE","ELEFANTE","JIRAFA","OSO","LOBO","AGUILA","DELFIN"],
-        todo: []
-    };
-    sopaDB.todo = [].concat(...Object.values(sopaDB));
-
-    let sGrid=12, sMatrix=[], sWords=[], sFound=[], sCurrentCat='todo', sSwipe=false, sStart=null, sHigh=[];
-
-    function initSopa(cat) {
-        sCurrentCat = cat;
-        showScreen('screen-sopa-game');
-        document.getElementById('sopa-title').textContent = cat.toUpperCase();
-        startTimer('timer-sopa');
-        
-        let pool = sopaDB[cat].sort(()=>Math.random()-0.5);
-        sWords = pool.slice(0, 10);
-        sFound = [];
-        
-        genSopaGrid();
-        renderSopa();
+    /* ================= 1. WORDLE (NUEVO) ================= */
+    const WORDLE_DICT = ["ABRIR","ACTOR","AGUDO","AIRE","AMOR","ANDAR","ANIMAL","ANTES","AQUEL","ARBOL","ARENA","ARROZ","ATLAS","ATOMO","AUTOR","AVION","AZUL","BAILE","BAJAR","BANCO","BARCO","BEBER","BESO","BLUSA","BOCA","BODA","BOLSA","BRAZO","BUENO","BURRO","CABLE","CAER","CAJA","CALLE","CAMA","CAMPO","CANTO","CARNE","CARTA","CASA","CASCO","CAZA","CENA","CERDO","CERO","CIELO","CINE","CLASE","CLAVE","COCHE","COCO","COLOR","COMER","CORAL","CORER","CORTO","COSA","CREMA","CRUDO","CUERPO","CUEVA","DADO","DANZA","DARDO","DATOS","DEBER","DECIR","DEDO","DIETA","DISCO","DOBLE","DOLOR","DULCE","DURO","EDAD","ELLOS","ENERO","ENTRAR","ERROR","ESCALA","ESTAR","EXITO","FACIL","FALSO","FAUNA","FELIZ","FERIA","FIESTA","FINAL","FLOR","FUEGO","FUENTE","FUERTE","GAFAS","GANAR","GENTE","GLOBO","GOLPE","GORRA","GRASA","GRITO","GRUPO","GUAPO","GUSTO","HABER","HABLA","HACER","HACHA","HIELO","HIERBA","HIJO","HILO","HOMBRE","HORA","HOTEL","HUEVO","HUMO","IDEA","IGUAL","ISLA","JABON","JARDIN","JAULA","JUEGO","JULIO","JUNIO","JUSTO","LABIO","LADO","LAGO","LANA","LARGO","LAPIZ","LECHE","LENTO","LEON","LETRA","LIBRO","LIMON","LINEA","LISTA","LLAMA","LLAVE","LOBO","LUGAR","LUNA","LUZ","MADRE","MAGIA","MAIZ","MALETA","MANO","MAPA","MARCA","MARCO","MARTES","MARZO","MASA","MAYOR","MEDIO","MEJOR","MELON","MENOS","MENTE","MESA","METAL","METRO","MIEDO","MIEL","MITAD","MODA","MUNDO","MURO","NACER","NADAR","NARIZ","NAVE","NEGRO","NIEVE","NIÑO","NOCHE","NORTE","NUBE","NUEVO","NUNCA","OESTE","OIDO","OJO","OLA","OLLA","ONDA","ORDEN","OREJA","ORO","OSO","OTOÑO","PADRE","PAGAR","PAIS","PAJARO","PAN","PAPEL","PARAR","PARQUE","PASO","PASTO","PATO","PAVO","PEDIR","PELO","PENA","PERRO","PESO","PEZ","PIANO","PIE","PIEL","PIEZA","PILOTO","PISO","PLACA","PLAN","PLATA","PLATO","PLAYA","PLAZA","PLUMA","POBRE","POCO","PODER","POLLO","POLVO","PONER","PORTE","POSTRE","POZO","PRECIO","PRIMO","PULSO","PUNTO","QUESO","RADIO","RAIZ","RAMA","RATA","RAZON","RED","RELOJ","REMO","RESTA","RICO","RIEGO","RIO","RISA","ROBO","ROCA","ROJO","ROPA","ROSA","ROTO","RUIDO","RUTA","SABER","SABOR","SAL","SALIR","SALUD","SANTO","SAPO","SECO","SEDA","SELLO","SELVA","SERIE","SILLA","SOL","SOPA","SUAVE","SUELO","SUEÑO","SUMA","SUR","TABLA","TACO","TALLA","TAPA","TARDE","TAZA","TECHO","TELA","TEMAS","TENER","TENIS","TEXTO","TIEMPO","TIENDA","TIERRA","TIGRE","TINTA","TIO","TIPO","TIRA","TODO","TOMAR","TONO","TORRE","TOTAL","TRAJE","TREN","TRES","TRIGO","TRONO","TUBO","TUL","TUMBA","TURNO","UVA","VACA","VALLE","VALOR","VAPOR","VASO","VELA","VENIR","VERDE","VIAJE","VIDA","VIDRIO","VIEJO","VIENTO","VINO","VISTA","VIVIR","VOLAR","VOZ","VUELO","YATE","YERBA","YESO","YOGA","ZAPATO","ZONA","ZORRO","ZUMO"];
+    
+    let wSolution = "";
+    let wGrid = [];
+    let wCurrentRow = 0;
+    let wCurrentCol = 0;
+    let wGameOver = false;
+    
+    function initWordle() {
+        showScreen('screen-wordle');
+        wSolution = WORDLE_DICT[Math.floor(Math.random() * WORDLE_DICT.length)];
+        wGrid = Array(6).fill().map(() => Array(5).fill(""));
+        wCurrentRow = 0;
+        wCurrentCol = 0;
+        wGameOver = false;
+        renderWordleBoard();
+        renderKeyboard();
     }
 
-    function genSopaGrid() {
-        sMatrix = Array(sGrid).fill().map(()=>Array(sGrid).fill(''));
-        let placedList = [];
-        sWords.forEach(w => {
-            if(w.length > sGrid) return;
-            let placed = false, tries=0;
-            while(!placed && tries++<100) {
-                let dir = Math.floor(Math.random()*3); // 0:H, 1:V, 2:D
-                let r = Math.floor(Math.random()*sGrid);
-                let c = Math.floor(Math.random()*sGrid);
-                if(canPlace(w,r,c,dir)) {
-                    for(let i=0; i<w.length; i++) sMatrix[r + (dir>0?i:0)][c + (dir%2===0?i:0)] = w[i];
-                    placed = true;
-                    placedList.push(w);
-                }
+    function renderWordleBoard() {
+        const board = document.getElementById('wordle-board');
+        board.innerHTML = "";
+        for(let r=0; r<6; r++) {
+            const rowDiv = document.createElement('div'); rowDiv.className = 'wordle-row';
+            for(let c=0; c<5; c++) {
+                const cell = document.createElement('div'); cell.className = 'wordle-cell';
+                cell.id = `w-cell-${r}-${c}`;
+                cell.textContent = wGrid[r][c];
+                rowDiv.appendChild(cell);
             }
+            board.appendChild(rowDiv);
+        }
+    }
+
+    function renderKeyboard() {
+        const kb = document.getElementById('keyboard'); kb.innerHTML = "";
+        const rows = ["QWERTYUIOP", "ASDFGHJKLÑ", "ZXCVBNM"];
+        rows.forEach((rowStr, i) => {
+            const rowDiv = document.createElement('div'); rowDiv.className = 'key-row';
+            if(i===2) {
+                let enter = document.createElement('div'); enter.className='key key-big'; enter.textContent='ENTER'; 
+                enter.onclick = handleWordleEnter; rowDiv.appendChild(enter);
+            }
+            for(let char of rowStr) {
+                let key = document.createElement('div'); key.className='key'; key.id=`key-${char}`; key.textContent=char;
+                key.onclick = () => handleWordleInput(char);
+                rowDiv.appendChild(key);
+            }
+            if(i===2) {
+                let back = document.createElement('div'); back.className='key key-big'; back.textContent='⌫'; 
+                back.onclick = handleWordleBackspace; rowDiv.appendChild(back);
+            }
+            kb.appendChild(rowDiv);
         });
-        sWords = placedList;
-        const abc = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-        for(let r=0; r<sGrid; r++) for(let c=0; c<sGrid; c++) if(!sMatrix[r][c]) sMatrix[r][c] = abc[Math.floor(Math.random()*abc.length)];
     }
 
-    function canPlace(w,r,c,d) {
-        let len=w.length, er=r+(d>0?len-1:0), ec=c+(d%2===0?len-1:0);
-        if(er>=sGrid || ec>=sGrid) return false;
-        for(let i=0; i<len; i++) {
-            let nr=r+(d>0?i:0), nc=c+(d%2===0?i:0);
-            if(sMatrix[nr][nc]!=='' && sMatrix[nr][nc]!==w[i]) return false;
-        }
-        return true;
+    // Physical Keyboard support
+    document.addEventListener('keydown', (e) => {
+        if(!document.getElementById('screen-wordle').classList.contains('active')) return;
+        if(wGameOver) return;
+        let key = e.key.toUpperCase();
+        if(key === 'ENTER') handleWordleEnter();
+        else if(key === 'BACKSPACE') handleWordleBackspace();
+        else if(/^[A-ZÑ]$/.test(key)) handleWordleInput(key);
+    });
+
+    function handleWordleInput(char) {
+        if(wGameOver || wCurrentCol >= 5) return;
+        wGrid[wCurrentRow][wCurrentCol] = char;
+        document.getElementById(`w-cell-${wCurrentRow}-${wCurrentCol}`).textContent = char;
+        wCurrentCol++;
     }
 
-    function renderSopa() {
-        const g = document.getElementById('sopa-grid'); g.innerHTML='';
-        for(let r=0; r<sGrid; r++) for(let c=0; c<sGrid; c++) {
-            let d=document.createElement('div'); d.className='cell'; d.textContent=sMatrix[r][c];
-            d.dataset.r=r; d.dataset.c=c;
-            d.onmousedown=hSopaStart; d.onmouseenter=hSopaMove; d.onmouseup=hSopaEnd;
-            d.ontouchstart=(e)=>{e.preventDefault(); hSopaStart.call(d)};
-            g.appendChild(d);
-        }
-        g.ontouchmove=(e)=>{e.preventDefault(); let el=document.elementFromPoint(e.touches[0].clientX,e.touches[0].clientY); if(el && el.classList.contains('cell')) hSopaMove.call(el)};
-        g.ontouchend=hSopaEnd;
+    function handleWordleBackspace() {
+        if(wGameOver || wCurrentCol <= 0) return;
+        wCurrentCol--;
+        wGrid[wCurrentRow][wCurrentCol] = "";
+        document.getElementById(`w-cell-${wCurrentRow}-${wCurrentCol}`).textContent = "";
+    }
+
+    function handleWordleEnter() {
+        if(wGameOver || wCurrentCol < 5) return;
         
-        const l = document.getElementById('sopa-words'); l.innerHTML='';
-        sWords.forEach(w => { let s=document.createElement('div'); s.id='w-'+w; s.textContent=w; s.style.padding="2px 6px"; s.style.background="#eee"; s.style.borderRadius="4px"; s.style.fontSize="0.8rem"; s.style.color="#333"; l.appendChild(s); });
+        const guess = wGrid[wCurrentRow].join("");
+        // Simple validation: just needs to be full. In real app, check dictionary exists.
+        
+        // Color Logic
+        let solArray = wSolution.split("");
+        let guessArray = guess.split("");
+        let rowColors = Array(5).fill("absent");
+        
+        // 1. Check Greens
+        for(let i=0; i<5; i++) {
+            if(guessArray[i] === solArray[i]) {
+                rowColors[i] = "correct";
+                solArray[i] = null; // Mark as used
+                guessArray[i] = null;
+            }
+        }
+        
+        // 2. Check Yellows
+        for(let i=0; i<5; i++) {
+            if(guessArray[i] && solArray.includes(guessArray[i])) {
+                rowColors[i] = "present";
+                let idx = solArray.indexOf(guessArray[i]);
+                solArray[idx] = null;
+            }
+        }
+
+        // Apply Colors
+        for(let i=0; i<5; i++) {
+            let cell = document.getElementById(`w-cell-${wCurrentRow}-${i}`);
+            cell.classList.add(rowColors[i]);
+            // Update Keyboard
+            let key = document.getElementById(`key-${wGrid[wCurrentRow][i]}`);
+            if(key) {
+                if(rowColors[i] === 'correct') key.className = 'key correct';
+                else if(rowColors[i] === 'present' && !key.classList.contains('correct')) key.className = 'key present';
+                else if(rowColors[i] === 'absent' && !key.classList.contains('correct') && !key.classList.contains('present')) key.className = 'key absent';
+            }
+        }
+
+        if(guess === wSolution) {
+            wGameOver = true;
+            fireConfetti();
+            let oldRec = JSON.parse(localStorage.getItem('bg_record_wordle')) || {val: 0};
+            checkRecord('wordle', oldRec.val + 1); // Increment win count
+            setTimeout(()=>alert("¡Excelente! Palabra: " + wSolution), 500);
+        } else if(wCurrentRow >= 5) {
+            wGameOver = true;
+            setTimeout(()=>alert("Perdiste. La palabra era: " + wSolution), 500);
+        } else {
+            wCurrentRow++;
+            wCurrentCol = 0;
+        }
     }
 
+    /* ================= 2. SOPA ================= */
+    const sopaDB = { paises: ["ARGENTINA","BOLIVIA","BRASIL","CHILE","COLOMBIA","ECUADOR","ESPAÑA","FRANCIA","ITALIA","JAPON","CHINA","ALEMANIA"], comidas: ["PIZZA","HAMBURGUESA","SUSHI","TACOS","PASTA","ARROZ","POLLO","ENSALADA","HELADO","FRUTA"], animales: ["PERRO","GATO","LEON","TIGRE","ELEFANTE","JIRAFA","OSO","LOBO","AGUILA","DELFIN"], todo: [] };
+    sopaDB.todo = [].concat(...Object.values(sopaDB));
+    let sGrid=12, sMatrix=[], sWords=[], sFound=[], sCurrentCat='todo', sSwipe=false, sStart=null, sHigh=[];
+    function initSopa(cat) { sCurrentCat = cat; showScreen('screen-sopa-game'); document.getElementById('sopa-title').textContent = cat.toUpperCase(); startTimer('timer-sopa'); let pool = sopaDB[cat].sort(()=>Math.random()-0.5); sWords = pool.slice(0, 10); sFound = []; genSopaGrid(); renderSopa(); }
+    function genSopaGrid() { sMatrix = Array(sGrid).fill().map(()=>Array(sGrid).fill('')); let placedList = []; sWords.forEach(w => { if(w.length > sGrid) return; let placed = false, tries=0; while(!placed && tries++<100) { let dir = Math.floor(Math.random()*3), r = Math.floor(Math.random()*sGrid), c = Math.floor(Math.random()*sGrid); if(canPlace(w,r,c,dir)) { for(let i=0; i<w.length; i++) sMatrix[r + (dir>0?i:0)][c + (dir%2===0?i:0)] = w[i]; placed = true; placedList.push(w); } } }); sWords = placedList; const abc = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"; for(let r=0; r<sGrid; r++) for(let c=0; c<sGrid; c++) if(!sMatrix[r][c]) sMatrix[r][c] = abc[Math.floor(Math.random()*abc.length)]; }
+    function canPlace(w,r,c,d) { let len=w.length, er=r+(d>0?len-1:0), ec=c+(d%2===0?len-1:0); if(er>=sGrid || ec>=sGrid) return false; for(let i=0; i<len; i++) { let nr=r+(d>0?i:0), nc=c+(d%2===0?i:0); if(sMatrix[nr][nc]!=='' && sMatrix[nr][nc]!==w[i]) return false; } return true; }
+    function renderSopa() { const g = document.getElementById('sopa-grid'); g.innerHTML=''; for(let r=0; r<sGrid; r++) for(let c=0; c<sGrid; c++) { let d=document.createElement('div'); d.className='cell'; d.textContent=sMatrix[r][c]; d.dataset.r=r; d.dataset.c=c; d.onmousedown=hSopaStart; d.onmouseenter=hSopaMove; d.onmouseup=hSopaEnd; d.ontouchstart=(e)=>{e.preventDefault(); hSopaStart.call(d)}; g.appendChild(d); } g.ontouchmove=(e)=>{e.preventDefault(); let el=document.elementFromPoint(e.touches[0].clientX,e.touches[0].clientY); if(el && el.classList.contains('cell')) hSopaMove.call(el)}; g.ontouchend=hSopaEnd; const l = document.getElementById('sopa-words'); l.innerHTML=''; sWords.forEach(w => { let s=document.createElement('div'); s.id='w-'+w; s.textContent=w; s.style.padding="2px 6px"; s.style.background="#eee"; s.style.borderRadius="4px"; s.style.fontSize="0.8rem"; s.style.color="#333"; l.appendChild(s); }); }
     function hSopaStart() { sSwipe=true; sStart=this; hlSopa(this); }
     function hSopaMove() { if(sSwipe && sStart) hlSopa(this); }
-    function hlSopa(end) {
-        sHigh.forEach(c=>c.classList.remove('highlight')); sHigh=[];
-        let r1=+sStart.dataset.r, c1=+sStart.dataset.c, r2=+end.dataset.r, c2=+end.dataset.c;
-        let dr=r2-r1, dc=c2-c1, st=Math.max(Math.abs(dr),Math.abs(dc));
-        if(dr!==0 && dc!==0 && Math.abs(dr)!==Math.abs(dc)) return;
-        for(let i=0; i<=st; i++) {
-            let nr=r1+(dr===0?0:dr/st)*i, nc=c1+(dc===0?0:dc/st)*i;
-            let c=document.querySelector(`.cell[data-r="${nr}"][data-c="${nc}"]`);
-            if(c) { c.classList.add('highlight'); sHigh.push(c); }
-        }
-    }
-    function hSopaEnd() {
-        if(!sSwipe) return; sSwipe=false;
-        let w = sHigh.map(c=>c.textContent).join('');
-        let rev = w.split('').reverse().join('');
-        let match = (sWords.includes(w) && !sFound.includes(w)) ? w : (sWords.includes(rev) && !sFound.includes(rev) ? rev : null);
-        
-        if(match) {
-            sFound.push(match); sHigh.forEach(c=>{c.classList.remove('highlight'); c.classList.add('found')});
-            let lbl = document.getElementById('w-'+match);
-            if(lbl) { lbl.style.background="var(--primary)"; lbl.style.color="white"; lbl.style.textDecoration="line-through"; }
-            if(sFound.length === sWords.length) {
-                stopGame(); fireConfetti();
-                setTimeout(()=>checkRecord('sopa', timeElapsed), 500);
-            }
-        } else {
-            sHigh.forEach(c=>c.classList.remove('highlight'));
-        }
-        sHigh=[]; sStart=null;
-    }
+    function hlSopa(end) { sHigh.forEach(c=>c.classList.remove('highlight')); sHigh=[]; let r1=+sStart.dataset.r, c1=+sStart.dataset.c, r2=+end.dataset.r, c2=+end.dataset.c; let dr=r2-r1, dc=c2-c1, st=Math.max(Math.abs(dr),Math.abs(dc)); if(dr!==0 && dc!==0 && Math.abs(dr)!==Math.abs(dc)) return; for(let i=0; i<=st; i++) { let nr=r1+(dr===0?0:dr/st)*i, nc=c1+(dc===0?0:dc/st)*i; let c=document.querySelector(`.cell[data-r="${nr}"][data-c="${nc}"]`); if(c) { c.classList.add('highlight'); sHigh.push(c); } } }
+    function hSopaEnd() { if(!sSwipe) return; sSwipe=false; let w = sHigh.map(c=>c.textContent).join(''); let rev = w.split('').reverse().join(''); let match = (sWords.includes(w) && !sFound.includes(w)) ? w : (sWords.includes(rev) && !sFound.includes(rev) ? rev : null); if(match) { sFound.push(match); sHigh.forEach(c=>{c.classList.remove('highlight'); c.classList.add('found')}); let lbl = document.getElementById('w-'+match); if(lbl) { lbl.style.background="var(--primary)"; lbl.style.color="white"; lbl.style.textDecoration="line-through"; } if(sFound.length === sWords.length) { stopGame(); fireConfetti(); setTimeout(()=>checkRecord('sopa', timeElapsed), 500); } } else { sHigh.forEach(c=>c.classList.remove('highlight')); } sHigh=[]; sStart=null; }
 
-    /* ================= 2. SUDOKU ================= */
+    /* ================= 3. SUDOKU ================= */
     let suSol=[], suPuz=[], suSel=null;
-    function initSudoku() {
-        showScreen('screen-sudoku'); startTimer('timer-sudoku');
-        let b=[[1,2,3,4,5,6,7,8,9],[4,5,6,7,8,9,1,2,3],[7,8,9,1,2,3,4,5,6],[2,3,4,5,6,7,8,9,1],[5,6,7,8,9,1,2,3,4],[8,9,1,2,3,4,5,6,7],[3,4,5,6,7,8,9,1,2],[6,7,8,9,1,2,3,4,5],[9,1,2,3,4,5,6,7,8]];
-        let m=[1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-0.5);
-        suSol=b.map(r=>r.map(n=>m[n-1])); suPuz=suSol.map(r=>[...r]);
-        let h=40; while(h>0){ let r=Math.floor(Math.random()*9),c=Math.floor(Math.random()*9); if(suPuz[r][c]!==0){suPuz[r][c]=0;h--;}}
-        
-        const db=document.getElementById('sudoku-board'); db.innerHTML=''; suSel=null;
-        for(let i=0; i<81; i++) {
-            let d=document.createElement('div'); d.className='sudo-cell';
-            let r=Math.floor(i/9), c=i%9, v=suPuz[r][c];
-            if(v!==0) { d.textContent=v; d.classList.add('fixed'); }
-            else d.onclick=()=>{ if(suSel) suSel.classList.remove('selected'); suSel=d; d.classList.add('selected'); };
-            db.appendChild(d);
-        }
-    }
+    function initSudoku() { showScreen('screen-sudoku'); startTimer('timer-sudoku'); let b=[[1,2,3,4,5,6,7,8,9],[4,5,6,7,8,9,1,2,3],[7,8,9,1,2,3,4,5,6],[2,3,4,5,6,7,8,9,1],[5,6,7,8,9,1,2,3,4],[8,9,1,2,3,4,5,6,7],[3,4,5,6,7,8,9,1,2],[6,7,8,9,1,2,3,4,5],[9,1,2,3,4,5,6,7,8]]; let m=[1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-0.5); suSol=b.map(r=>r.map(n=>m[n-1])); suPuz=suSol.map(r=>[...r]); let h=40; while(h>0){ let r=Math.floor(Math.random()*9),c=Math.floor(Math.random()*9); if(suPuz[r][c]!==0){suPuz[r][c]=0;h--;}} const db=document.getElementById('sudoku-board'); db.innerHTML=''; suSel=null; for(let i=0; i<81; i++) { let d=document.createElement('div'); d.className='sudo-cell'; let r=Math.floor(i/9), c=i%9, v=suPuz[r][c]; if(v!==0) { d.textContent=v; d.classList.add('fixed'); } else d.onclick=()=>{ if(suSel) suSel.classList.remove('selected'); suSel=d; d.classList.add('selected'); }; db.appendChild(d); } }
     function fillSudoku(n) { if(suSel) { suSel.textContent=n?n:''; suSel.classList.remove('error'); } }
-    function checkSudoku() {
-        let err=0, mt=0, cells=document.querySelectorAll('.sudo-cell');
-        cells.forEach((c,i)=>{
-            let v=parseInt(c.textContent)||0;
-            if(v===0) mt++;
-            else if(v!==suSol[Math.floor(i/9)][i%9] && !c.classList.contains('fixed')) { c.classList.add('error'); err++; }
-        });
-        if(err===0 && mt===0) { stopGame(); fireConfetti(); setTimeout(()=>checkRecord('sudoku', timeElapsed), 500); }
-        else alert(`Errores: ${err}, Vacíos: ${mt}`);
-    }
+    function checkSudoku() { let err=0, mt=0, cells=document.querySelectorAll('.sudo-cell'); cells.forEach((c,i)=>{ let v=parseInt(c.textContent)||0; if(v===0) mt++; else if(v!==suSol[Math.floor(i/9)][i%9] && !c.classList.contains('fixed')) { c.classList.add('error'); err++; } }); if(err===0 && mt===0) { stopGame(); fireConfetti(); setTimeout(()=>checkRecord('sudoku', timeElapsed), 500); } else alert(`Errores: ${err}, Vacíos: ${mt}`); }
 
-    /* ================= 3. MEMORIA (FIXED) ================= */
-    const memIcons = ["🍎","🍌","🍒","🍇","🍉","🍓","🍑","🍍"];
+    /* ================= 4. MEMORIA (MEJORADA 6 TEMAS) ================= */
+    const memThemes = {
+        frutas: ["🍎","🍌","🍒","🍇","🍉","🍓","🍑","🍍"],
+        deportes: ["⚽","🏀","🏈","🎾","🎱","🎳","⛳","🥊"],
+        animales: ["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼"],
+        caras: ["😀","😎","😍","🤔","😴","🤢","🤡","👻"],
+        clima: ["☀️","🌤️","☁️","🌧️","⛈️","❄️","🌪️","🌈"],
+        vehiculos: ["🚗","🚕","🚙","🚌","🏎️","🚓","🚑","🚲"]
+    };
     let memCards=[], memLock=false;
+    
     function initMemory() {
         showScreen('screen-memory'); startTimer('timer-memory');
         const g=document.getElementById('memory-grid'); g.innerHTML=''; memCards=[]; memLock=false;
-        let deck = [...memIcons, ...memIcons].sort(()=>Math.random()-0.5);
+        
+        // Random Theme
+        const keys = Object.keys(memThemes);
+        const themeKey = keys[Math.floor(Math.random() * keys.length)];
+        const icons = memThemes[themeKey];
+        document.getElementById('memo-theme-label').textContent = "Tema: " + themeKey.charAt(0).toUpperCase() + themeKey.slice(1);
+
+        let deck = [...icons, ...icons].sort(()=>Math.random()-0.5);
+        
         deck.forEach(icon => {
-            let c = document.createElement('div'); c.className = 'card';
-            // Simple structure: no nested 3d nonsense, just text content
-            c.textContent = icon; 
-            
+            let c = document.createElement('div'); c.className = 'card'; c.textContent = icon; 
             c.onclick = () => {
                 if(memLock || c.classList.contains('flipped')) return;
                 c.classList.add('flipped');
                 memCards.push({ el: c, icon: icon });
-                
                 if(memCards.length === 2) {
                     memLock = true;
                     if(memCards[0].icon === memCards[1].icon) {
@@ -532,11 +593,7 @@
                             stopGame(); fireConfetti(); setTimeout(()=>checkRecord('memory', timeElapsed), 500);
                         }
                     } else {
-                        setTimeout(() => {
-                            memCards[0].el.classList.remove('flipped');
-                            memCards[1].el.classList.remove('flipped');
-                            memCards = []; memLock = false;
-                        }, 1000);
+                        setTimeout(() => { memCards[0].el.classList.remove('flipped'); memCards[1].el.classList.remove('flipped'); memCards = []; memLock = false; }, 1000);
                     }
                 }
             };
@@ -544,79 +601,19 @@
         });
     }
 
-    /* ================= 4. SIMON ================= */
+    /* ================= 5. SIMON ================= */
     let sSeq=[], sInput=[], sLevel=1, simonTimer=null, sActive=false;
-    function initSimon() {
-        stopGame(); showScreen('screen-simon'); 
-        sSeq=[]; sLevel=1; document.getElementById('simon-level').textContent=1;
-        document.getElementById('simon-start-btn').style.display='inline-block';
-    }
-    function startSimonRound() {
-        document.getElementById('simon-start-btn').style.display='none';
-        sInput=[]; sSeq.push(Math.floor(Math.random()*4));
-        playSeq();
-    }
-    function playSeq() {
-        sActive=false; let i=0;
-        simonTimer = setInterval(() => {
-            flashBtn(sSeq[i]); i++;
-            if(i>=sSeq.length) { clearInterval(simonTimer); sActive=true; }
-        }, 800);
-    }
-    function flashBtn(idx) {
-        let b = document.getElementById('sb-'+idx);
-        b.classList.add('active'); setTimeout(()=>b.classList.remove('active'), 400);
-    }
-    function handleSimon(idx) {
-        if(!sActive) return;
-        flashBtn(idx); sInput.push(idx);
-        if(sInput[sInput.length-1] !== sSeq[sInput.length-1]) {
-            sActive=false; alert(`¡Perdiste! Nivel: ${sLevel}`);
-            checkRecord('simon', sLevel);
-            initSimon(); return;
-        }
-        if(sInput.length === sSeq.length) {
-            sActive=false; sLevel++; document.getElementById('simon-level').textContent=sLevel;
-            setTimeout(startSimonRound, 1000);
-        }
-    }
+    function initSimon() { stopGame(); showScreen('screen-simon'); sSeq=[]; sLevel=1; document.getElementById('simon-level').textContent=1; document.getElementById('simon-start-btn').style.display='inline-block'; }
+    function startSimonRound() { document.getElementById('simon-start-btn').style.display='none'; sInput=[]; sSeq.push(Math.floor(Math.random()*4)); playSeq(); }
+    function playSeq() { sActive=false; let i=0; simonTimer = setInterval(() => { flashBtn(sSeq[i]); i++; if(i>=sSeq.length) { clearInterval(simonTimer); sActive=true; } }, 800); }
+    function flashBtn(idx) { let b = document.getElementById('sb-'+idx); b.classList.add('active'); setTimeout(()=>b.classList.remove('active'), 400); }
+    function handleSimon(idx) { if(!sActive) return; flashBtn(idx); sInput.push(idx); if(sInput[sInput.length-1] !== sSeq[sInput.length-1]) { sActive=false; alert(`¡Perdiste! Nivel: ${sLevel}`); checkRecord('simon', sLevel); initSimon(); return; } if(sInput.length === sSeq.length) { sActive=false; sLevel++; document.getElementById('simon-level').textContent=sLevel; setTimeout(startSimonRound, 1000); } }
 
-    /* ================= 5. MATH ================= */
+    /* ================= 6. MATH ================= */
     let mScore=0, mTime=30, mAns=0, mathTimer=null;
-    function initMath() {
-        stopGame(); showScreen('screen-math');
-        mScore=0; mTime=30; 
-        document.getElementById('math-score').textContent="0";
-        document.getElementById('math-time').textContent="30";
-        nextMath();
-        mathTimer = setInterval(() => {
-            mTime--; document.getElementById('math-time').textContent=mTime;
-            if(mTime<=0) { stopGame(); alert("Tiempo!"); checkRecord('math', mScore); goHome(); }
-        }, 1000);
-    }
-    function nextMath() {
-        let a=Math.floor(Math.random()*12)+1, b=Math.floor(Math.random()*12)+1, op=Math.random()<0.5?'+':'-';
-        if(Math.random()>0.7) op='*';
-        if(op==='*'){a=Math.floor(Math.random()*9)+1; b=Math.floor(Math.random()*9)+1;}
-        mAns = eval(`${a}${op}${b}`);
-        document.getElementById('math-eq').textContent = `${a} ${op} ${b}`;
-        
-        let opts = [mAns];
-        while(opts.length<4) { let f=mAns+Math.floor(Math.random()*10)-5; if(f!==mAns && !opts.includes(f)) opts.push(f); }
-        opts.sort(()=>Math.random()-0.5);
-        
-        const c = document.getElementById('math-opts'); c.innerHTML='';
-        opts.forEach(o => {
-            let b=document.createElement('button'); b.className='btn btn-primary'; b.textContent=o; b.style.fontSize="1.5rem";
-            b.onclick=()=>{ 
-                if(o===mAns) { mScore+=10; document.getElementById('math-score').textContent=mScore; nextMath(); }
-                else { mScore=Math.max(0,mScore-5); document.getElementById('math-score').textContent=mScore; }
-            };
-            c.appendChild(b);
-        });
-    }
+    function initMath() { stopGame(); showScreen('screen-math'); mScore=0; mTime=30; document.getElementById('math-score').textContent="0"; document.getElementById('math-time').textContent="30"; nextMath(); mathTimer = setInterval(() => { mTime--; document.getElementById('math-time').textContent=mTime; if(mTime<=0) { stopGame(); alert("Tiempo!"); checkRecord('math', mScore); goHome(); } }, 1000); }
+    function nextMath() { let a=Math.floor(Math.random()*12)+1, b=Math.floor(Math.random()*12)+1, op=Math.random()<0.5?'+':'-'; if(Math.random()>0.7) op='*'; if(op==='*'){a=Math.floor(Math.random()*9)+1; b=Math.floor(Math.random()*9)+1;} mAns = eval(`${a}${op}${b}`); document.getElementById('math-eq').textContent = `${a} ${op} ${b}`; let opts = [mAns]; while(opts.length<4) { let f=mAns+Math.floor(Math.random()*10)-5; if(f!==mAns && !opts.includes(f)) opts.push(f); } opts.sort(()=>Math.random()-0.5); const c = document.getElementById('math-opts'); c.innerHTML=''; opts.forEach(o => { let b=document.createElement('button'); b.className='btn btn-primary'; b.textContent=o; b.style.fontSize="1.5rem"; b.onclick=()=>{ if(o===mAns) { mScore+=10; document.getElementById('math-score').textContent=mScore; nextMath(); } else { mScore=Math.max(0,mScore-5); document.getElementById('math-score').textContent=mScore; } }; c.appendChild(b); }); }
 
-    // Init
     updateRecordDisplay();
 </script>
 </body>
