@@ -13,18 +13,17 @@
             --primary: #6c5ce7;
             --secondary: #00cec9;
             --accent: #ff7675;
-            --success: #00b894;
             --shadow: 0 8px 30px rgba(0,0,0,0.12);
             --radius: 24px;
         }
 
-        /* DARK MODE */
+        /* MODO OSCURO (Por defecto basado en tu imagen) */
         body.dark-mode {
-            --bg-gradient: linear-gradient(135deg, #2d3436 0%, #000000 100%);
-            --card-bg: rgba(30, 39, 46, 0.95);
-            --text: #dfe6e9;
-            --text-light: #b2bec3;
-            --shadow: 0 8px 30px rgba(0,0,0,0.5);
+            --bg-gradient: linear-gradient(135deg, #1e272e 0%, #000000 100%);
+            --card-bg: rgba(30, 39, 46, 0.98);
+            --text: #d2dae2;
+            --text-light: #808e9b;
+            --shadow: 0 8px 30px rgba(0,0,0,0.6);
         }
 
         body {
@@ -73,6 +72,7 @@
         h1 { margin: 0 0 5px 0; font-size: 2.2rem; background: -webkit-linear-gradient(45deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center;}
         h2 { font-size: 1.2rem; color: var(--text); margin: 0; text-align: left; flex: 1; }
         
+        /* BOTONES */
         .btn {
             background: var(--card-bg);
             border: 1px solid rgba(128,128,128,0.2);
@@ -91,33 +91,53 @@
         .btn:active { transform: scale(0.97); }
         .btn-primary { background: var(--primary); color: white; border: none; box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4); }
         
-        /* Nav Buttons */
         .btn-icon {
             width: 40px; height: 40px; border-radius: 12px; border: none;
             display: flex; justify-content: center; align-items: center;
             font-size: 1.2rem; cursor: pointer; margin-left: 8px;
             transition: background 0.2s;
         }
-        .btn-exit { background: rgba(255, 118, 117, 0.1); color: var(--accent); }
-        .btn-restart { background: rgba(0, 206, 201, 0.1); color: var(--secondary); }
+        .btn-exit { background: rgba(255, 118, 117, 0.15); color: var(--accent); }
+        .btn-restart { background: rgba(0, 206, 201, 0.15); color: var(--secondary); }
         .btn-back { background: rgba(128,128,128,0.1); color: var(--text); width: auto; padding: 0 15px; font-size: 0.9rem; }
 
         .nav { 
             width: 100%; display: flex; justify-content: space-between; align-items: center; 
             margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid rgba(128,128,128,0.1); 
         }
-        .nav-controls { display: flex; }
+        .nav-controls { display: flex; align-items: center; }
 
-        .stat-box { font-family: monospace; font-size: 1.1rem; color: var(--primary); background: rgba(128,128,128,0.1); padding: 5px 10px; border-radius: 8px; margin-right: 10px; }
+        .timer-badge { font-family: monospace; font-size: 1.2rem; color: var(--primary); background: rgba(128,128,128,0.1); padding: 5px 12px; border-radius: 8px; margin-right: 5px; font-weight: bold; }
+
         .theme-switch { position: absolute; top: 15px; right: 15px; font-size: 1.5rem; cursor: pointer; z-index: 100; }
 
-        /* --- SOPA DE LETRAS --- */
+        /* LISTA DE RÉCORDS */
+        .records-box {
+            width: 100%;
+            margin-top: 10px;
+            background: rgba(0,0,0,0.03);
+            border-radius: 16px;
+            padding: 15px;
+            font-size: 0.9rem;
+        }
+        .record-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(128,128,128,0.1);
+        }
+        .record-item:last-child { border-bottom: none; }
+        .rec-name { font-weight: bold; color: var(--primary); margin-left: 5px; }
+        .rec-val { font-family: monospace; font-weight: bold; }
+
+        /* JUEGOS */
+        /* Sopa */
         #sopa-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; width: 100%; aspect-ratio: 1; touch-action: none; margin-bottom: 15px; }
-        .cell { background: rgba(128,128,128,0.1); border-radius: 4px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 1.1rem; color: var(--text-light); cursor: pointer; }
-        .cell.highlight { background: var(--secondary); color: white; transform: scale(1.1); z-index: 2; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
+        .cell { background: rgba(128,128,128,0.1); border-radius: 4px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 1rem; color: var(--text-light); cursor: pointer; }
+        .cell.highlight { background: var(--secondary); color: white; transform: scale(1.1); z-index: 2; }
         .cell.found { background: var(--primary); color: white; }
 
-        /* --- SUDOKU --- */
+        /* Sudoku */
         #sudoku-board { display: grid; grid-template-columns: repeat(9, 1fr); gap: 1px; background: var(--text); border: 2px solid var(--text); margin-bottom: 15px; border-radius: 4px; overflow: hidden; width: 100%; max-width: 400px; }
         .sudo-cell { background: var(--card-bg); aspect-ratio: 1; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: var(--text); cursor: pointer; }
         .sudo-cell:nth-child(3n) { border-right: 2px solid var(--text); } .sudo-cell:nth-child(9n) { border-right: none; }
@@ -128,21 +148,21 @@
         .numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; width: 100%; max-width: 400px; }
         .num-btn { padding: 12px; font-size: 1.2rem; background: var(--card-bg); border: 1px solid rgba(128,128,128,0.3); border-radius: 8px; color: var(--text); }
 
-        /* --- MEMORIA --- */
+        /* Memoria */
         #memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; padding: 10px 0; }
-        .card { aspect-ratio: 1; background: var(--primary); border-radius: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; color: white; transition: transform 0.4s; transform-style: preserve-3d; }
+        .card { aspect-ratio: 1; background: var(--primary); border-radius: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 2.2rem; color: white; transition: transform 0.4s; transform-style: preserve-3d; }
         .card.flipped { background: white; transform: rotateY(180deg); }
         .card-content { display: none; }
         .card.flipped .card-content { display: block; transform: rotateY(180deg); }
 
-        /* --- SIMON --- */
+        /* Simon */
         .simon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 300px; height: 300px; margin: 20px auto; }
         .simon-btn { border-radius: 20px; cursor: pointer; opacity: 0.6; transition: 0.1s; border: none; box-shadow: 0 5px 0 rgba(0,0,0,0.1); }
         .simon-btn:active, .simon-btn.active { opacity: 1; transform: scale(0.95); box-shadow: 0 0 20px currentColor; }
         .s-green { background: #00b894; color: #00b894; } .s-red { background: #ff7675; color: #ff7675; }
         .s-yellow { background: #fdcb6e; color: #fdcb6e; } .s-blue { background: #0984e3; color: #0984e3; }
 
-        /* --- MATH --- */
+        /* Math */
         .math-box { background: rgba(128,128,128,0.05); padding: 30px; border-radius: 20px; text-align: center; margin-bottom: 20px; width: 100%; }
         .math-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
 
@@ -150,7 +170,7 @@
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
     </style>
 </head>
-<body>
+<body class="dark-mode">
 
 <div class="app">
     <div class="theme-switch" onclick="toggleTheme()">🌓</div>
@@ -158,14 +178,18 @@
     <div id="screen-home" class="screen active">
         <div style="flex:1; display:flex; flex-direction:column; justify-content:center; width:100%">
             <h1>🧠 Brain Gym</h1>
-            <p style="text-align:center; color:var(--text-light); margin-bottom:30px;">Versión 8.0</p>
+            <p style="text-align:center; color:var(--text-light); margin-bottom:20px;">Versión 8.0</p>
+            
             <button class="btn" onclick="showSopaMenu()"><span>🔤</span> Sopa de Letras</button>
             <button class="btn" onclick="initSudoku()"><span>🔢</span> Sudoku</button>
             <button class="btn" onclick="initMemory()"><span>🃏</span> Memoria</button>
             <button class="btn" onclick="initSimon()"><span>🔴</span> Simon Dice</button>
             <button class="btn" onclick="initMath()"><span>🧮</span> Cálculo</button>
-            <div style="margin-top:20px; text-align:center; font-size:0.8rem; color:var(--text-light)">
-                Récords: Math <span id="rec-math">0</span> | Simon <span id="rec-simon">0</span>
+            
+            <div class="records-box">
+                <div style="text-align:center; margin-bottom:10px; font-weight:bold; color:var(--text-light)">🏆 MEJORES RÉCORDS</div>
+                <div id="rec-list">
+                    </div>
             </div>
         </div>
     </div>
@@ -174,18 +198,17 @@
         <div class="nav"><h2>Sopa de Letras</h2><button class="btn-icon btn-back" onclick="goHome()">Volver</button></div>
         <button class="btn" onclick="initSopa('paises')">🌍 Países</button>
         <button class="btn" onclick="initSopa('comidas')">🍕 Comidas</button>
-        <button class="btn" onclick="initSopa('tecnologia')">💻 Tecnología</button>
         <button class="btn" onclick="initSopa('animales')">🐶 Animales</button>
         <button class="btn btn-primary" onclick="initSopa('todo')">🚀 Modo Mix</button>
     </div>
 
     <div id="screen-sopa-game" class="screen">
         <div class="nav">
-            <h2 id="sopa-cat-title" style="font-size:1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></h2>
+            <h2 id="sopa-cat-title" style="font-size:1rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></h2>
             <div class="nav-controls">
-                <div id="sopa-timer" class="stat-box">00:00</div>
+                <div id="timer-sopa" class="timer-badge">00:00</div>
                 <button class="btn-icon btn-restart" onclick="restartSopa()">↺</button>
-                <button class="btn-icon btn-exit" onclick="stopSopa(); showSopaMenu()">✖</button>
+                <button class="btn-icon btn-exit" onclick="stopGame(); showSopaMenu()">✖</button>
             </div>
         </div>
         <div id="sopa-grid"></div>
@@ -196,8 +219,9 @@
         <div class="nav">
             <h2>Sudoku</h2>
             <div class="nav-controls">
+                <div id="timer-sudoku" class="timer-badge">00:00</div>
                 <button class="btn-icon btn-restart" onclick="initSudoku()">↺</button>
-                <button class="btn-icon btn-exit" onclick="goHome()">✖</button>
+                <button class="btn-icon btn-exit" onclick="stopGame(); goHome()">✖</button>
             </div>
         </div>
         <div id="sudoku-board"></div>
@@ -208,7 +232,7 @@
             <button class="num-btn" onclick="fillSudoku(7)">7</button><button class="num-btn" onclick="fillSudoku(8)">8</button>
             <button class="num-btn" onclick="fillSudoku(9)">9</button><button class="num-btn" style="color:var(--accent)" onclick="fillSudoku(null)">⌫</button>
         </div>
-        <div style="margin-top:20px; display:flex; gap:10px; width:100%">
+        <div style="margin-top:15px; width:100%">
             <button class="btn btn-primary" onclick="checkSudoku()">Verificar</button>
         </div>
     </div>
@@ -217,8 +241,9 @@
         <div class="nav">
             <h2>Memoria</h2>
             <div class="nav-controls">
+                <div id="timer-memory" class="timer-badge">00:00</div>
                 <button class="btn-icon btn-restart" onclick="initMemory()">↺</button>
-                <button class="btn-icon btn-exit" onclick="goHome()">✖</button>
+                <button class="btn-icon btn-exit" onclick="stopGame(); goHome()">✖</button>
             </div>
         </div>
         <div id="memory-grid"></div>
@@ -247,7 +272,7 @@
             <h2>Cálculo</h2>
             <div class="nav-controls">
                 <button class="btn-icon btn-restart" onclick="initMath()">↺</button>
-                <button class="btn-icon btn-exit" onclick="stopMath(); goHome()">✖</button>
+                <button class="btn-icon btn-exit" onclick="stopGame(); goHome()">✖</button>
             </div>
         </div>
         <div class="math-box">
@@ -260,13 +285,74 @@
 </div>
 
 <script>
-    // --- SYSTEM ---
-    function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); loadRecords(); }
-    function goHome() { showScreen('screen-home'); }
-    function showSopaMenu() { showScreen('screen-sopa-menu'); }
+    // --- GESTIÓN DE RÉCORDS ---
+    const GAMES = {
+        sopa:   { title: "Sopa",   type: "time" }, // Menor es mejor
+        sudoku: { title: "Sudoku", type: "time" },
+        memory: { title: "Memoria",type: "time" },
+        simon:  { title: "Simon",  type: "score" }, // Mayor es mejor
+        math:   { title: "Cálculo",type: "score" }
+    };
+
+    function checkRecord(gameKey, value) {
+        let rec = JSON.parse(localStorage.getItem('bg_rec_'+gameKey)) || { name: '-', val: (GAMES[gameKey].type==='time' ? 999999 : 0) };
+        let isBetter = false;
+
+        if (GAMES[gameKey].type === 'time') {
+            if (value < rec.val) isBetter = true;
+        } else {
+            if (value > rec.val) isBetter = true;
+        }
+
+        if (isBetter) {
+            let name = prompt(`¡NUEVO RÉCORD!\n\n${GAMES[gameKey].title}: ${formatVal(value, GAMES[gameKey].type)}\n\nIngresa tu nombre:`);
+            if (name) {
+                localStorage.setItem('bg_rec_'+gameKey, JSON.stringify({ name: name.substring(0,12), val: value }));
+                updateHomeRecords();
+                alert("¡Récord Guardado!");
+            }
+        }
+    }
+
+    function formatVal(val, type) {
+        if (type === 'score') return val + ' pts';
+        if (val === 999999) return '-';
+        let m = Math.floor(val/60).toString().padStart(2,'0');
+        let s = (val%60).toString().padStart(2,'0');
+        return `${m}:${s}`;
+    }
+
+    function updateHomeRecords() {
+        const list = document.getElementById('rec-list');
+        list.innerHTML = '';
+        for (let key in GAMES) {
+            let rec = JSON.parse(localStorage.getItem('bg_rec_'+key)) || { name: 'Nadie', val: (GAMES[key].type==='time' ? 999999 : 0) };
+            let displayVal = (rec.name === 'Nadie') ? '--' : formatVal(rec.val, GAMES[key].type);
+            
+            list.innerHTML += `
+                <div class="record-item">
+                    <span>${GAMES[key].title}</span>
+                    <span>
+                        <span class="rec-val">${displayVal}</span>
+                        <span class="rec-name">${rec.name}</span>
+                    </span>
+                </div>
+            `;
+        }
+    }
+
+    // --- SISTEMA GENERAL ---
+    let gameTimerInterval;
+    let timeElapsed = 0;
+
+    function showScreen(id) { 
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); 
+        document.getElementById(id).classList.add('active'); 
+        updateHomeRecords();
+    }
+    function goHome() { stopGame(); showScreen('screen-home'); }
+    function showSopaMenu() { stopGame(); showScreen('screen-sopa-menu'); }
     function toggleTheme() { document.body.classList.toggle('dark-mode'); }
-    function loadRecords() { document.getElementById('rec-math').textContent = localStorage.getItem('bg_math') || 0; document.getElementById('rec-simon').textContent = localStorage.getItem('bg_simon') || 0; }
-    loadRecords();
     function fireConfetti() {
         for(let i=0; i<50; i++) {
             let c=document.createElement('div'); c.className='confetti'; c.style.left=Math.random()*100+'%'; c.style.top='-10px';
@@ -274,41 +360,46 @@
             document.body.appendChild(c); setTimeout(()=>c.remove(),3000);
         }
     }
+    
+    // Timer global para juegos de tiempo
+    function startGlobalTimer(displayId) {
+        stopGame(); // Limpia anteriores
+        timeElapsed = 0;
+        document.getElementById(displayId).textContent = "00:00";
+        gameTimerInterval = setInterval(() => {
+            timeElapsed++;
+            let m=Math.floor(timeElapsed/60).toString().padStart(2,'0');
+            let s=(timeElapsed%60).toString().padStart(2,'0');
+            document.getElementById(displayId).textContent = `${m}:${s}`;
+        }, 1000);
+    }
+    function stopGame() { clearInterval(gameTimerInterval); clearInterval(simonInterval); clearInterval(mathInterval); }
 
     // --- 1. SOPA ---
     const sopaDB = {
-        paises: ["ARGENTINA","BOLIVIA","BRASIL","CHILE","COLOMBIA","ECUADOR","ESPAÑA","FRANCIA","ITALIA","JAPON","CHINA","ALEMANIA","MEXICO","CANADA","URUGUAY","PERU"],
-        comidas: ["PIZZA","HAMBURGUESA","SUSHI","TACOS","PASTA","ARROZ","POLLO","ENSALADA","HELADO","FRUTA","CHOCOLATE","QUESO","PAN","SOPA","TORTILLA"],
-        tecnologia: ["INTERNET","WIFI","MOUSE","TECLADO","MONITOR","LAPTOP","IPHONE","ANDROID","GOOGLE","CODIGO","ROBOT","DATOS","NUBE","PANTALLA","APP"],
-        animales: ["PERRO","GATO","LEON","TIGRE","ELEFANTE","JIRAFA","OSO","LOBO","AGUILA","DELFIN","TIBURON","PANDA","MONO","CABALLO"],
+        paises: ["ARGENTINA","BOLIVIA","BRASIL","CHILE","COLOMBIA","ECUADOR","ESPAÑA","FRANCIA","ITALIA","JAPON","CHINA","ALEMANIA"],
+        comidas: ["PIZZA","HAMBURGUESA","SUSHI","TACOS","PASTA","ARROZ","POLLO","ENSALADA","HELADO","FRUTA"],
+        animales: ["PERRO","GATO","LEON","TIGRE","ELEFANTE","JIRAFA","OSO","LOBO","AGUILA","DELFIN"],
         todo: []
     };
     sopaDB.todo = [].concat(...Object.values(sopaDB));
-    let sGrid=12, sMatrix=[], sWords=[], sFound=[], sTimer, sTime=0, sActive=false, sCurrentCat='todo';
-    let swipe=false, sStart=null, sHigh=[];
+    let sGrid=12, sMatrix=[], sWords=[], sFound=[], sCurrentCat='todo', swipe=false, sStart=null, sHigh=[];
 
     function initSopa(cat) {
         sCurrentCat = cat; 
         showScreen('screen-sopa-game');
         document.getElementById('sopa-cat-title').textContent = cat.toUpperCase();
-        stopSopa(); sTime=0; sActive=false;
-        document.getElementById('sopa-timer').textContent = "00:00";
+        
+        // Init Timer (starts on first interaction actually, but logic simplified here)
+        startGlobalTimer('timer-sopa'); 
         
         let pool = sopaDB[cat].sort(()=>Math.random()-0.5);
-        let count = Math.floor(Math.random()*13) + 8;
+        let count = Math.floor(Math.random()*5) + 8; 
         sWords = pool.slice(0, count); sFound=[];
         genSopa(); renderSopa();
     }
     function restartSopa() { initSopa(sCurrentCat); }
 
-    function startTimer() {
-        if(sActive) return; sActive=true;
-        sTimer = setInterval(() => { sTime++;
-            let m=Math.floor(sTime/60).toString().padStart(2,'0'), s=(sTime%60).toString().padStart(2,'0');
-            document.getElementById('sopa-timer').textContent = `${m}:${s}`;
-        }, 1000);
-    }
-    function stopSopa() { clearInterval(sTimer); sActive=false; }
     function genSopa() {
         sMatrix = Array(sGrid).fill().map(()=>Array(sGrid).fill(''));
         let placedWords = [];
@@ -350,7 +441,7 @@
         const l=document.getElementById('sopa-words'); l.innerHTML='';
         sWords.forEach(w => { let s=document.createElement('span'); s.id='w-'+w; s.textContent=w; s.style.padding="4px 8px"; s.style.background="rgba(128,128,128,0.1)"; s.style.borderRadius="4px"; s.style.fontSize="0.8rem"; l.appendChild(s); });
     }
-    function hStart() { startTimer(); swipe=true; sStart=this; hl(this); }
+    function hStart() { swipe=true; sStart=this; hl(this); }
     function hMove() { if(swipe && sStart) hl(this); }
     function hl(end) {
         sHigh.forEach(c=>c.classList.remove('highlight')); sHigh=[];
@@ -370,7 +461,11 @@
         if(m) {
             sFound.push(m); sHigh.forEach(c=>{c.classList.remove('highlight'); c.classList.add('found')});
             let el=document.getElementById('w-'+m); el.style.background="var(--primary)"; el.style.color="white"; el.style.textDecoration="line-through";
-            if(sFound.length===sWords.length) { stopSopa(); fireConfetti(); alert(`¡Completado en ${document.getElementById('sopa-timer').textContent}!`); }
+            if(sFound.length===sWords.length) { 
+                stopGame(); 
+                fireConfetti(); 
+                setTimeout(() => checkRecord('sopa', timeElapsed), 500); 
+            }
         } else sHigh.forEach(c=>c.classList.remove('highlight'));
         sHigh=[]; sStart=null;
     }
@@ -379,10 +474,11 @@
     let suSol=[], suPuz=[], suSel=null;
     function initSudoku() {
         showScreen('screen-sudoku');
+        startGlobalTimer('timer-sudoku');
         let b=[[1,2,3,4,5,6,7,8,9],[4,5,6,7,8,9,1,2,3],[7,8,9,1,2,3,4,5,6],[2,3,4,5,6,7,8,9,1],[5,6,7,8,9,1,2,3,4],[8,9,1,2,3,4,5,6,7],[3,4,5,6,7,8,9,1,2],[6,7,8,9,1,2,3,4,5],[9,1,2,3,4,5,6,7,8]];
         let m=[1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-0.5);
         suSol=b.map(r=>r.map(n=>m[n-1])); suPuz=suSol.map(r=>[...r]);
-        let h=45; while(h>0){ let r=Math.floor(Math.random()*9),c=Math.floor(Math.random()*9); if(suPuz[r][c]!==0){suPuz[r][c]=0;h--}}
+        let h=40; while(h>0){ let r=Math.floor(Math.random()*9),c=Math.floor(Math.random()*9); if(suPuz[r][c]!==0){suPuz[r][c]=0;h--}}
         const bd=document.getElementById('sudoku-board'); bd.innerHTML=''; suSel=null;
         for(let i=0; i<81; i++) {
             let d=document.createElement('div'); d.className='sudo-cell';
@@ -400,30 +496,21 @@
             if(v===0) mt++;
             else if(v!==suSol[Math.floor(i/9)][i%9] && !c.classList.contains('fixed')) { c.classList.add('error'); err++; }
         });
-        if(err===0 && mt===0) { fireConfetti(); alert("¡Sudoku Correcto!"); }
-        else alert(`Errores: ${err}, Vacíos: ${mt}`);
+        if(err===0 && mt===0) { 
+            stopGame();
+            fireConfetti(); 
+            setTimeout(() => checkRecord('sudoku', timeElapsed), 500);
+        } else alert(`Errores: ${err}, Vacíos: ${mt}`);
     }
 
-    // --- 3. MEMORIA (MULTI-THEME) ---
-    const memThemes = [
-        ["🍎","🍌","🍒","🍇","🍉","🍓","🍑","🍍"], // Frutas
-        ["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼"], // Animales
-        ["⚽","🏀","🏈","🎾","🎱","🎳","⛳","🥊"], // Deportes
-        ["😀","😂","😍","😎","😡","😱","🥶","🤡"], // Caras
-        ["🚀","🛸","🤖","👾","🔭","🌑","🌎","💻"], // Espacio
-        ["🎃","👻","💀","🕷️","🦇","🧛","🧟","🕸️"], // Halloween
-        ["🍔","🍕","🍟","🌭","🍿","🍩","🍪","🍦"]  // Comida
-    ];
+    // --- 3. MEMORIA ---
+    const memIcons = ["🍎","🍌","🍒","🍇","🍉","🍓","🍑","🍍"];
     let memFlips=[], memLock=false;
-    
     function initMemory() {
         showScreen('screen-memory');
+        startGlobalTimer('timer-memory');
         const g=document.getElementById('memory-grid'); g.innerHTML=''; memFlips=[]; memLock=false;
-        
-        // Seleccionar tema aleatorio
-        let theme = memThemes[Math.floor(Math.random() * memThemes.length)];
-        let deck = [...theme, ...theme].sort(()=>Math.random()-0.5);
-        
+        let deck=[...memIcons, ...memIcons].sort(()=>Math.random()-0.5);
         deck.forEach(i => {
             let c=document.createElement('div'); c.className='card'; c.innerHTML=`<div class="card-content">${i}</div>`;
             c.onclick=()=>{
@@ -431,8 +518,14 @@
                 c.classList.add('flipped'); memFlips.push({c,i});
                 if(memFlips.length===2) {
                     memLock=true;
-                    if(memFlips[0].i === memFlips[1].i) { memFlips=[]; memLock=false; if(!document.querySelectorAll('.card:not(.flipped)').length) { fireConfetti(); setTimeout(()=>alert("¡Ganaste!"),500); } }
-                    else setTimeout(()=>{memFlips[0].c.classList.remove('flipped'); memFlips[1].c.classList.remove('flipped'); memFlips=[]; memLock=false;},1000);
+                    if(memFlips[0].i === memFlips[1].i) { 
+                        memFlips=[]; memLock=false; 
+                        if(!document.querySelectorAll('.card:not(.flipped)').length) { 
+                            stopGame();
+                            fireConfetti(); 
+                            setTimeout(() => checkRecord('memory', timeElapsed), 500);
+                        } 
+                    } else setTimeout(()=>{memFlips[0].c.classList.remove('flipped'); memFlips[1].c.classList.remove('flipped'); memFlips=[]; memLock=false;},1000);
                 }
             };
             g.appendChild(c);
@@ -442,7 +535,7 @@
     // --- 4. SIMON ---
     let simonSeq=[], simonInput=[], simonLevel=1, simonActive=false, simonInterval;
     function initSimon() {
-        clearInterval(simonInterval); // Limpiar previo
+        stopGame();
         showScreen('screen-simon'); simonSeq=[]; simonLevel=1; 
         document.getElementById('simon-level').textContent=simonLevel; 
         document.getElementById('start-simon').style.display='block'; 
@@ -466,8 +559,9 @@
         if(!simonActive) return;
         flashSimon(idx); simonInput.push(idx);
         if(simonInput[simonInput.length-1] !== simonSeq[simonInput.length-1]) {
-            simonActive=false; alert(`¡Perdiste! Nivel: ${simonLevel}`);
-            let old=parseInt(localStorage.getItem('bg_simon'))||0; if(simonLevel>old) localStorage.setItem('bg_simon',simonLevel);
+            simonActive=false; 
+            alert(`¡Perdiste! Nivel: ${simonLevel}`);
+            checkRecord('simon', simonLevel);
             initSimon(); return;
         }
         if(simonInput.length === simonSeq.length) {
@@ -479,13 +573,12 @@
     // --- 5. MATH ---
     let mScore=0, mTime=30, mInterval, mAns=0;
     function initMath() {
-        stopMath(); // Limpiar previo
+        stopGame();
         showScreen('screen-math'); mScore=0; mTime=30;
         document.getElementById('math-score').textContent="0"; document.getElementById('math-time').textContent="30";
         nextMath();
-        mInterval = setInterval(()=>{ mTime--; document.getElementById('math-time').textContent=mTime; if(mTime<=0){ stopMath(); alert(`Tiempo. Puntos: ${mScore}`); let old=parseInt(localStorage.getItem('bg_math'))||0; if(mScore>old) localStorage.setItem('bg_math',mScore); goHome(); } }, 1000);
+        mInterval = setInterval(()=>{ mTime--; document.getElementById('math-time').textContent=mTime; if(mTime<=0){ stopGame(); alert(`Tiempo. Puntos: ${mScore}`); checkRecord('math', mScore); goHome(); } }, 1000);
     }
-    function stopMath() { clearInterval(mInterval); }
     function nextMath() {
         let a=Math.floor(Math.random()*12)+1, b=Math.floor(Math.random()*12)+1, op=Math.random()<0.5?'+':(Math.random()<0.5?'-':'*');
         if(op==='*'){a=Math.floor(Math.random()*9)+1; b=Math.floor(Math.random()*9)+1;}
@@ -499,6 +592,9 @@
             c.appendChild(b);
         });
     }
+    
+    // Init
+    updateHomeRecords();
 </script>
 </body>
 </html>
