@@ -3,765 +3,940 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Brain Buddy">
-    <meta name="theme-color" content="#ffffff">
-
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%236c5ce7'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-size='250'%3E🧠%3C/text%3E%3C/svg%3E">
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%236c5ce7'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-size='250'%3E🧠%3C/text%3E%3C/svg%3E">
-
-    <title>Brain Buddy</title>
+    <title>Brain Buddy - Final Definitivo</title>
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            --card-bg: rgba(255, 255, 255, 0.98);
-            --text: #2d3436;
-            --text-light: #636e72;
-            --radius: 24px;
-            --shadow: 0 15px 35px rgba(0,0,0,0.2);
-            /* Paleta */
-            --c-wordle: #27ae60;
-            --c-sopa: #2980b9;
-            --c-sudoku: #e67e22;
-            --c-memo: #9b59b6;
-            --c-simon: #e74c3c;
-            --c-math: #1abc9c;
-            /* Sudoku especifico */
-            --sudo-border: #2d3436;
-            --sudo-fixed-bg: rgba(0,0,0,0.05);
-            --sudo-fixed-text: #2980b9;
+            /* Palette Dark Elegant */
+            --bg-body: #0f172a; 
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #312e81 100%);
+            
+            --glass-bg: rgba(30, 41, 59, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            
+            --primary: #6366f1;    /* Indigo */
+            --secondary: #a855f7;  /* Purple */
+            --accent: #38bdf8;     /* Sky */
+            --highlight: #fbbf24;  /* Amber */
+            
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            
+            --success: #10b981;
+            --danger: #f43f5e;
+            
+            --radius: 16px;
+            --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --shadow: 0 10px 40px -10px rgba(0,0,0,0.6);
         }
 
-        body.dark-mode {
-            --bg-gradient: linear-gradient(135deg, #2c3e50 0%, #000000 100%);
-            --card-bg: rgba(30, 39, 46, 0.98);
-            --text: #ecf0f1;
-            --text-light: #bdc3c7;
-            --shadow: 0 15px 35px rgba(0,0,0,0.6);
-            /* Sudoku dark */
-            --sudo-border: #ecf0f1;
-            --sudo-fixed-bg: rgba(255,255,255,0.1);
-            --sudo-fixed-text: #3498db;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+        
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: var(--font-main);
             background: var(--bg-gradient);
-            color: var(--text);
-            margin: 0;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            /* Safe area para iPhone */
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-
-        .app {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 500px;
-            height: 95vh;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
+            color: var(--text-main);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow-x: hidden;
+            overscroll-behavior: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Header --- */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            animation: fadeInDown 0.8s ease;
+        }
+        .header h1 { 
+            font-size: 2.8rem; 
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px; 
+            font-weight: 800;
+        }
+        .header p { color: var(--text-muted); font-size: 1rem; letter-spacing: 1px; }
+
+        /* --- Card Container --- */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            border: 1px solid var(--glass-border);
             position: relative;
         }
 
-        /* --- PANTALLAS --- */
-        .screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            /* Espacio superior para botón tema y barra estado */
-            padding: 70px 20px 50px 20px; 
-            width: 100%;
-            height: 100%;
-            box-sizing: border-box;
-            overflow-y: auto;
-            animation: fadeIn 0.3s ease;
-        }
-        .screen.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* --- CABECERA Y TÍTULOS --- */
-        h1 { margin: 10px 0 20px 0; font-size: 2.2rem; text-align: center; font-weight: 800; letter-spacing: -1px; }
-        
-        .nav { 
-            width: 100%; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 15px; 
-            padding-bottom: 10px; 
-            border-bottom: 2px solid rgba(128,128,128,0.1);
-            position: relative; 
-        }
-        
-        .nav h2 { 
-            font-size: 1.4rem; 
-            margin: 0; 
-            font-weight: 700; 
-            text-align: center; 
-            flex-grow: 1;       
-            padding-left: 10px; 
-        }
-
-        .nav-controls { display: flex; gap: 8px; z-index: 2; }
-
-        /* --- BOTÓN TEMA --- */
-        .theme-switch {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 42px; height: 42px;
-            background: rgba(128,128,128,0.15);
-            border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 1.3rem;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            backdrop-filter: blur(5px);
-        }
-
-        /* --- COPYRIGHT --- */
-        .copyright {
-            position: absolute;
-            bottom: 15px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--text-light);
-            opacity: 0.6;
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        /* --- MENÚ GRID --- */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        .menu-btn {
-            border: none; border-radius: 18px; padding: 15px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            aspect-ratio: 1.2; transition: transform 0.1s;
-        }
-        .menu-btn:active { transform: scale(0.96); }
-        .menu-emoji { font-size: 2.2rem; margin-bottom: 5px; }
-        .menu-label { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; }
-        
-        .bg-wordle { background: var(--c-wordle); }
-        .bg-simon { background: var(--c-simon); }
-        .bg-sopa { background: var(--c-sopa); }
-        .bg-memo { background: var(--c-memo); }
-        .bg-sudoku { background: var(--c-sudoku); }
-        .bg-math { background: var(--c-math); }
-
-        /* UI ELEMENTS */
+        /* --- Buttons --- */
         .btn {
-            background: var(--card-bg); border: 1px solid rgba(128,128,128,0.3);
-            color: var(--text); padding: 14px; border-radius: 12px;
-            font-size: 1rem; font-weight: 700; cursor: pointer; width: 100%; margin-bottom: 8px;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: white;
+            user-select: none;
         }
-        .btn-icon { width: 38px; height: 38px; border-radius: 10px; border: none; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; }
-        .btn-restart { background: rgba(52, 152, 219, 0.15); color: #3498db; }
-        .btn-exit { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
-        .btn-back { background: transparent; border: 1px solid rgba(128,128,128,0.3); color: var(--text); width: auto; padding: 0 15px; font-size: 0.9rem; }
-        .timer-badge { font-family: monospace; font-size: 1.1rem; color: var(--c-sudoku); background: rgba(128,128,128,0.1); padding: 5px 10px; border-radius: 8px; font-weight: bold; }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
+        .btn-outline { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted); }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); color: white; border-color: var(--text-main); }
+        .btn-restart { background: rgba(56, 189, 248, 0.15); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.3); }
+        .btn-restart:hover { background: rgba(56, 189, 248, 0.25); }
 
-        /* RECORDS BOX */
-        .records-box {
+        /* --- Grid Menu --- */
+        .game-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
             width: 100%;
-            background: rgba(128,128,128,0.05);
-            border-radius: 16px;
-            padding: 15px;
-            margin-top: auto;
-            margin-bottom: 30px; 
-            font-size: 0.85rem;
         }
-        .record-title { text-align: center; font-weight: bold; margin-bottom: 8px; letter-spacing: 1px; color: var(--text-light); }
-        .record-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .record-item { display: flex; justify-content: space-between; padding: 6px 10px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .rec-name { font-weight: bold; color: var(--c-sopa); }
-        .records-note { text-align: center; margin-top: 10px; opacity: 0.6; font-size: 0.75rem; font-style: italic; }
-        .cloud-actions { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
-        .btn-cloud { background: transparent; border: 1px solid rgba(128,128,128,0.3); padding: 8px 12px; border-radius: 8px; color: var(--text); font-size: 0.8rem; cursor: pointer; }
+        .game-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+            display: flex; flex-direction: column; justify-content: space-between;
+            width: 160px;
+            height: 180px; 
+        }
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.08);
+            border-color: var(--primary);
+        }
+        .game-icon { font-size: 2.5rem; margin-bottom: 10px; display: block; filter: drop-shadow(0 0 8px rgba(255,255,255,0.1)); }
+        .game-title { font-size: 1.1rem; margin-bottom: 5px; color: var(--text-main); font-weight: 700; }
+        .game-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.2; }
 
-        /* --- JUEGOS --- */
+        /* --- Views --- */
+        .view { display: none; animation: fadeIn 0.4s ease; width: 100%; }
+        .view.active { display: block; }
+
+        /* --- Game Controls --- */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
         
-        /* Wordle */
-        .wordle-grid { display: grid; gap: 5px; margin-bottom: 15px; justify-content: center; }
-        .wordle-cell { width: 45px; height: 45px; border: 2px solid rgba(128,128,128,0.3); border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: bold; text-transform: uppercase; }
-        .wordle-cell.correct { background: var(--c-wordle); color: white; border-color: var(--c-wordle); }
-        .wordle-cell.present { background: #f1c40f; color: white; border-color: #f1c40f; }
-        .wordle-cell.absent { background: #7f8c8d; color: white; border-color: #7f8c8d; }
-        .keyboard { display: flex; flex-direction: column; gap: 4px; width: 100%; max-width: 400px; }
-        .key-row { display: flex; justify-content: center; gap: 3px; }
-        .key { flex: 1; padding: 12px 0; background: rgba(128,128,128,0.15); border-radius: 4px; text-align: center; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
-        .key.correct { background: var(--c-wordle); color: white; } .key.present { background: #f1c40f; color: white; } .key.absent { opacity: 0.3; }
+        .controls-left, .controls-right { display: flex; gap: 10px; align-items: center; }
 
-        /* Simon */
-        .simon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; aspect-ratio: 1; max-width: 300px; margin: 20px auto; }
-        .simon-btn { border-radius: 20px; cursor: pointer; opacity: 0.5; border: none; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; color: rgba(255,255,255,0.9); transition: 0.1s; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); font-weight: bold; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-        .simon-btn.active { opacity: 1; transform: scale(0.95); box-shadow: 0 0 25px currentColor; color: white; }
-        .s-0 { background: #2ecc71; color: #2ecc71; } .s-1 { background: #e74c3c; color: #e74c3c; } .s-2 { background: #f1c40f; color: #f1c40f; } .s-3 { background: #3498db; color: #3498db; }
+        .stats-bar {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            border: 1px solid var(--glass-border);
+            color: var(--accent);
+            min-width: 90px; text-align: center;
+        }
 
-        /* Sopa */
-        #sopa-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; width: 100%; aspect-ratio: 1; margin-bottom: 10px; user-select: none; }
-        .cell { background: rgba(128,128,128,0.1); border-radius: 3px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 0.9rem; cursor: pointer; }
-        .cell.highlight { background: var(--c-sopa); color: white; } .cell.found { background: #27ae60; color: white; }
+        .difficulty-selector select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: #1e293b;
+            color: white;
+            cursor: pointer;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        #game-board-area {
+            min-height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 10px;
+            user-select: none;
+        }
+
+        /* --- GAME SPECIFIC STYLES --- */
+        
+        /* Memory */
+        .memory-grid { display: grid; gap: 8px; perspective: 1000px; margin: 0 auto; }
+        .memory-card {
+            width: 60px; height: 60px; position: relative;
+            transform-style: preserve-3d; transition: transform 0.4s; cursor: pointer;
+        }
+        .memory-card.flip { transform: rotateY(180deg); }
+        .front, .back {
+            width: 100%; height: 100%; position: absolute;
+            backface-visibility: hidden; border-radius: 10px;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .front { background: #1e293b; transform: rotateY(180deg); border: 1px solid var(--glass-border); font-size: 1.8rem; }
+        .back { background: linear-gradient(135deg, #334155, #475569); border: 1px solid rgba(255,255,255,0.1); }
 
         /* Sudoku */
-        #sudoku-board { display: grid; grid-template-columns: repeat(9, 1fr); gap: 1px; background: var(--sudo-border); border: 2px solid var(--sudo-border); width: 100%; max-width: 360px; aspect-ratio: 1; margin-bottom: 10px; }
-        .sudo-cell { background: var(--card-bg); display: flex; justify-content: center; align-items: center; font-size: 1.3rem; cursor: pointer; color: var(--text); }
-        .sudo-cell.fixed { background: var(--sudo-fixed-bg); font-weight: 800; color: var(--sudo-fixed-text); } 
-        .sudo-cell.selected { background: var(--c-sudoku) !important; color: white !important; }
-        .numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; width: 100%; max-width: 360px; margin-top: 10px; }
-        .num-btn { padding: 12px; background: var(--card-bg); border: 1px solid rgba(128,128,128,0.3); border-radius: 8px; font-size: 1.3rem; cursor: pointer; color: var(--text); font-weight: bold; }
+        .sudoku-grid {
+            display: grid; grid-template-columns: repeat(9, 1fr); gap: 1px;
+            background: #475569; border: 2px solid #475569; max-width: 400px; width: 100%;
+            border-radius: 4px; overflow: hidden;
+        }
+        .sudoku-cell {
+            background: #1e293b; aspect-ratio: 1; display: flex; justify-content: center; align-items: center;
+            font-size: 1.1rem; cursor: pointer; color: var(--text-main);
+        }
+        .sudoku-cell.initial { font-weight: bold; color: var(--highlight); background: #0f172a; }
+        .sudoku-cell.selected { background: rgba(99, 102, 241, 0.4); }
+        .sudoku-cell.error { color: var(--danger); background: rgba(244, 63, 94, 0.2); }
+        .sudoku-cell:nth-child(3n) { border-right: 2px solid #64748b; } .sudoku-cell:nth-child(9n) { border-right: none; }
+        .sudoku-grid .sudoku-cell:nth-child(n+19):nth-child(-n+27), .sudoku-grid .sudoku-cell:nth-child(n+46):nth-child(-n+54) { border-bottom: 2px solid #64748b; }
+        .numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 20px; max-width: 400px; width: 100%; }
+        .numpad button { background: rgba(255,255,255,0.1); color: white; border: none; font-size: 1.1rem; padding: 10px; border-radius: 8px; cursor: pointer; }
 
-        /* Memory (4x4) */
-        #memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; max-width: 360px; }
-        .card { aspect-ratio: 1; background: var(--c-memo); border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 2.2rem; color: transparent; transition: transform 0.2s; }
-        .card.flipped { background: white; border: 2px solid var(--c-memo); color: initial; transform: rotateY(180deg); }
+        /* Word Search */
+        .ws-grid { display: grid; gap: 2px; background: #334155; padding: 3px; border-radius: 8px; touch-action: none; }
+        .ws-cell {
+            background: #1e293b; width: 28px; height: 28px; display: flex; justify-content: center; align-items: center;
+            font-weight: 600; cursor: pointer; font-size: 0.8rem; color: #cbd5e1;
+        }
+        .ws-cell.selected { background: var(--highlight); color: #0f172a; } .ws-cell.found { background: var(--success); color: #0f172a; }
+        .ws-word { padding: 4px 8px; background: rgba(255,255,255,0.1); border-radius: 12px; font-size: 0.8rem; color: var(--text-muted); display: inline-block; margin: 2px; }
+        .ws-word.done { text-decoration: line-through; color: var(--success); opacity: 0.5; }
 
-        /* Math */
-        .math-box { background: rgba(128,128,128,0.1); padding: 20px; border-radius: 16px; text-align: center; width: 100%; margin-bottom: 20px; }
-        .math-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+        /* Stroop & Math */
+        .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; }
+        .choice-btn { font-size: 1.3rem; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; border-radius: 12px; }
+        .stroop-word { font-size: 3.5rem; font-weight: 900; margin: 20px 0; text-shadow: 0 0 20px rgba(0,0,0,0.5); letter-spacing: 2px; }
 
-        .confetti { position: absolute; width: 10px; height: 10px; animation: fall linear forwards; pointer-events: none; z-index: 1001; }
-        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+        /* 2048 Game (VISUAL FIX) */
+        .g2048-container {
+            background: #0f172a; /* Fondo muy oscuro */
+            padding: 10px; border-radius: 12px; touch-action: none;
+            display: grid; gap: 8px; position: relative; user-select: none;
+            border: 2px solid var(--glass-border);
+        }
+        .g2048-cell {
+            background: rgba(255,255,255,0.05); /* Huecos vacíos sutiles */
+            border-radius: 8px; width: 70px; height: 70px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 2rem; font-weight: 800; color: white;
+            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); /* Efecto hundido para vacíos */
+        }
+        
+        /* Fichas con alto contraste estilo Neón */
+        .tile-2 { background: #6366f1; box-shadow: 0 4px 0 #4338ca; border: 1px solid rgba(255,255,255,0.2); } /* Indigo */
+        .tile-4 { background: #38bdf8; box-shadow: 0 4px 0 #0284c7; border: 1px solid rgba(255,255,255,0.2); } /* Sky */
+        .tile-8 { background: #22c55e; box-shadow: 0 4px 0 #15803d; border: 1px solid rgba(255,255,255,0.2); } /* Green */
+        .tile-16 { background: #fbbf24; box-shadow: 0 4px 0 #b45309; border: 1px solid rgba(255,255,255,0.2); text-shadow: 0 1px 2px rgba(0,0,0,0.3); } /* Amber */
+        .tile-32 { background: #f472b6; box-shadow: 0 4px 0 #be185d; } /* Pink */
+        .tile-64 { background: #ef4444; box-shadow: 0 4px 0 #b91c1c; } /* Red */
+        .tile-128 { background: #a855f7; box-shadow: 0 0 15px #a855f7; z-index: 2; } /* Purple Glow */
+        .tile-256 { background: #3b82f6; box-shadow: 0 0 20px #3b82f6; z-index: 2; }
+        .tile-512 { background: #ec4899; box-shadow: 0 0 25px #ec4899; z-index: 2; }
+        .tile-1024 { background: #eab308; box-shadow: 0 0 30px #eab308; font-size: 1.6rem; z-index: 2; }
+
+        /* Anagram Game */
+        .anagram-pool { display: flex; gap: 8px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+        .anagram-slots { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; min-height: 50px; }
+        .letter-btn {
+            width: 45px; height: 45px; border-radius: 8px; font-size: 1.5rem; font-weight: bold;
+            display: flex; justify-content: center; align-items: center; cursor: pointer;
+            background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); color: white;
+        }
+        .letter-btn.empty { background: rgba(0,0,0,0.2); border: 2px dashed rgba(255,255,255,0.1); cursor: default; }
+        .letter-btn:active { transform: scale(0.9); background: var(--primary); }
+
+        /* Diff Game */
+        .diff-cell { background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 1.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; aspect-ratio: 1; }
+        .diff-cell:active { transform: scale(0.9); }
+
+        /* --- Modals --- */
+        #confetti-canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 1000; }
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+            display: none; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: #1e293b; padding: 30px; border-radius: 20px;
+            max-width: 380px; width: 90%; text-align: center;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal h2 { color: var(--primary); margin-bottom: 10px; font-size: 1.8rem; }
+        .modal input {
+            width: 100%; padding: 12px; margin: 10px 0 20px 0;
+            border: 1px solid #334155; border-radius: 10px;
+            font-size: 1.1rem; background: #0f172a; color: white; text-align: center;
+        }
+        #ranking-list { max-height: 350px; overflow-y: auto; text-align: left; }
+        #ranking-list li { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; display: flex; justify-content: space-between; }
+        #ranking-list b { color: var(--accent); }
+
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 2rem; }
+            .g2048-cell { width: 55px; height: 55px; font-size: 1.4rem; }
+            .memory-card { width: 50px; height: 50px; }
+            .ws-cell { width: 24px; height: 24px; font-size: 0.7rem; }
+            .stroop-word { font-size: 2.5rem; }
+            .controls-left, .controls-right { width: 100%; justify-content: center; margin-bottom: 5px; }
+            .game-grid { gap: 10px; }
+            .game-card { width: 45%; } 
+        }
     </style>
 </head>
 <body>
 
-<div class="app">
-    <div class="theme-switch" onclick="toggleTheme()">🌓</div>
+    <canvas id="confetti-canvas"></canvas>
 
-    <div id="screen-home" class="screen active">
-        <h1>🧠 Brain Buddy</h1>
-        
-        <div class="menu-grid">
-            <button class="menu-btn bg-wordle" onclick="showWordleMenu()">
-                <div class="menu-emoji">🟩</div><div class="menu-label">Palabra</div>
-            </button>
-            <button class="menu-btn bg-simon" onclick="showSimonMenu()">
-                <div class="menu-emoji">🔴</div><div class="menu-label">Simon</div>
-            </button>
-            <button class="menu-btn bg-sopa" onclick="showSopaMenu()">
-                <div class="menu-emoji">🔤</div><div class="menu-label">Sopa</div>
-            </button>
-            <button class="menu-btn bg-memo" onclick="initMemory()">
-                <div class="menu-emoji">🃏</div><div class="menu-label">Memoria</div>
-            </button>
-            <button class="menu-btn bg-sudoku" onclick="initSudoku()">
-                <div class="menu-emoji">🔢</div><div class="menu-label">Sudoku</div>
-            </button>
-            <button class="menu-btn bg-math" onclick="initMath()">
-                <div class="menu-emoji">🧮</div><div class="menu-label">Cálculo</div>
-            </button>
+    <div class="container">
+        <header class="header">
+            <h1>🧠 Brain Buddy</h1>
+            <p>Gimnasio Mental</p>
+        </header>
+
+        <div id="view-menu" class="view active">
+            <div class="game-grid">
+                </div>
+            <div style="margin-top: 40px; text-align: center; width: 100%;">
+                 <button class="btn btn-outline" onclick="App.showRankingGlobal()">🏆 Ver Récords</button>
+            </div>
         </div>
 
-        <div class="records-box">
-            <div class="record-title">🏆 TUS RÉCORDS</div>
-            <div id="rec-list" class="record-list"></div>
-            <div class="records-note">Los récords se guardan localmente en este dispositivo.</div>
-            <div class="cloud-actions">
-                <button class="btn-cloud" onclick="exportData()">☁️ Guardar</button>
-                <button class="btn-cloud" onclick="importData()">📥 Cargar</button>
-                <button class="btn-cloud" onclick="clearRecords()">🗑️ Reset</button>
+        <div id="view-game" class="view">
+            <div class="card">
+                <div class="game-header">
+                    <div class="controls-left">
+                        <button class="btn btn-outline" onclick="App.confirmExit()">⬅ Menú</button>
+                        <div class="difficulty-selector">
+                            <select id="difficulty-select" onchange="App.changeDifficulty(this.value)">
+                                <option value="easy">Fácil</option>
+                                <option value="medium">Medio</option>
+                                <option value="hard">Difícil</option>
+                                <option value="extreme">Extremo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="controls-right">
+                        <div class="stats-bar">
+                            <span id="stat-1">00:00</span>
+                        </div>
+                        <span id="stat-2" style="font-weight:bold; color:var(--highlight)"></span>
+                        <button class="btn btn-restart" onclick="App.restartGame()" title="Reiniciar Juego">↻ Reiniciar</button>
+                    </div>
+                </div>
+                
+                <div id="game-title-display" style="text-align: center; margin-bottom: 20px; color: var(--primary); font-size: 1.5rem; font-weight: 700; letter-spacing: 1px;"></div>
+                
+                <div id="game-board-area">
+                    </div>
             </div>
         </div>
     </div>
 
-    <div id="screen-wordle-menu" class="screen">
-        <div class="nav"><h2>Longitud</h2><div class="nav-controls"><button class="btn-icon btn-back" onclick="goHome()">Volver</button></div></div>
-        <button class="btn" onclick="initWordle(4)">4 Letras</button>
-        <button class="btn" onclick="initWordle(5)">5 Letras</button>
-        <button class="btn" onclick="initWordle(6)">6 Letras</button>
-        <button class="btn" onclick="initWordle(7)">7 Letras</button>
-    </div>
-    <div id="screen-wordle-game" class="screen">
-        <div class="nav"><h2>Palabra</h2><div class="nav-controls"><button class="btn-icon btn-restart" onclick="initWordle(currentWordleLen)">↺</button><button class="btn-icon btn-exit" onclick="showWordleMenu()">✖</button></div></div>
-        <div class="wordle-grid" id="wordle-board"></div>
-        <div class="keyboard" id="keyboard"></div>
-    </div>
-
-    <div id="screen-simon-menu" class="screen">
-        <div class="nav"><h2>Tema Simon</h2><div class="nav-controls"><button class="btn-icon btn-back" onclick="goHome()">Volver</button></div></div>
-        <button class="btn" onclick="initSimon('classic')">🎨 Clásico (Colores)</button>
-        <button class="btn" onclick="initSimon('days')">📆 Días (Lun/Mar)</button>
-        <button class="btn" onclick="initSimon('numbers')">🔢 Números (1-4)</button>
-        <button class="btn" onclick="initSimon('food')">🍔 Comida</button>
-    </div>
-    <div id="screen-simon-game" class="screen">
-        <div class="nav"><h2>Simon</h2><div class="nav-controls"><button class="btn-icon btn-restart" onclick="initSimon(currentSimonTheme)">↺</button><button class="btn-icon btn-exit" onclick="showSimonMenu()">✖</button></div></div>
-        <div style="text-align:center; margin-bottom:15px; font-size:1.5rem;">Nivel: <span id="simon-level" style="font-weight:bold; color:var(--c-simon)">1</span></div>
-        <div class="simon-grid">
-            <button id="sb-0" class="simon-btn s-0" onclick="handleSimon(0)"></button>
-            <button id="sb-1" class="simon-btn s-1" onclick="handleSimon(1)"></button>
-            <button id="sb-2" class="simon-btn s-2" onclick="handleSimon(2)"></button>
-            <button id="sb-3" class="simon-btn s-3" onclick="handleSimon(3)"></button>
+    <div id="modal-win" class="modal-overlay">
+        <div class="modal">
+            <h2>🎉 ¡Excelente!</h2>
+            <p id="win-message">Nivel completado.</p>
+            <div id="record-section" style="display:none; margin-top:15px;">
+                <p style="color: var(--success); font-weight: bold; margin-bottom: 5px;">¡NUEVO RÉCORD!</p>
+                <input type="text" id="player-name" placeholder="Tu nombre..." maxlength="12" autocomplete="off">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="App.handleWinAction('replay')">↻ Jugar de nuevo</button>
+                <button class="btn btn-outline" onclick="App.handleWinAction('exit')">➜ Salir</button>
+            </div>
         </div>
-        <button id="simon-start-btn" class="btn" style="background:var(--c-simon); color:white; margin-top:20px;" onclick="startSimonRound()">Comenzar</button>
     </div>
 
-    <div id="screen-sopa-menu" class="screen">
-        <div class="nav"><h2>Tema Sopa</h2><div class="nav-controls"><button class="btn-icon btn-back" onclick="goHome()">Volver</button></div></div>
-        <button class="btn" onclick="initSopa('paises')">🌍 Países</button>
-        <button class="btn" onclick="initSopa('comidas')">🍕 Comidas</button>
-        <button class="btn" onclick="initSopa('animales')">🐶 Animales</button>
-        <button class="btn" onclick="initSopa('todo')">🚀 Mix</button>
-    </div>
-    <div id="screen-sopa-game" class="screen">
-        <div class="nav"><h2 id="sopa-title"></h2><div class="nav-controls"><div id="timer-sopa" class="timer-badge">00:00</div><button class="btn-icon btn-restart" onclick="initSopa(sCurrentCat)">↺</button><button class="btn-icon btn-exit" onclick="showSopaMenu()">✖</button></div></div>
-        <div id="sopa-grid"></div>
-        <div id="sopa-words" style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-top:10px;"></div>
-    </div>
-
-    <div id="screen-sudoku" class="screen">
-        <div class="nav"><h2>Sudoku</h2><div class="nav-controls"><div id="timer-sudoku" class="timer-badge">00:00</div><button class="btn-icon btn-restart" onclick="initSudoku()">↺</button><button class="btn-icon btn-exit" onclick="goHome()">✖</button></div></div>
-        <div id="sudoku-board"></div>
-        <div class="numpad">
-            <button class="num-btn" onclick="fillSudoku(1)">1</button><button class="num-btn" onclick="fillSudoku(2)">2</button><button class="num-btn" onclick="fillSudoku(3)">3</button><button class="num-btn" onclick="fillSudoku(4)">4</button><button class="num-btn" onclick="fillSudoku(5)">5</button>
-            <button class="num-btn" onclick="fillSudoku(6)">6</button><button class="num-btn" onclick="fillSudoku(7)">7</button><button class="num-btn" onclick="fillSudoku(8)">8</button><button class="num-btn" onclick="fillSudoku(9)">9</button><button class="num-btn" style="color:var(--c-simon)" onclick="fillSudoku(null)">⌫</button>
+    <div id="modal-ranking" class="modal-overlay">
+        <div class="modal">
+            <h2>🏆 Récords</h2>
+            <div id="ranking-list"></div>
+            <button class="btn btn-primary" style="margin-top:15px; width:100%" onclick="document.getElementById('modal-ranking').classList.remove('active')">Cerrar</button>
         </div>
-        <button class="btn" style="margin-top:15px; background:var(--c-sudoku); color:white" onclick="checkSudoku()">Verificar</button>
     </div>
-
-    <div id="screen-memory" class="screen">
-        <div class="nav"><h2>Memoria</h2><div class="nav-controls"><div id="timer-memory" class="timer-badge">00:00</div><button class="btn-icon btn-restart" onclick="initMemory()">↺</button><button class="btn-icon btn-exit" onclick="goHome()">✖</button></div></div>
-        <h4 id="memo-theme-label" style="margin:0 0 15px 0; color:var(--text-light); text-align:center;"></h4>
-        <div id="memory-grid"></div>
-    </div>
-
-    <div id="screen-math" class="screen">
-        <div class="nav"><h2>Cálculo</h2><div class="nav-controls"><button class="btn-icon btn-restart" onclick="initMath()">↺</button><button class="btn-icon btn-exit" onclick="stopGame(); goHome()">✖</button></div></div>
-        <div class="math-box">
-            <div id="math-eq" style="font-size:3rem; font-weight:bold; margin-bottom:5px;"></div>
-            <div>Puntos: <span id="math-score" style="font-weight:bold; color:var(--c-math)">0</span> | <span id="math-time">30</span>s</div>
-        </div>
-        <div id="math-opts" class="math-opts"></div>
-    </div>
-
-    <div class="copyright">© Maarteeno 2026</div>
-</div>
 
 <script>
-    /* ================= SYSTEM ================= */
-    let gameInterval = null;
-    let timeElapsed = 0;
-    
-    // Configuración de Juegos
-    const GAMES_CONFIG = {
-        wordle: { label: "Palabra", type: "score" },
-        simon:  { label: "Simon", type: "max" },
-        sopa:   { label: "Sopa", type: "min" },
-        memo:   { label: "Memoria", type: "min" },
-        sudoku: { label: "Sudoku", type: "min" },
-        math:   { label: "Cálculo", type: "max" }
-    };
+/**
+ * BRAIN BUDDY CORE
+ */
 
-    // Navegación
-    function showScreen(id) { 
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(id === 'screen-home') updateRecordDisplay();
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => document.querySelectorAll(s);
+
+const Sound = {
+    ctx: new (window.AudioContext || window.webkitAudioContext)(),
+    play: function(freq, type, dur, vol=0.1) {
+        if(this.ctx.state === 'suspended') this.ctx.resume();
+        const o = this.ctx.createOscillator(); const g = this.ctx.createGain();
+        o.type = type; o.frequency.value = freq;
+        g.gain.setValueAtTime(vol, this.ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
+        o.connect(g); g.connect(this.ctx.destination);
+        o.start(); o.stop(this.ctx.currentTime + dur);
+    },
+    win: () => { Sound.play(400,'sine',0.1); setTimeout(()=>Sound.play(600,'sine',0.1),100); setTimeout(()=>Sound.play(800,'triangle',0.4,0.2),200); },
+    click: () => Sound.play(300,'sine',0.05,0.05),
+    error: () => Sound.play(150,'sawtooth',0.3,0.08),
+    merge: () => Sound.play(500,'square',0.05,0.05)
+};
+
+const Storage = {
+    get: () => JSON.parse(localStorage.getItem('brainBuddy_v7')) || {},
+    save: (d) => localStorage.setItem('brainBuddy_v7', JSON.stringify(d)),
+    check: (id, diff, score) => {
+        const d = Storage.get();
+        const cur = d[`${id}_${diff}`];
+        return !cur || score < cur.score; 
+    },
+    set: (id, diff, name, score) => {
+        const d = Storage.get();
+        d[`${id}_${diff}`] = { name, score, date: new Date().toLocaleDateString() };
+        Storage.save(d);
     }
-    function goHome() { stopGame(); showScreen('screen-home'); }
-    function showWordleMenu() { stopGame(); showScreen('screen-wordle-menu'); }
-    function showSimonMenu() { stopGame(); showScreen('screen-simon-menu'); }
-    function showSopaMenu() { stopGame(); showScreen('screen-sopa-menu'); }
-    function toggleTheme() { document.body.classList.toggle('dark-mode'); }
-    
-    // Timer Global
-    function stopGame() { clearInterval(gameInterval); clearInterval(simonTimer); clearInterval(mathTimer); }
-    function startTimer(displayId) {
-        stopGame(); timeElapsed = 0;
-        const el = document.getElementById(displayId);
-        if(el) el.textContent = "00:00";
-        gameInterval = setInterval(() => {
-            timeElapsed++;
-            let m = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
-            let s = (timeElapsed % 60).toString().padStart(2, '0');
-            if(el) el.textContent = `${m}:${s}`;
-        }, 1000);
+};
+
+const Confetti = {
+    canvas: document.getElementById('confetti-canvas'),
+    ctx: document.getElementById('confetti-canvas').getContext('2d'),
+    particles: [], active: false,
+    resize: function() { this.canvas.width=window.innerWidth; this.canvas.height=window.innerHeight; },
+    start: function() {
+        this.resize(); this.particles=[];
+        const colors = ['#6366f1', '#a855f7', '#38bdf8', '#10b981', '#fbbf24'];
+        for(let i=0; i<100; i++) this.particles.push({
+            x: Math.random()*this.canvas.width, y: Math.random()*this.canvas.height-this.canvas.height,
+            c: colors[Math.floor(Math.random()*colors.length)],
+            vx: Math.random()*2-1, vy: Math.random()*3+2, s: Math.random()*8+4
+        });
+        this.active=true; this.loop();
+        setTimeout(()=>this.stop(), 3000);
+    },
+    stop: function() { this.active=false; this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height); },
+    loop: function() {
+        if(!this.active) return;
+        this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+        this.particles.forEach(p=>{
+            p.y+=p.vy; p.x+=p.vx;
+            this.ctx.fillStyle=p.c; this.ctx.fillRect(p.x,p.y,p.s,p.s);
+            if(p.y>this.canvas.height) p.y=-10;
+        });
+        requestAnimationFrame(()=>this.loop());
     }
+};
 
-    // Efectos
-    function fireConfetti() {
-        for(let i=0; i<40; i++) {
-            let c = document.createElement('div'); c.className = 'confetti';
-            c.style.left = Math.random()*100 + '%'; c.style.top = '-10px';
-            c.style.backgroundColor = `hsl(${Math.random()*360},100%,50%)`;
-            c.style.animationDuration = (Math.random()*2+1) + 's';
-            document.body.appendChild(c);
-            setTimeout(() => c.remove(), 3000);
-        }
-    }
+// --- GAMES ---
 
-    /* ================= RECORDS SYSTEM ================= */
-    function checkRecord(gameKey, score) {
-        let key = 'bg_rec_' + gameKey;
-        let saved = JSON.parse(localStorage.getItem(key));
-        if (!saved) saved = { name: '-', val: (GAMES_CONFIG[gameKey].type === 'min' ? 999999 : 0) };
+// 1. Memory Game
+class MemoryGame {
+    constructor(diff) {
+        this.diff = diff;
+        this.cards = []; this.flipped = []; this.locked = false; this.matched = 0;
+        
+        if (diff === 'easy') { this.cols = 4; this.rows = 4; }
+        else if (diff === 'medium') { this.cols = 5; this.rows = 4; }
+        else { this.cols = 6; this.rows = 6; }
+        
+        const themes = {
+            faces: ['😀','😂','😍','😎','🤬','🤢','🤡','👻','👽','🤖','💩','👺','💀','🤕','🤠','🥸','😇','🎃'],
+            transport: ['🚀','🚗','🚓','🚑','🚒','🚲','🛵','🚂','✈️','🛸','🚁','🛶','⛵','🚤','🚜','🚛','🚌','🏎️'],
+            sports: ['⚽','🏀','🏈','⚾','🎾','🏐','🏉','🎱','🏓','🏸','🥅','🥊','🥋','⛳','⛸','🎣','🤿','🏄'],
+            fruits: ['🍏','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🥑']
+        };
 
-        let isNew = false;
-        if (GAMES_CONFIG[gameKey].type === 'min') {
-            if (score < saved.val) isNew = true;
+        const totalPairs = (this.cols * this.rows) / 2;
+        let pool = [];
+
+        if (diff === 'extreme') {
+            const all = [...themes.faces, ...themes.transport, ...themes.sports, ...themes.fruits];
+            pool = all.sort(() => 0.5 - Math.random()).slice(0, totalPairs);
         } else {
-            if (score > saved.val) isNew = true;
+            const keys = Object.keys(themes);
+            const key = keys[Math.floor(Math.random() * keys.length)];
+            pool = themes[key].sort(() => 0.5 - Math.random()).slice(0, totalPairs);
         }
-
-        if (isNew) {
-            let display = (GAMES_CONFIG[gameKey].type === 'min') ? formatTime(score) : score;
-            let name = prompt(`¡NUEVO RÉCORD!\nJuego: ${GAMES_CONFIG[gameKey].label}\nMarca: ${display}\n\nTu nombre:`);
-            if (name) {
-                localStorage.setItem(key, JSON.stringify({ name: name.substring(0,10), val: score }));
+        this.cards = [...pool, ...pool].sort(() => 0.5 - Math.random());
+    }
+    init(c) {
+        c.innerHTML = `<div class="memory-grid" style="grid-template-columns: repeat(${this.cols}, 1fr);">
+            ${this.cards.map((e, i) => `<div class="memory-card" onclick="App.curr.flip(${i})" id="c-${i}"><div class="front">${e}</div><div class="back"></div></div>`).join('')}</div>`;
+    }
+    flip(i) {
+        const card = $(`#c-${i}`);
+        if (this.locked || card.classList.contains('flip') || this.flipped.some(c=>c.id===i)) return;
+        card.classList.add('flip'); Sound.click(); this.flipped.push({ id: i, val: this.cards[i], el: card });
+        if (this.flipped.length === 2) {
+            this.locked = true; App.moves++; $('#stat-2').textContent = `Mov: ${App.moves}`;
+            if (this.flipped[0].val === this.flipped[1].val) {
+                this.matched++; this.flipped = []; this.locked = false; if (this.matched === this.cards.length / 2) App.endGame(true);
+            } else {
+                Sound.error(); setTimeout(() => { this.flipped.forEach(c => c.el.classList.remove('flip')); this.flipped = []; this.locked = false; }, 800);
             }
         }
     }
+}
 
-    function formatTime(s) {
-        let m = Math.floor(s / 60).toString().padStart(2, '0');
-        let sec = (s % 60).toString().padStart(2, '0');
-        return `${m}:${sec}`;
-    }
-
-    function updateRecordDisplay() {
-        const list = document.getElementById('rec-list');
-        list.innerHTML = '';
-        for (let k in GAMES_CONFIG) {
-            let saved = JSON.parse(localStorage.getItem('bg_rec_' + k));
-            let val = '--'; let name = '';
-            if (saved) {
-                name = saved.name;
-                val = (GAMES_CONFIG[k].type === 'min') ? formatTime(saved.val) : saved.val;
-                if(k==='wordle') val += ' wins';
-            }
-            let item = document.createElement('div'); item.className='record-item';
-            item.innerHTML = `<span>${GAMES_CONFIG[k].label}</span> <span>${val} <small class="rec-name">${name}</small></span>`;
-            list.appendChild(item);
-        }
-    }
-
-    function exportData() { let d={}; ['wordle','sopa','sudoku','memo','simon','math'].forEach(k=>{let v=localStorage.getItem('bg_rec_'+k); if(v) d[k]=v;}); prompt("Copia:", btoa(JSON.stringify(d))); }
-    function importData() { let c=prompt("Pega:"); if(!c)return; try{ let d=JSON.parse(atob(c)); for(let k in d) localStorage.setItem('bg_rec_'+k, d[k]); updateRecordDisplay(); alert("Ok"); }catch(e){alert("Error");} }
-    function clearRecords() { if(confirm("¿Reset?")) { localStorage.clear(); updateRecordDisplay(); } }
-
-    /* ================= 1. WORDLE (4-7) ================= */
-    const WORDLE_DB = {
-        4: ["GATO","CASA","AUTO","LAGO","MESA","PERA","ROPA","LUNA","SOLO","VINO","PATO","TORO","RIOS","LOTE","PISO","MANO","BOCA","PIEL","OJOS","PELO","DEDO","UÑAS","CARA","CODO","PIES","ARCO","BODA","DAMA","FAMA","GOMA","HOJA","ISLA","JOYA","KILO","LEER","MAPA","NUBE","OLAS","PAPA","QUEM","RAMA","SALA","TAZA","URNA","VACA","YATE","ZONA"],
-        5: ["PERRO","PLAYA","SUELO","CIELO","LIBRO","LLAVE","ARBOL","AVION","BARCO","CAMPO","CANTO","CARNE","CARTA","CASCO","CEBRA","CESTA","CLASE","COCHE","COLOR","COMER","CORAL","CREMA","CRUDO","DADO","DANZA","DARDO","DATOS","DIETA","DISCO","DOBLE","DOLOR","DULCE","ENERO","ERROR","EXITO","FACIL","FALSO","FAUNA","FELIZ","FERIA","FIESTA","FINAL","FLOR","FUEGO","GAFAS","GANAR","GENTE","GLOBO","GOLPE","GORRA","GRASA","GRITO","GRUPO","GUAPO","GUSTO","HABER","HABLA","HACER","HACHA","HIELO","HIJO","HILO","HUEVO","HUMO","IDEA","IGUAL","ISLA","JABON","JAULA","JUEGO","JULIO","JUNIO","JUSTO","LABIO","LADO","LAGO","LANA","LARGO","LAPIZ","LECHE","LENTO","LEON","LETRA","LIBRO","LIMON","LINEA","LISTA","LLAMA","LLAVE","LOBO","LUGAR","LUNA","LUZ","MADRE","MAGIA","MAIZ","MANO","MAPA","MARCA","MARCO","MASA","MAYOR","MEDIO","MEJOR","MELON","MENOS","MENTE","MESA","METAL","METRO","MIEDO","MIEL","MITAD","MODA","MUNDO","MURO","NACER","NADAR","NARIZ","NAVE","NEGRO","NIEVE","NIÑO","NOCHE","NORTE","NUBE","NUEVO","NUNCA","OESTE","OIDO","OJO","OLA","OLLA","ONDA","ORDEN","OREJA","ORO","OSO","OTOÑO","PADRE","PAGAR","PAIS","PAJARO","PAN","PAPEL","PARAR","PARQUE","PASO","PASTO","PATO","PAVO","PEDIR","PELO","PENA","PERRO","PESO","PEZ","PIANO","PIE","PIEL","PIEZA","PILOTO","PISO","PLACA","PLAN","PLATA","PLATO","PLAYA","PLAZA","PLUMA","POBRE","POCO","PODER","POLLO","POLVO","PONER","PORTE","POSTRE","POZO","PRECIO","PRIMO","PULSO","PUNTO","QUESO","RADIO","RAIZ","RAMA","RATA","RAZON","RED","RELOJ","REMO","RESTA","RICO","RIEGO","RIO","RISA","ROBO","ROCA","ROJO","ROPA","ROSA","ROTO","RUIDO","RUTA","SABER","SABOR","SAL","SALIR","SALUD","SANTO","SAPO","SECO","SEDA","SELLO","SELVA","SERIE","SILLA","SOL","SOPA","SUAVE","SUELO","SUEÑO","SUMA","SUR","TABLA","TACO","TALLA","TAPA","TARDE","TAZA","TECHO","TELA","TEMAS","TENER","TENIS","TEXTO","TIEMPO","TIENDA","TIERRA","TIGRE","TINTA","TIO","TIPO","TIRA","TODO","TOMAR","TONO","TORRE","TOTAL","TRAJE","TREN","TRES","TRIGO","TRONO","TUBO","TUL","TUMBA","TURNO","UVA","VACA","VALLE","VALOR","VAPOR","VASO","VELA","VENIR","VERDE","VIAJE","VIDA","VIDRIO","VIEJO","VIENTO","VINO","VISTA","VIVIR","VOLAR","VOZ","VUELO","YATE","YERBA","YESO","YOGA","ZAPATO","ZONA","ZORRO","ZUMO"],
-        6: ["CAMINO","PIEDRA","TIEMPO","VIENTO","BOSQUE","CIUDAD","CUERPO","MENTES","PLANTA","PUERTA","COMPRA","ABUELO","ACEITE","ADULTO","AGOSTO","AHORRO","AJEDREZ","ALARMA","ALCALDE","ALEGRE","ALTURA","ALUMNO","AMIGOS","ANILLO","ANIMAL","ANTENA","APOYAR","ARRIBA","ARRUGA","ASUNTO","ATENTO","ATLETA","AVISO","AYUDA","AZUCAR","BAILAR","BALCON","BANANA","BANDERA","BARBA","BARRIO","BASURA","BATALLA","BEBIDA","BELLEZA","BESAR","BICHO","BILLETE","BLANCO","BLOQUE","BOLSAS","BOMBA","BONITO","BOTON","BRAZOS","BRUJA","BUZON","CABALLO","CABINA","CABEZA","CADENA","CAFETERA","CAJON","CALOR","CAMARA","CAMBIO","CAMISA","CAMPO","CANCION","CANSADO","CANTAR","CAPAZ","CAPITAL","CARCEL","CARGA","CARIÑO","CARNE","CARTA","CARTON","CASCO","CASTIGO","CAUSA","CELULA","CEMENTO","CENIZA","CENTRO","CEPILLO","CEREAL","CEREZA","CERRAR","CESPED","CHARLA","CHICO","CHISTE","CHOQUE","CICLO","CIEGO","CIELO","CIENCIA","CIERTO","CINCO","CINTA","CIRCO","CIVIL","CLARO","CLASE","CLIMA","CLINICA","COBRE","COCINA","CODIGO","COGER","COLEGIO","COLINA","COLOR","COMIDA","COMUN","CONEJO","CONSEJO","CONTAR","COPA","COPIA","CORAZON","CORONA","CORREO","CORTAR","CORTE","COSAS","COSER","COSTA","CRECER","CREMA","CRISIS","CRUCE","CRUDO","CUADRO","CUARTO","CUENTO","CUERDA","CUELLO","CUENTA","CUERPO","CUEVA","CULPA","CULTURA","CURSO","CURVA","DADO","DANZA","DAÑO","DARDO","DEBER","DEBIL","DECIR","DEDO","DEFENSA","DEJAR","DELITO","DEMAS","DENTRO","DEPORTE","DERECHO","DESEO","DEUDA","DIABLO","DIARIO","DIBUJO","DIENTE","DIETA","DINERO","DISCO","DISEÑO","DOBLE","DOCENA","DOLOR","DOMINGO","DONDE","DORMIR","DROGA","DUCHA","DUDA","DUEÑO","DULCE","DURO","ECHAR","EDAD","EFECTO","EJEMPLO","ELEVAR","ELLOS","EMPLEO","EMPUJAR","ENANO","ENCIMA","ENERO","ENFERMO","ENLACE","ENORME","ENTRAR","ENVIO","EPOCA","EQUIPO","ERROR","ESCALA","ESCAPE","ESCENA","ESCOBA","ESCUDO","ESCUELA","ESPADA","ESPALDA","ESPEJO","ESPERA","ESPOSA","ESPOSO","ESTADO","ESTAR","ESTILO","ESTIMA","ESTUDIO","ETAPA","ETERNO","EVENTO","EXAMEN","EXITO","EXTRA","FABRICA","FACIL","FACTOR","FALDA","FALSO","FALTA","FAMILIA","FANTASMA","FAROL","FAVOR","FECHA","FELIZ","FERIA","FIESTA","FIGURA","FILA","FILME","FINAL","FINCA","FIRMA","FISICO","FLACO","FLECHA","FLOR","FLOTA","FLUJO","FONDO","FORMA","FORZAR","FOTO","FRASE","FRENO","FRENTE","FRESA","FRESCO","FRIO","FRUTA","FUEGO","FUENTE","FUERTE","FUERZA","FUMAR","FUTBOL","FUTURO","GAFAS","GALLETA","GALLINA","GANADO","GANAR","GANSO","GARAJE","GARGANTA","GASTO","GATO","GENTE","GESTO","GIGANTE","GIMNASIO","GIRAR","GLOBO","GLORIA","GOLPE","GORDO","GORRA","GOTA","GRACIA","GRADO","GRANO","GRASA","GRATIS","GRAVE","GRIFO","GRIS","GRITO","GROSERO","GRUESO","GRUPO","GUANTE","GUAPO","GUARDIA","GUERRA","GUIA","GUSANO","GUSTO","HABER","HABIL","HABITO","HABLA","HACER","HACHA","HALLAR","HAMBRE","HARINA","HASTA","HECHO","HELADO","HERIDO","HERMANO","HEROE","HIELO","HIERBA","HIERRO","HIGADO","HIJA","HIJO","HILO","HIMNO","HISTORIA","HOGAR","HOJA","HOLA","HOMBRE","HOMBRO","HONDO","HONOR","HORA","HORNO","HOTEL","HUESO","HUEVO","HUIR","HUMANO","HUMEDO","HUMO","HUMOR","IDEAL","IDIOMA","IDOLO","IGLESIA","IGUAL","IMAGEN","IMAN","IMPAR","INDICE","INICIO","INMENSO","INUTIL","INVIERNO","ISLA","JABON","JAMON","JARDIN","JARRA","JAULA","JEFE","JOVEN","JOYA","JUEGO","JUEVES","JUGAR","JUICIO","JULIO","JUNIO","JUNTA","JUNTO","JURADO","JUSTO","JUVENTUD","KILO","LABIO","LABOR","LADO","LADRON","LAGO","LAGRIMA","LANA","LANZAR","LAPIZ","LARGO","LATIN","LAVAR","LECCION","LECHE","LECTOR","LEER","LEGAL","LEGUA","LEJOS","LENGUA","LENTO","LEÑA","LEON","LETRA","LEVANTAR","LEYENDA","LIBRE","LIBRO","LIDER","LIGERO","LIMITES","LIMON","LIMPIO","LINDO","LINEA","LINGOTE","LIO","LIQUIDO","LIRIO","LISO","LISTA","LISTO","LITRO","LLAMA","LLAMAR","LLANO","LLAVE","LLEGAR","LLENO","LLEVAR","LLORAR","LLUVIA","LOBO","LOCAL","LOCO","LODO","LOGRO","LOMA","LOMO","LONA","LONGITUD","LORO","LOSA","LUCHA","LUCRO","LUGAR","LUJO","LUNA","LUNES","LUZ","MACETA","MACHO","MADERA","MADRE","MAESTRO","MAGIA","MAGO","MAIZ","MALETA","MALO","MAMA","MANCHA","MANDO","MANERA","MANGA","MANGO","MANI","MANO","MANTA","MANTECA","MANZANA","MAÑANA","MAPA","MAQUINA","MAR","MARAVILLA","MARCA","MARCHA","MARCO","MAREA","MARIDO","MARINERO","MARIPOSA","MARMOL","MARRON","MARTES","MARTILLO","MARZO","MAS","MASA","MASCARA","MASCOTA","MATAR","MATERIA","MATIZ","MAYOR","MAZORCA","MECANICO","MEDALLA","MEDIA","MEDICO","MEDIDA","MEDIO","MEDIR","MEJILLA","MEJOR","MELON","MEMORIA","MENOR","MENOS","MENSAJE","MENTE","MENTIRA","MENU","MERCADO","MERITO","MERMELADA","MES","MESA","META","METAL","METODO","METRO","MEZCLA","MIEDO","MIEL","MIEMBRO","MIGA","MIL","MILAGRO","MILITAR","MILLA","MILLON","MINA","MINERAL","MINIMO","MINUTO","MIRADA","MIRAR","MISA","MISIL","MISMO","MITAD","MITO","MOCHILA","MODA","MODELO","MODERNO","MODO","MOHO","MOJADO","MOLDE","MOLER","MOLINO","MOMENTO","MONEDA","MONJE","MONO","MONTAÑA","MONTON","MONUMENTO","MORA","MORADO","MORAL","MORDIDA","MORENO","MORIR","MOSCA","MOSQUITO","MOSTRAR","MOTOR","MOVER","MOVIL","MOZO","MUCHACHO","MUCHO","MUEBLE","MUELLE","MUERTE","MUERTO","MUESCA","MUESTRA","MUJER","MULA","MULTA","MUNDO","MUÑECA","MUÑECO","MURO","MUSCULO","MUSEO","MUSICA","MUSLO","MUY","NACER","NACION","NADA","NADAR","NADIE","NARANJA","NARIZ","NATA","NATURAL","NAUFRAGIO","NAVAJA","NAVE","NAVIDAD","NECESARIO","NEGAR","NEGOCIO","NEGRO","NENE","NERVIO","NETO","NEUMATICO","NEVAR","NIEBLA","NIETA","NIETO","NIEVE","NIDO","NIEBLA","NIÑO","NIVEL","NO","NOBLE","NOCHE","NOGAL","NOMBRE","NORMA","NORTE","NOTA","NOTAR","NOTICIA","NOVELA","NOVIA","NOVIO","NUBE","NUCA","NUCLEO","NUDILLO","NUDO","NUERA","NUESTRO","NUEVE","NUEVO","NUEZ","NUMERO","NUNCA","NUTRIA","OBJETO","OBLIGAR","OBRA","OBRERO","OBSERVAR","OBTENER","OCEANO","OCHENTA","OCHO","OCUPAR","ODIO","OESTE","OFERTA","OFICIAL","OFICINA","OFICIO","OIDO","OIR","OJO","OLA","OLER","OLIVA","OLLA","OLMO","OLOR","OLVIDAR","OMBLIGO","ONCE","ONDA","OPCION","OPERAR","OPINION","OPONER","OPORTUNIDAD","ORACION","ORDEN","OREJA","ORGANO","ORGULLO","ORIENTE","ORIGEN","ORILLA","ORO","ORQUESTA","OSCURO","OSO","OSTRA","OTOÑO","OTRO","OVEJA","OXIGENO","PACIENTE","PACTO","PADRE","PAGA","PAGAR","PAGINA","PAIS","PAISAJE","PAJA","PAJARO","PALA","PALABRA","PALACIO","PALANCA","PALMA","PALO","PALOMA","PAN","PANADERIA","PANTALON","PANTALLA","PANTERA","PAÑUELO","PAPA","PAPA","PAPEL","PAQUETE","PAR","PARA","PARADA","PARAGUAS","PARAISO","PARAR","PARED","PAREJA","PARIENTE","PARQUE","PARRA","PARTE","PARTIDO","PARTIR","PASADO","PASAJERO","PASAR","PASEO","PASION","PASO","PASTA","PASTEL","PASTO","PATA","PATATA","PATIO","PATO","PATRON","PAUSA","PAUTA","PAVO","PAZ","PECHO","PEDAZO","PEDIDO","PEDIR","PEGAMENTO","PEGAR","PEINAR","PEINE","PELEAR","PELIGRO","PELO","PELOTA","PENA","PENDIENTE","PENSAR","PENSION","PEOR","PEPINO","PEQUEÑO","PERA","PERCHA","PERDER","PERDON","PERFIL","PERFUME","PERIODICO","PERLA","PERMISO","PERMITIR","PERO","PERRO","PERSONA","PESADO","PESAR","PESCA","PESCADO","PESCUEZO","PESO","PESTAÑA","PETALO","PETROLEO","PEZ","PIANO","PICO","PIE","PIEDRA","PIEL","PIERNA","PIEZA","PILA","PILAR","PILOTO","PIMIENTA","PINO","PINTURA","PINZAS","PIOJO","PIPA","PISAR","PISCINA","PISO","PISTA","PISTOLA","PITO","PIZARRA","PLACA","PLACER","PLAN","PLANCHA","PLANETA","PLANO","PLANTA","PLATA","PLATANO","PLATO","PLAYA","PLAZA","PLEITO","PLOMO","PLUMA","POBRE","POCO","PODER","PODRIDO","POEMA","POETA","POLICIA","POLITICA","POLLO","POLVO","POMELO","POMO","PONER","POPA","POPULAR","POR","PORCELANA","PORCHE","PORQUE","PORTADA","PORTE","PORTERO","POSIBLE","POSTE","POSTRE","POTENCIA","POZO","PRADO","PRECIO","PREGUNTA","PREMIO","PRENSA","PRESO","PRESTAMO","PRIMAVERA","PRIMERO","PRIMO","PRINCESA","PRINCIPE","PRINCIPIO","PRISA","PRISION","PRIVADO","PROBAR","PROBLEMA","PROCESO","PRODUCTO","PROFESOR","PROFUNDO","PROGRAMA","PROHIBIR","PROMES","PRONTO","PROPINA","PROPIO","PROSA","PROTEINA","PRUEBA","PSICOLOGO","PUBLICO","PUDRIR","PUEBLO","PUENTE","PUERCO","PUERTA","PUERTO","PUESTO","PULGA","PULGADA","PULMON","PULPO","PULSO","PUNTA","PUNTO","PUÑO","PURA","PURPURA","QUE","QUEBRAR","QUEDAR","QUEJA","QUEMAR","QUERER","QUESO","QUIEN","QUIETO","QUIMICA","QUINCE","QUINTO","QUITAR","RABANO","RABIA","RABO","RACIMO","RADIO","RAIZ","RAMA","RANA","RAPIDO","RAQUETA","RARO","RASCACIELOS","RATA","RATON","RAYA","RAYO","RAZON","REAL","REALIDAD","RECETA","RECIBIR","RECIENTE","RECOGER","RECORDAR","RECTO","RED","REDONDO","REDUCIR","REFLEJO","REFRAN","REGALO","REGLA","REINA","REINO","REIR","REJA","RELACION","RELATO","RELIGION","RELOJ","REMAR","REMEDIO","REMO","RENTA","REPARAR","REPETIR","REPOSO","REPROCHAR","RESERVA","RESPETO","RESPUESTA","RESTA","RESTO","RESULTADO","RETIRO","REUNION","REVISTA","REY","REZAR","RICO","RIEGO","RIESGO","RIFLE","RIO","RIQUEZA","RISA","RITMO","RITO","RIVAL","ROBAR","ROBLE","ROBO","ROBUSTO","ROCA","ROCIO","RODILLA","ROJO","ROLLO","ROMPER","ROPA","ROSA","ROSTRO","ROTO","RUBIO","RUEDA","RUGIDO","RUIDO","RUINA","RUMBO","RUSO","RUTA","SABADO","SABANA","SABER","SABIO","SABOR","SACAR","SACO","SACUDIR","SAGRADO","SAL","SALA","SALIDA","SALIR","SALMON","SALON","SALSA","SALTAR","SALTO","SALUD","SALUDO","SALVAJE","SANGRE","SANTO","SAPO","SASTRE","SATELITE","SAUCE","SECAR","SECO","SECRETARIO","SECRETO","SECTA","SEDA","SEGUIR","SEGUNDO","SEGURIDAD","SEGURO","SEIS","SELECCION","SELLA","SELLO","SELVA","SEMANA","SEMILLA","SEÑAL","SEÑOR","SEÑORA","SENTADO","SENTIDO","SENTIR","SEPARAR","SEPTIEMBRE","SER","SERIE","SERIO","SERPIENTE","SERVICIO","SERVIR","SESENTA","SETECIENTOS","SETENTA","SEXO","SEXTO","SI","SIEMPRE","SIERRA","SIESTA","SIGLO","SIGNIFICADO","SIGNO","SILENCIO","SILLA","SILLON","SIMBOLO","SIMPATICO","SIMPLE","SIN","SINCERO","SINGULAR","SINO","SISTEMA","SITIO","SITUACION","SOBRE","SOBRINA","SOBRINO","SOCIEDAD","SOCIO","SOFA","SOL","SOLDADO","SOLEDAD","SOLIDO","SOLO","SOLTAR","SOLUCION","SOMBRA","SOMBRERO","SONIDO","SONRISA","SOPA","SOPLAR","SOPORTE","SORDO","SORPRESA","SORTIJA","SOSTEN","SOTANO","SUAVE","SUBIR","SUCIO","SUDOR","SUEGRA","SUEGRO","SUELA","SUELDO","SUELO","SUEÑO","SUERTE","SUFIJO","SUFRIR","SUMA","SUPERIOR","SUR","SURCO","SUSTANCIA","SUSTO","SUTIL","TABACO","TABLA","TABLERO","TACON","TACTO","TAJADA","TALADRO","TALENTO","TALLA","TALLER","TALLO","TALON","TAMAÑO","TAMBOR","TANQUE","TANTO","TAPA","TAPAR","TAPETE","TAPON","TAQUILLA","TARDE","TAREA","TARJETA","TARRO","TARTA","TAXI","TAZA","TAZON","TE","TEATRO","TECHO","TECLADO","TECNICA","TEJADO","TEJER","TEJIDO","TELA","TELEFONO","TELEVISION","TEMA","TEMER","TEMPERATURA","TEMPLO","TEMPORADA","TEMPRANO","TENDENCIA","TENEDOR","TENER","TENIS","TENSION","TEORIA","TERCERO","TERMINAR","TERMINO","TERNERA","TERRAZA","TERRENO","TERROR","TESORO","TESTIGO","TETERA","TEXTO","TIA","TIBURON","TIEMPO","TIENDA","TIERRA","TIGRE","TIJERAS","TIMBRE","TIMIDO","TIO","TIPO","TIRA","TIRAR","TITULO","TOALLA","TOBILLO","TOCAR","TOCINO","TODO","TOLDO","TOMAR","TOMATE","TONELADA","TONO","TONTO","TOQUE","TORMENTA","TORNEO","TORO","TORPE","TORRE","TORTA","TORTILLA","TORTUGA","TOS","TOSTAR","TOTAL","TRABAJO","TRACTOR","TRADICION","TRADUCIR","TRAER","TRAFICO","TRAGEDIA","TRAJE","TRAMPA","TRAMO","TRANQUILO","TRANVIA","TRAPO","TRASERO","TRATAR","TRATO","TRAYECTO","TRAZAR","TREINTA","TREN","TRENZA","TREPAR","TRES","TRIBU","TRIBUNAL","TRIGO","TRIMESTRE","TRISTE","TRIUNFO","TRONCO","TRONO","TROPA","TROZO","TRUENO","TU","TUBERIA","TUBO","TULIPAN","TUMBA","TUMBAR","TUNEL","TURISMO","TURISTA","TURNO","TUTOR","UÑA","UN","UNICO","UNIDAD","UNIFORME","UNION","UNIR","UNIVERSO","UNO","UNTAR","UÑA","URBANO","URGENTE","USAR","USO","UTIL","UVA","VACA","VACACION","VACIO","VAGON","VAINA","VALER","VALIENTE","VALLA","VALLE","VALOR","VALVULA","VAPOR","VARILLA","VARIOS","VARON","VASO","VECINO","VEGETAL","VEHICULO","VEINTE","VEJEZ","VELA","VELERO","VELO","VELOCIDAD","VENA","VENCER","VENDA","VENDEDOR","VENDER","VENENO","VENGA","VENIR","VENTA","VENTANA","VER","VERANO","VERBO","VERDAD","VERDE","VERDURA","VERGÜENZA","VERSO","VERTICAL","VESTIDO","VESTIR","VEZ","VIA","VIAJAR","VIAJE","VIBORA","VICI","VICTIMA","VICTORIA","VIDA","VIDEO","VIDRIO","VIEJO","VIENTO","VIENTRE","VIERNES","VIGA","VIGILAR","VILLA","VINAGRE","VINO","VIÑA","VIOLIN","VIRGEN","VIRTUD","VISITA","VISPERA","VISTA","VIUDA","VIUDO","VIVIR","VIVO","VOCABLO","VOCAL","VOCACION","VOLAR","VOLCAN","VOLUMEN","VOLUNTAD","VOLVER","VOSOTROS","VOTAR","VOTO","VOZ","VUELO","VUELTA","VUESTRO","VULGAR","Y","YA","YATE","YEGUA","YEMA","YERBA","YERNO","YESO","YO","YODO","YOGA","YUNQUE","ZANAHORIA","ZANJA","ZAPATO","ZARZA","ZONA","ZOOLOGICO","ZORRO","ZUMO","ZURDO"],
-        7: ["ESTRELLA","MANZANA","PERSONA","VENTANA","ESCUELA","TRABAJO","FAMILIA","SEMANA","MOMENTO","LUGAR","CIUDAD","TIEMPO","CAMINO","VERDAD","SUEÑO","CUERPO","MUSICA","AMIGO","NOCHE","FIESTA","PADRE","MADRE","HERMANO","SISTEMA","EJEMPLO","SENTIDO","MIRADA","FUERZA","NOMBRE","GRUPO","CUENTA","HISTORIA","CALLE","BARRIO","PUEBLO","MUNDO","TIERRA","AGUA","FUEGO","VIENTO","JUEGO","EQUIPO","PRUEBA","CLASE","FORMA","PARTE","PUNTO","CASO","HECHO","LADO","NIVEL","ORDEN","PODER","SALUD","AMOR","DOLOR","MIEDO","RAZON","VALOR","IDEAL","LIBRO","PAPEL","CARTA","COLOR","LINEA","FONDO","FIGURA","IMAGEN","BRAZO","PIERNA","CABEZA","MANO","DEDO","LABIO","DIENTE","LENGUA","PELO","CARA","OJOS","NARIZ","OREJA","CUELLO","ESPALDA","PECHO","CORAZON","SANGRE","HUESO","PIEL","AIRE","LLUVIA","NIEVE","CALOR","FRIO","SOL","LUNA","CIELO","NUBE","MAR","RIO","LAGO","MONTE","VALLE","CAMPO","BOSQUE","FLOR","ARBOL","FRUTA","ANIMAL","PERRO","GATO","CABALLO","PAJARO","PEZ","LEON","TIGRE","OSO","LOBO","RATON","VACA","CERDO","OVEJA","GALLINA","HUEVO","LECHE","PAN","QUESO","ARROZ","PASTA","SOPA","ENSALADA","CARNE","PESCADO","AGUA","VINO","CERVEZA","CAFE","TE","AZUCAR","SAL","ACEITE","CASA","EDIFICIO","PUERTA","PARED","TECHO","SUELO","MESA","SILLA","CAMA","ROPA","ZAPATO","SOMBRERO","RELOJ","DINERO","PRECIO","COMPRA","VENTA","TIENDA","MERCADO","BANCO","OFICINA","ESCUELA","COLEGIO","CLASE","ALUMNO","MAESTRO","LIBRO","LAPIZ","PAPEL","CARTA","CORREO","TELEFONO","RADIO","TELE","CINE","TEATRO","MUSICA","BAILE","DEPORTE","FUTBOL","JUEGO","VIAJE","TREN","COCHE","AVION","BARCO","CALLE","PLAZA","PARQUE","JARDIN","CIUDAD","PUEBLO","PAIS","ESTADO","GOBIERNO","LEY","GUERRA","PAZ","VIDA","MUERTE","SALUD","ENFERMO","MEDICO","HOSPITAL","DOLOR","REMEDIO","AMOR","ODIO","ALEGRIA","TRISTEZA","MIEDO","VALOR","ESPERA","DESEO","SUEÑO","REALIDAD","MENTIRA","VERDAD","ERROR","ACIERTO","DUDA","PREGUNTA","RESPUESTA","PALABRA","SILENCIO","VOZ","GRITO","RISA","LLANTO","BESO","ABRAZO","GOLPE","LUCHA","TRABAJO","DESCANSO","VACACION","FIESTA","REGALO","SORPRESA","SECRETO","RECUERDO","OLVIDO","TIEMPO","HORA","MINUTO","SEGUNDO","DIA","NOCHE","MAÑANA","TARDE","SEMANA","MES","AÑO","SIGLO","ESTACION","PRIMAVERA","VERANO","OTOÑO","INVIERNO","LUNES","MARTES","MIERCOLES","JUEVES","VIERNES","SABADO","DOMINGO","ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE","UNO","DOS","TRES","CUATRO","CINCO","SEIS","SIETE","OCHO","NUEVE","DIEZ","CIEN","MIL","PRIMERO","SEGUNDO","ULTIMO","TODO","NADA","ALGO","MUCHO","POCO","MAS","MENOS","IGUAL","DIFERENTE","GRANDE","PEQUEÑO","LARGO","CORTO","ALTO","BAJO","ANCHO","ESTRECHO","GORDO","FLACO","FUERTE","DEBIL","RAPIDO","LENTO","NUEVO","VIEJO","JOVEN","BUENO","MALO","MEJOR","PEOR","RICO","POBRE","LINDO","FEO","LIMPIO","SUCIO","SECO","MOJADO","CALIENTE","FRIO","LLENO","VACIO","ABIERTO","CERRADO","FACIL","DIFICIL","CLARO","OSCURO","BLANCO","NEGRO","ROJO","AZUL","VERDE","AMARILLO","NARANJA","ROSA","VIOLETA","GRIS","MARRON","ORO","PLATA","HIERRO","MADERA","PIEDRA","VIDRIO","PAPEL","TELA","PLASTICO","GOMA","CUERO","PIEL","PELO","PLUMA","ALGODON","LANA","SEDA","AGUA","TIERRA","FUEGO","AIRE","LUZ","SOMBRA","SONIDO","RUIDO","OLOR","GUSTO","TACTO","VISTA","OIDO","OLFATO","GUSTO","TACTO","SENTIDO","MENTE","ALMA","ESPIRITU","DIOS","CIELO","INFIERNO","MUNDO","UNIVERSO","SOL","LUNA","ESTRELLA","PLANETA","TIERRA","MAR","RIO","MONTAÑA","VALLE","CAMPO","CIUDAD","PUEBLO","CASA","HOGAR","FAMILIA","PADRE","MADRE","HIJO","HIJA","HERMANO","HERMANA","ABUELO","ABUELA","TIO","TIA","PRIMO","PRIMA","AMIGO","AMIGA","NOVIO","NOVIA","ESPOSO","ESPOSA","HOMBRE","MUJER","NIÑO","NIÑA","BEBE","PERSONA","GENTE","GRUPO","SOCIEDAD","PUEBLO","NACION","PAIS","ESTADO","GOBIERNO","LEY","JUSTICIA","LIBERTAD","PAZ","GUERRA","EJERCITO","POLICIA","LADRON","CRIMEN","CARCEL","CASTIGO","PREMIO","DINERO","TRABAJO","EMPLEO","JEFE","OBRERO","MEDICO","MAESTRO","ABOGADO","JUEZ","POLITICO","ARTISTA","ACTOR","CANTANTE","MUSICO","ESCRITOR","POETA","PINTOR","DEPORTISTA","JUGADOR","EQUIPO","PARTIDO","JUEGO","GANAR","PERDER","EXITO","FRACASO","SUERTE","DESTINO","FUTURO","PASADO","PRESENTE","HISTORIA","VIDA","MUERTE","NACER","VIVIR","MORIR","AMAR","ODIAR","REIR","LLORAR","COMER","BEBER","DORMIR","DESPERTAR","SOÑAR","PENSAR","CREER","SABER","CONOCER","ENTENDER","APRENDER","ENSEÑAR","HABLAR","ESCUCHAR","LEER","ESCRIBIR","VER","MIRAR","OIR","TOCAR","SENTIR","MOVER","ANDAR","CORRER","SALTAR","BAILAR","JUGAR","TRABAJAR","DESCANSAR","VIAJAR","VOLVER","IR","VENIR","ENTRAR","SALIR","SUBIR","BAJAR","CAER","LEVANTAR","DAR","RECIBIR","TOMAR","DEJAR","PONER","QUITAR","ABRIR","CERRAR","EMPEZAR","TERMINAR","SEGUIR","ESPERAR","BUSCAR","ENCONTRAR","PERDER","GANAR","COMPRAR","VENDER","PAGAR","COBRAR","GASTAR","AHORRAR","TENER","QUERER","PODER","DEBER","HACER","SER","ESTAR","HABER"]
-    };
-
-    let wSolution="", wGrid=[], wRow=0, wCol=0, wOver=false, currentWordleLen=5;
-
-    function initWordle(len) {
-        currentWordleLen = len || 5;
-        showScreen('screen-wordle-game');
-        let pool = WORDLE_DB[currentWordleLen];
-        wSolution = pool[Math.floor(Math.random()*pool.length)];
-        wGrid = Array(6).fill().map(()=>Array(currentWordleLen).fill(""));
-        wRow=0; wCol=0; wOver=false;
-        renderWordleBoard(); renderKeyboard();
-    }
-
-    function renderWordleBoard() {
-        const b = document.getElementById('wordle-board');
-        b.style.gridTemplateColumns = `repeat(${currentWordleLen}, 1fr)`;
-        b.innerHTML = "";
-        for(let r=0; r<6; r++) {
-            for(let c=0; c<currentWordleLen; c++) {
-                let cell=document.createElement('div'); cell.className='wordle-cell'; cell.id=`w-${r}-${c}`;
-                cell.textContent=wGrid[r][c]; b.appendChild(cell);
-            }
-        }
-    }
-
-    function renderKeyboard() {
-        const kb = document.getElementById('keyboard'); kb.innerHTML = "";
-        ["QWERTYUIOP", "ASDFGHJKLÑ", "ZXCVBNM"].forEach((row,i) => {
-            let rowDiv = document.createElement('div'); rowDiv.className = 'key-row';
-            if(i===2) { let ent=document.createElement('div'); ent.className='key'; ent.textContent='ENTER'; ent.style.flex='1.5'; ent.onclick=wEnter; rowDiv.appendChild(ent); }
-            for(let char of row) { let k=document.createElement('div'); k.className='key'; k.id='key-'+char; k.textContent=char; k.onclick=()=>wInput(char); rowDiv.appendChild(k); }
-            if(i===2) { let back=document.createElement('div'); back.className='key'; back.textContent='⌫'; back.style.flex='1.5'; back.onclick=wBack; rowDiv.appendChild(back); }
-            kb.appendChild(rowDiv);
+// 2. Sudoku
+class Sudoku {
+    constructor(diff) { this.diff = diff; this.board = []; this.sol = []; }
+    init(c) {
+        c.innerHTML = `<div class="sudoku-grid" id="sdk-b"></div><div class="numpad" id="sdk-p"></div>`;
+        this.gen();
+        const b = $('#sdk-b');
+        this.board.forEach((r, i) => r.forEach((v, j) => {
+            const d = document.createElement('div'); d.className = `sudoku-cell ${v?'initial':''}`; d.textContent = v||'';
+            d.onclick = () => { if(!v) this.sel(d, i, j); }; b.appendChild(d);
+        }));
+        [1,2,3,4,5,6,7,8,9,'⌫'].forEach(n=>{
+            const btn=document.createElement('button'); btn.textContent=n; btn.onclick=()=>this.inp(n); $('#sdk-p').appendChild(btn);
         });
     }
+    sel(el, r, c) { $$('.selected').forEach(x=>x.classList.remove('selected')); this.cur = { el, r, c }; el.classList.add('selected'); }
+    inp(v) {
+        if (!this.cur) return;
+        if (v==='⌫') { this.cur.el.textContent=''; this.board[this.cur.r][this.cur.c]=0; return; }
+        this.cur.el.textContent=v; this.board[this.cur.r][this.cur.c]=v;
+        if (v!=this.sol[this.cur.r][this.cur.c]) { this.cur.el.classList.add('error'); Sound.error(); }
+        else { this.cur.el.classList.remove('error'); Sound.click(); if (this.check()) App.endGame(true); }
+    }
+    check() { return this.board.every((r,i)=>r.every((c,j)=>c===this.sol[i][j])); }
+    gen() {
+        this.sol = Array(9).fill().map(()=>Array(9).fill(0));
+        const fill=(r,c)=>{
+            const n=[1,2,3,4,5,6,7,8,9].sort(()=>0.5-Math.random());
+            for(let x of n) if(this.valid(r,c,x)){ this.sol[r][c]=x; if(c===8?(r===8?true:fill(r+1,0)):fill(r,c+1)) return true; this.sol[r][c]=0; }
+            return false;
+        }; fill(0,0);
+        this.board=JSON.parse(JSON.stringify(this.sol));
+        let rem = this.diff==='easy'?30:(this.diff==='medium'?40:(this.diff==='hard'?50:58));
+        while(rem>0){ let r=Math.floor(Math.random()*9),c=Math.floor(Math.random()*9); if(this.board[r][c]!==0){this.board[r][c]=0;rem--;} }
+    }
+    valid(r,c,v){
+        for(let k=0;k<9;k++) if(this.sol[r][k]===v || this.sol[k][c]===v) return false;
+        let br=Math.floor(r/3)*3, bc=Math.floor(c/3)*3;
+        for(let i=0;i<3;i++) for(let j=0;j<3;j++) if(this.sol[br+i][bc+j]===v) return false;
+        return true;
+    }
+}
 
-    function wInput(k) { if(wCol<currentWordleLen && !wOver) { wGrid[wRow][wCol]=k; document.getElementById(`w-${wRow}-${wCol}`).textContent=k; wCol++; } }
-    function wBack() { if(wCol>0 && !wOver) { wCol--; wGrid[wRow][wCol]= ""; document.getElementById(`w-${wRow}-${wCol}`).textContent=""; } }
-    function wEnter() {
-        if(wCol<currentWordleLen || wOver) return;
-        let guess = wGrid[wRow].join("");
-        let solArr = wSolution.split("");
-        let colors = Array(currentWordleLen).fill("absent");
+// 3. Math
+class MathGame {
+    constructor(diff) { this.diff=diff; this.pts=0; this.max=10; }
+    init(c) { c.innerHTML=`<div style="text-align:center"><div class="math-problem" id="mt-p"></div><div class="choice-grid" id="mt-o"></div></div>`; this.next(); }
+    next() {
+        const ops=['+','-','*']; let op=ops[Math.floor(Math.random()*(this.diff==='easy'?2:3))];
+        let a,b,res,lim=this.diff==='easy'?10:50;
+        if(op==='*'){ a=Math.floor(Math.random()*10)+2; b=Math.floor(Math.random()*10)+2; res=a*b; }
+        else { a=Math.floor(Math.random()*lim)+1; b=Math.floor(Math.random()*lim)+1; if(op==='-'){if(a<b)[a,b]=[b,a]; res=a-b;} else res=a+b; }
+        $('#mt-p').textContent=`${a} ${op} ${b} = ?`; $('#stat-2').textContent=`Pts: ${this.pts}/${this.max}`;
+        let o=[res]; while(o.length<4){ let f=res+(Math.floor(Math.random()*20)-10); if(f>=0 && !o.includes(f)) o.push(f); }
+        $('#mt-o').innerHTML=o.sort(()=>0.5-Math.random()).map(v=>`<button class="btn choice-btn" onclick="App.curr.ans(${v},${res})">${v}</button>`).join('');
+    }
+    ans(v,r) { if(v===r){this.pts++;Sound.click();if(this.pts===this.max)App.endGame(true);else this.next();}else{Sound.error();this.next();} }
+}
 
-        // Green pass
-        for(let i=0; i<currentWordleLen; i++) {
-            if(wGrid[wRow][i] === solArr[i]) { colors[i] = "correct"; solArr[i] = null; }
+// 4. Word Search
+class WordSearch {
+    constructor(diff) {
+        this.diff=diff; this.sz=diff==='easy'?8:(diff==='medium'?10:12);
+        this.words=["JAVA","HTML","CSS","NODE","WIFI","DATA","CODE","BYTE","LINK","PING"];
+        this.target=this.words.sort(()=>0.5-Math.random()).slice(0,Math.floor(this.sz*0.6)); this.found=0;
+    }
+    init(c) {
+        c.innerHTML=`<div style="margin-bottom:10px;text-align:center">Palabras: <span id="ws-c" style="color:var(--highlight)">0</span>/${this.target.length}</div>
+        <div class="ws-grid" style="grid-template-columns:repeat(${this.sz},1fr);max-width:${this.sz*28}px;margin:0 auto;" id="ws-b"></div>
+        <div style="text-align:center;margin-top:15px">${this.target.map(w=>`<span class="ws-word" id="wd-${w}">${w}</span>`).join('')}</div>`;
+        this.gen(); const b=$('#ws-b');
+        this.grid.forEach((r,i)=>r.forEach((l,j)=>{
+            const d=document.createElement('div');d.className='ws-cell';d.textContent=l;d.dataset.r=i;d.dataset.c=j;b.appendChild(d);
+        })); this.evt(b);
+    }
+    gen() {
+        this.grid=Array(this.sz).fill().map(()=>Array(this.sz).fill(''));
+        this.target.forEach(w=>{
+            let p=false,t=0,wp=w;
+            if((this.diff==='hard'||this.diff==='extreme')&&Math.random()>0.5) wp=w.split('').reverse().join('');
+            while(!p && t<100){
+                const d=Math.floor(Math.random()*3), r=Math.floor(Math.random()*this.sz), c=Math.floor(Math.random()*this.sz);
+                if(this.can(wp,r,c,d)){this.put(wp,r,c,d);p=true;}t++;
+            }
+        });
+        const abc="ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"; for(let r=0;r<this.sz;r++)for(let c=0;c<this.sz;c++)if(!this.grid[r][c])this.grid[r][c]=abc[Math.floor(Math.random()*abc.length)];
+    }
+    can(w,r,c,d){
+        if((d===0&&c+w.length>this.sz)||(d===1&&r+w.length>this.sz)||(d===2&&(c+w.length>this.sz||r+w.length>this.sz)))return false;
+        for(let i=0;i<w.length;i++) if(this.grid[r+(d>0?i:0)][c+(d!==1?i:0)] && this.grid[r+(d>0?i:0)][c+(d!==1?i:0)]!==w[i]) return false;
+        return true;
+    }
+    put(w,r,c,d){for(let i=0;i<w.length;i++)this.grid[r+(d>0?i:0)][c+(d!==1?i:0)]=w[i];}
+    evt(b){
+        let s=false,st=null,cs=[];
+        const get=(e)=> (e.target.closest('.ws-cell')||(e.touches?document.elementFromPoint(e.touches[0].clientX,e.touches[0].clientY)?.closest('.ws-cell'):null));
+        const up=(e)=>{
+            if(s){s=false;$$('.ws-cell.selected').forEach(x=>x.classList.remove('selected'));
+            const txt=cs.map(p=>this.grid[p.r][p.c]).join(''), rev=txt.split('').reverse().join('');
+            const m=this.target.includes(txt)?txt:(this.target.includes(rev)?rev:null);
+            if(m){
+                const el=$(`#wd-${m}`); if(!el.classList.contains('done')){
+                    el.classList.add('done');this.found++;$('#ws-c').textContent=this.found;
+                    cs.forEach(p=>$(`.ws-cell[data-r="${p.r}"][data-c="${p.c}"]`).classList.add('found'));
+                    Sound.click(); if(this.found===this.target.length)App.endGame(true);
+                }
+            }}
+        };
+        const mv=(e)=>{ if(s){ const c=get(e); if(c){
+            $$('.ws-cell.selected').forEach(x=>x.classList.remove('selected'));
+            const en={r:+c.dataset.r,c:+c.dataset.c}, dr=en.r-st.r, dc=en.c-st.c; cs=[];
+            if(!dr||!dc||Math.abs(dr)===Math.abs(dc)){
+                const stp=Math.max(Math.abs(dr),Math.abs(dc)), sr=dr?dr/Math.abs(dr):0, sc=dc?dc/Math.abs(dc):0;
+                for(let i=0;i<=stp;i++) cs.push({r:st.r+i*sr,c:st.c+i*sc});
+                cs.forEach(p=>$(`.ws-cell[data-r="${p.r}"][data-c="${p.c}"]`)?.classList.add('selected'));
+            }
+        }}};
+        const dn=(e)=>{const c=get(e);if(c){s=true;st={r:+c.dataset.r,c:+c.dataset.c};}};
+        b.onmousedown=dn;b.onmousemove=mv;document.onmouseup=up; b.ontouchstart=dn;b.ontouchmove=mv;document.ontouchend=up;
+    }
+}
+
+// 5. Diff Game
+class DiffGame {
+    constructor(diff) { this.lvl=1; this.max=diff==='easy'?3:5; }
+    init(c) { this.c=c; this.load(); }
+    load() {
+        const sz=Math.min(this.lvl+3,7), em=['😀','😎','🤩','🥶','🤢','👺','💀','👽','🤖','🎃'], b=em[Math.floor(Math.random()*em.length)];
+        let d; do{d=em[Math.floor(Math.random()*em.length)];}while(d===b);
+        this.c.innerHTML=`<div style="text-align:center;margin-bottom:15px">Nivel ${this.lvl} / ${this.max}</div>
+        <div class="diff-grid" style="display:grid;grid-template-columns:repeat(${sz},1fr);gap:6px;max-width:400px;margin:0 auto;"></div>`;
+        const g=$('.diff-grid'), t=Math.floor(Math.random()*(sz*sz));
+        for(let i=0;i<sz*sz;i++){
+            const el=document.createElement('div'); el.className='diff-cell'; el.textContent=i===t?d:b;
+            el.onclick=()=>{if(i===t){Sound.click();this.lvl++;if(this.lvl>this.max)App.endGame(true);else this.load();}else Sound.error();};
+            g.appendChild(el);
         }
-        // Yellow pass
-        for(let i=0; i<currentWordleLen; i++) {
-            if(colors[i] !== "correct" && solArr.includes(wGrid[wRow][i])) {
-                colors[i] = "present"; solArr[solArr.indexOf(wGrid[wRow][i])] = null;
+    }
+}
+
+// 6. Stroop
+class StroopGame {
+    constructor(diff) { this.sc=0; this.max=diff==='easy'?10:15; this.cols=[{n:'ROJO',h:'#ef4444'},{n:'AZUL',h:'#3b82f6'},{n:'VERDE',h:'#22c55e'},{n:'AMARILLO',h:'#eab308'}]; }
+    init(c) { c.innerHTML=`<div style="text-align:center"><div class="stroop-question" id="st-q"></div><div class="stroop-word" id="st-w"></div><div class="choice-grid" id="st-o"></div></div>`; this.next(); }
+    next() {
+        const t=this.cols[Math.floor(Math.random()*4)]; let c; do{c=this.cols[Math.floor(Math.random()*4)];}while(c.n===t.n);
+        const m=(Math.random()>0.5)?'col':'txt', q=m==='col'?'¿Qué <b>COLOR</b> ves?':'¿Qué <b>DICE</b>?';
+        $('#st-q').innerHTML=q; const w=$('#st-w'); w.textContent=t.n; w.style.color=c.h; $('#stat-2').textContent=`Pts: ${this.sc}/${this.max}`;
+        let o=[m==='col'?c.n:t.n]; while(o.length<4){const r=this.cols[Math.floor(Math.random()*4)].n; if(!o.includes(r))o.push(r);}
+        $('#st-o').innerHTML=o.sort(()=>0.5-Math.random()).map(v=>`<button class="btn choice-btn" onclick="App.curr.ans('${v}','${o[0]}')">${v}</button>`).join('');
+    }
+    ans(v,r){ if(v===r){this.sc++;Sound.click();if(this.sc>=this.max)App.endGame(true);else this.next();}else{Sound.error();this.next();} }
+}
+
+// 7. 2048 (Complete)
+class Game2048 {
+    constructor(diff) {
+        this.sz=diff==='easy'?5:4; this.grid=[]; this.score=0;
+        this.winTile=diff==='easy'?128:(diff==='medium'?256:(diff==='hard'?512:1024));
+    }
+    init(c) {
+        c.innerHTML=`<div style="text-align:center;margin-bottom:10px">Meta: <span style="color:var(--highlight);font-weight:bold">${this.winTile}</span></div>
+        <div class="g2048-container" style="grid-template-columns:repeat(${this.sz},1fr);width:${this.sz*78}px;margin:0 auto;" id="g2048"></div>`;
+        this.grid=Array(this.sz*this.sz).fill(0); this.spawn(); this.spawn(); this.render();
+        
+        // --- INPUT HANDLING ---
+        document.onkeydown=(e)=>{
+            if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){ e.preventDefault(); this.move(e.key.replace('Arrow','').toLowerCase()); }
+        };
+        
+        const b=$('#g2048');
+        let tsX, tsY;
+        
+        // Touch
+        b.ontouchstart=(e)=>{tsX=e.touches[0].clientX; tsY=e.touches[0].clientY; e.preventDefault();};
+        b.ontouchend=(e)=>{
+            const dx=e.changedTouches[0].clientX-tsX, dy=e.changedTouches[0].clientY-tsY;
+            this.handleSwipe(dx, dy);
+        };
+
+        // Mouse (Drag)
+        let mDown = false;
+        b.onmousedown=(e)=>{ mDown=true; tsX=e.clientX; tsY=e.clientY; };
+        document.onmouseup=(e)=>{
+            if(!mDown) return; mDown=false;
+            const dx=e.clientX-tsX, dy=e.clientY-tsY;
+            this.handleSwipe(dx, dy);
+        };
+    }
+
+    handleSwipe(dx, dy) {
+        if(Math.abs(dx)>Math.abs(dy)){ if(Math.abs(dx)>30) this.move(dx>0?'right':'left'); }
+        else { if(Math.abs(dy)>30) this.move(dy>0?'down':'up'); }
+    }
+
+    render() {
+        const b=$('#g2048'); b.innerHTML='';
+        this.grid.forEach(v=>{
+            const d=document.createElement('div'); d.className=`g2048-cell tile-${v}`; d.textContent=v||''; b.appendChild(d);
+        });
+    }
+    spawn() {
+        const emp=this.grid.map((v,i)=>v===0?i:null).filter(v=>v!==null);
+        if(emp.length){ this.grid[emp[Math.floor(Math.random()*emp.length)]] = Math.random()>0.9?4:2; }
+    }
+    move(dir) {
+        let moved=false; const sz=this.sz;
+        const getLine=(i, isRow)=> {
+            let l=[]; for(let k=0;k<sz;k++) l.push(this.grid[isRow ? i*sz+k : k*sz+i]); return l;
+        };
+        const setLine=(i, l, isRow)=> {
+            for(let k=0;k<sz;k++) this.grid[isRow ? i*sz+k : k*sz+i] = l[k];
+        };
+        const merge=(row)=> {
+            let arr=row.filter(v=>v); 
+            if(dir==='right'||dir==='down') arr.reverse();
+            for(let i=0;i<arr.length-1;i++){
+                if(arr[i]===arr[i+1]){ arr[i]*=2; arr[i+1]=0; Sound.merge(); if(arr[i]===this.winTile) setTimeout(()=>App.endGame(true),300); }
+            }
+            arr=arr.filter(v=>v);
+            while(arr.length<sz) arr.push(0);
+            if(dir==='right'||dir==='down') arr.reverse();
+            return arr;
+        };
+
+        for(let i=0;i<sz;i++){
+            const old=getLine(i, dir==='left'||dir==='right');
+            const nw=merge(old);
+            setLine(i, nw, dir==='left'||dir==='right');
+            if(old.some((v,k)=>v!==nw[k])) moved=true;
+        }
+        if(moved){ this.spawn(); this.render(); }
+    }
+}
+
+// 8. Anagram (Keyboard Support)
+class AnagramGame {
+    constructor(diff) {
+        this.len = diff==='easy'?4:(diff==='medium'?5:(diff==='hard'?6:8));
+        this.words = diff==='easy' ? ['GATO','PATO','LUNA','SOL','ROJO','CASA'] : 
+                     (diff==='medium' ? ['ARBOL','PERRO','LIBRO','PLAYA','NORTE'] : 
+                     ['PLANETA','MUSICA','DOCTOR','CODIGO','FUTURO','JARDIN','ESPACIO','GUITARRA']);
+        this.target = this.words.sort(()=>0.5-Math.random()).slice(0,5);
+        this.idx=0; this.curWord=''; this.pool=[]; this.slots=[];
+    }
+    init(c) {
+        this.cont = c; this.load();
+        
+        // Keyboard Listener
+        document.onkeydown = (e) => {
+            const key = e.key.toUpperCase();
+            if (key === 'BACKSPACE') {
+                // Remove last filled
+                const lastIdx = this.slots.map((s, i) => s ? i : -1).filter(i => i !== -1).pop();
+                if (lastIdx !== undefined) this.clkSlot(lastIdx);
+            } else if (key.length === 1 && key.match(/[A-ZÑ]/)) {
+                // Find matching letter in pool
+                const found = this.pool.find(p => p.l === key);
+                if (found) this.clkPool(found.id);
+            }
+        };
+    }
+    load() {
+        if(this.idx >= this.target.length) { App.endGame(true); return; }
+        this.curWord = this.target[this.idx];
+        this.pool = this.curWord.split('').sort(()=>0.5-Math.random()).map((l,i)=>({l, id:i}));
+        this.slots = Array(this.curWord.length).fill(null);
+        this.render();
+    }
+    render() {
+        $('#stat-2').textContent = `Palabra: ${this.idx+1}/${this.target.length}`;
+        this.cont.innerHTML = `
+            <div style="text-align:center; margin-bottom:20px">Forma la palabra correcta:</div>
+            <div class="anagram-slots">
+                ${this.slots.map((s,i)=> s ? 
+                    `<div class="letter-btn" onclick="App.curr.clkSlot(${i})">${s.l}</div>` : 
+                    `<div class="letter-btn empty"></div>`).join('')}
+            </div>
+            <div class="anagram-pool">
+                ${this.pool.map(p=> `<div class="letter-btn" onclick="App.curr.clkPool(${p.id})">${p.l}</div>`).join('')}
+            </div>
+            <div style="text-align:center; margin-top:20px; font-size:0.8rem; color:var(--text-muted)">Usa el teclado o toca las letras</div>
+        `;
+    }
+    clkPool(id) {
+        const pIdx = this.pool.findIndex(p=>p.id===id);
+        const sIdx = this.slots.findIndex(s=>s===null);
+        if(pIdx>-1 && sIdx>-1) {
+            this.slots[sIdx] = this.pool[pIdx];
+            this.pool.splice(pIdx,1);
+            Sound.click(); this.render(); this.check();
+        }
+    }
+    clkSlot(i) {
+        if(this.slots[i]) {
+            this.pool.push(this.slots[i]);
+            this.slots[i] = null;
+            Sound.click(); this.render();
+        }
+    }
+    check() {
+        if(!this.slots.includes(null)) {
+            const w = this.slots.map(s=>s.l).join('');
+            if(w === this.curWord) {
+                Sound.merge(); 
+                setTimeout(()=>{ this.idx++; this.load(); }, 500);
+            } else {
+                Sound.error();
             }
         }
+    }
+}
 
-        // Apply Colors
-        for(let i=0; i<currentWordleLen; i++) {
-            let cell = document.getElementById(`w-${wRow}-${i}`);
-            let key = document.getElementById(`key-${wGrid[wRow][i]}`);
-            setTimeout(() => {
-                cell.classList.add(colors[i]);
-                if(key) {
-                    if(colors[i]==='correct') key.className='key correct';
-                    else if(colors[i]==='present' && !key.classList.contains('correct')) key.className='key present';
-                    else if(!key.classList.contains('correct') && !key.classList.contains('present')) key.className='key absent';
-                }
-            }, i*100);
+
+// --- CONTROLLER ---
+
+const App = {
+    curr: null, type: null, diff: 'easy', time: 0, timer: null, moves: 0,
+    list: [
+        { id:'mem', t:'Memoria', i:'🧩', d:'Parejas', c:MemoryGame },
+        { id:'sud', t:'Sudoku', i:'🔢', d:'Lógica', c:Sudoku },
+        { id:'mat', t:'Cálculo', i:'✖️', d:'Math', c:MathGame },
+        { id:'wrd', t:'Sopa Letras', i:'🔎', d:'Buscar', c:WordSearch },
+        { id:'dif', t:'Intruso', i:'🧐', d:'Visual', c:DiffGame },
+        { id:'str', t:'Confusión', i:'🎨', d:'Stroop', c:StroopGame },
+        { id:'2048', t:'2048', i:'🧊', d:'Desliza', c:Game2048 },
+        { id:'ana', t:'Anagrama', i:'🔡', d:'Palabras', c:AnagramGame }
+    ],
+
+    init: () => {
+        const g = $('.game-grid');
+        App.list.forEach(i => {
+            const c = document.createElement('div'); c.className = 'game-card';
+            c.innerHTML = `<div><span class="game-icon">${i.i}</span><div class="game-title">${i.t}</div><div class="game-desc">${i.d}</div></div>`;
+            c.onclick = () => App.load(i);
+            g.appendChild(c);
+        });
+        window.addEventListener('resize', ()=>Confetti.resize());
+    },
+
+    load: (type) => {
+        App.type = type; 
+        App.diff = 'easy'; $('#difficulty-select').value = 'easy';
+        $('#view-menu').classList.remove('active');
+        $('#view-game').classList.add('active');
+        $('#game-title-display').textContent = type.t;
+        App.run();
+    },
+
+    run: () => {
+        clearInterval(App.timer); App.time = 0; App.moves = 0;
+        $('#stat-1').textContent = "00:00"; $('#stat-2').textContent = "";
+        $('#game-board-area').innerHTML = '';
+        
+        App.curr = new App.type.c(App.diff);
+        App.curr.init($('#game-board-area'));
+        
+        App.timer = setInterval(() => {
+            App.time++;
+            const m = Math.floor(App.time / 60).toString().padStart(2, '0');
+            const s = (App.time % 60).toString().padStart(2, '0');
+            $('#stat-1').textContent = `${m}:${s}`;
+        }, 1000);
+    },
+
+    changeDifficulty: (v) => { App.diff = v; App.run(); },
+
+    restartGame: () => {
+        Sound.click();
+        App.run();
+    },
+
+    confirmExit: () => { if(confirm("¿Volver al menú?")) App.toMenu(); },
+
+    toMenu: () => {
+        clearInterval(App.timer);
+        $('#view-game').classList.remove('active');
+        $('#view-menu').classList.add('active');
+        $('#modal-win').classList.remove('active');
+        document.onkeydown = null; // Reset events
+        document.onmouseup = null;
+    },
+
+    endGame: (win) => {
+        if(!win) return;
+        clearInterval(App.timer); Sound.win(); Confetti.start();
+        document.onkeydown = null;
+        document.onmouseup = null;
+        
+        const rec = Storage.check(App.type.id, App.diff, App.time);
+        $('#win-message').textContent = `Tiempo: ${$('#stat-1').textContent}`;
+        $('#record-section').style.display = rec ? 'block' : 'none';
+        if(rec) { $('#player-name').value=''; setTimeout(()=>$('#player-name').focus(), 100); }
+        $('#modal-win').classList.add('active');
+    },
+
+    handleWinAction: (act) => {
+        const inp = $('#player-name');
+        if($('#record-section').style.display !== 'none' && inp.value.trim()) {
+            Storage.set(App.type.id, App.diff, inp.value.trim(), App.time);
         }
+        $('#modal-win').classList.remove('active');
+        if(act === 'replay') App.run(); else App.toMenu();
+    },
 
-        if(guess === wSolution) {
-            wOver=true; 
-            setTimeout(() => { fireConfetti(); alert("¡Correcto!"); checkRecord('wordle', 1); }, (currentWordleLen*100)+100);
-        } else if(wRow === 5) {
-            wOver=true;
-            setTimeout(() => alert("Perdiste. Era: " + wSolution), (currentWordleLen*100)+100);
-        } else {
-            wRow++; wCol=0;
+    showRankingGlobal: () => {
+        const d = Storage.get(); const l = $('#ranking-list'); l.innerHTML = '';
+        if(Object.keys(d).length === 0) l.innerHTML = '<p style="color:#aaa;text-align:center">Sin récords.</p>';
+        else {
+            App.list.forEach(g => {
+                let html = '';
+                ['easy','medium','hard','extreme'].forEach(lvl => {
+                    const k = `${g.id}_${lvl}`;
+                    if(d[k]) {
+                        const m = Math.floor(d[k].score/60).toString().padStart(2,'0');
+                        const s = (d[k].score%60).toString().padStart(2,'0');
+                        html += `<li><span>${lvl.toUpperCase()}</span> <b>${d[k].name} (${m}:${s})</b></li>`;
+                    }
+                });
+                if(html) l.innerHTML += `<h3 style="color:var(--primary);margin-top:15px;font-size:1rem">${g.i} ${g.t}</h3><ul>${html}</ul>`;
+            });
         }
+        $('#modal-ranking').classList.add('active');
     }
+};
 
-    /* ================= 2. SIMON ================= */
-    let sSeq=[], sInput=[], sLevel=1, simonTimer=null, sActive=false, currentSimonTheme='classic';
-    const SIMON_THEMES = {
-        classic: { 0:'', 1:'', 2:'', 3:'' },
-        days: { 0:'LUN', 1:'MAR', 2:'MIE', 3:'JUE' },
-        numbers: { 0:'1', 1:'2', 2:'3', 3:'4' },
-        food: { 0:'🍕', 1:'🍔', 2:'🌮', 3:'🍦' }
-    };
+window.onload = App.init;
 
-    function initSimon(theme) {
-        currentSimonTheme = theme;
-        showScreen('screen-simon-game');
-        for(let i=0; i<4; i++) document.getElementById('sb-'+i).textContent = SIMON_THEMES[theme][i];
-        stopGame(); sSeq=[]; sLevel=1; 
-        document.getElementById('simon-level').textContent=1; 
-        document.getElementById('simon-start-btn').style.display='inline-block';
-    }
-    
-    function startSimonRound() { 
-        document.getElementById('simon-start-btn').style.display='none'; 
-        sInput=[]; sSeq.push(Math.floor(Math.random()*4)); playSeq(); 
-    }
-    
-    function playSeq() { 
-        sActive=false; let i=0; 
-        simonTimer = setInterval(() => { flashBtn(sSeq[i]); i++; if(i>=sSeq.length) { clearInterval(simonTimer); sActive=true; } }, 800); 
-    }
-    
-    function flashBtn(idx) { 
-        let b = document.getElementById('sb-'+idx); 
-        b.classList.add('active'); setTimeout(()=>b.classList.remove('active'), 400); 
-    }
-    
-    function handleSimon(idx) { 
-        if(!sActive) return; 
-        flashBtn(idx); sInput.push(idx); 
-        if(sInput[sInput.length-1] !== sSeq[sInput.length-1]) { 
-            sActive=false; alert(`¡Perdiste! Nivel: ${sLevel}`); checkRecord('simon', sLevel); initSimon(currentSimonTheme); return; 
-        } 
-        if(sInput.length === sSeq.length) { 
-            sActive=false; sLevel++; document.getElementById('simon-level').textContent=sLevel; setTimeout(startSimonRound, 1000); 
-        } 
-    }
-
-    /* ================= 3. SOPA ================= */
-    const sopaDB = { paises: ["ARGENTINA","BOLIVIA","BRASIL","CHILE","COLOMBIA","ECUADOR","ESPAÑA","FRANCIA","ITALIA","JAPON","CHINA","ALEMANIA"], comidas: ["PIZZA","HAMBURGUESA","SUSHI","TACOS","PASTA","ARROZ","POLLO","ENSALADA","HELADO","FRUTA"], animales: ["PERRO","GATO","LEON","TIGRE","ELEFANTE","JIRAFA","OSO","LOBO","AGUILA","DELFIN"], todo: [] };
-    sopaDB.todo = [].concat(...Object.values(sopaDB));
-    let sGrid=12, sMatrix=[], sWords=[], sFound=[], sCurrentCat='todo', sSwipe=false, sStart=null, sHigh=[];
-
-    function initSopa(cat) { 
-        sCurrentCat = cat; showScreen('screen-sopa-game'); 
-        document.getElementById('sopa-title').textContent = cat.toUpperCase(); 
-        startTimer('timer-sopa'); 
-        let pool = sopaDB[cat].sort(()=>Math.random()-0.5); 
-        sWords = pool.slice(0, 10); sFound=[]; 
-        genSopaGrid(); renderSopa(); 
-    }
-
-    function genSopaGrid() { 
-        sMatrix = Array(sGrid).fill().map(()=>Array(sGrid).fill('')); 
-        let placedList = []; 
-        sWords.forEach(w => { 
-            if(w.length > sGrid) return; 
-            let placed = false, tries=0; 
-            while(!placed && tries++<100) { 
-                let dir = Math.floor(Math.random()*3), r = Math.floor(Math.random()*sGrid), c = Math.floor(Math.random()*sGrid); 
-                if(canPlace(w,r,c,dir)) { 
-                    for(let i=0; i<w.length; i++) sMatrix[r + (dir>0?i:0)][c + (dir%2===0?i:0)] = w[i]; 
-                    placed = true; placedList.push(w); 
-                } 
-            } 
-        }); 
-        sWords = placedList; 
-        const abc = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"; 
-        for(let r=0; r<sGrid; r++) for(let c=0; c<sGrid; c++) if(!sMatrix[r][c]) sMatrix[r][c] = abc[Math.floor(Math.random()*abc.length)]; 
-    }
-
-    function canPlace(w,r,c,d) { 
-        let len=w.length, er=r+(d>0?len-1:0), ec=c+(d%2===0?len-1:0); 
-        if(er>=sGrid || ec>=sGrid) return false; 
-        for(let i=0; i<len; i++) { 
-            let nr=r+(d>0?i:0), nc=c+(d%2===0?i:0); 
-            if(sMatrix[nr][nc]!=='' && sMatrix[nr][nc]!==w[i]) return false; 
-        } 
-        return true; 
-    }
-
-    function renderSopa() { 
-        const g = document.getElementById('sopa-grid'); g.innerHTML=''; 
-        for(let r=0; r<sGrid; r++) for(let c=0; c<sGrid; c++) { 
-            let d=document.createElement('div'); d.className='cell'; d.textContent=sMatrix[r][c]; d.dataset.r=r; d.dataset.c=c; 
-            d.onmousedown=hSopaStart; d.onmouseenter=hSopaMove; d.onmouseup=hSopaEnd; 
-            d.ontouchstart=(e)=>{e.preventDefault(); hSopaStart.call(d)}; 
-            g.appendChild(d); 
-        } 
-        g.ontouchmove=(e)=>{e.preventDefault(); let el=document.elementFromPoint(e.touches[0].clientX,e.touches[0].clientY); if(el && el.classList.contains('cell')) hSopaMove.call(el)}; 
-        g.ontouchend=hSopaEnd; 
-        const l = document.getElementById('sopa-words'); l.innerHTML=''; 
-        sWords.forEach(w => { let s=document.createElement('div'); s.id='w-'+w; s.textContent=w; s.style.padding="4px 8px"; s.style.background="rgba(128,128,128,0.1)"; s.style.borderRadius="4px"; s.style.fontSize="0.8rem"; l.appendChild(s); }); 
-    }
-
-    function hSopaStart() { sSwipe=true; sStart=this; hlSopa(this); }
-    function hSopaMove() { if(sSwipe && sStart) hlSopa(this); }
-    function hlSopa(end) { 
-        sHigh.forEach(c=>c.classList.remove('highlight')); sHigh=[]; 
-        let r1=+sStart.dataset.r, c1=+sStart.dataset.c, r2=+end.dataset.r, c2=+end.dataset.c; 
-        let dr=r2-r1, dc=c2-c1, st=Math.max(Math.abs(dr),Math.abs(dc)); 
-        if(dr!==0 && dc!==0 && Math.abs(dr)!==Math.abs(dc)) return; 
-        for(let i=0; i<=st; i++) { 
-            let nr=r1+(dr===0?0:dr/st)*i, nc=c1+(dc===0?0:dc/st)*i; 
-            let c=document.querySelector(`.cell[data-r="${nr}"][data-c="${nc}"]`); 
-            if(c) { c.classList.add('highlight'); sHigh.push(c); } 
-        } 
-    }
-
-    function hSopaEnd() { 
-        if(!sSwipe) return; sSwipe=false; 
-        let w = sHigh.map(c=>c.textContent).join(''); 
-        let rev = w.split('').reverse().join(''); 
-        let match = (sWords.includes(w) && !sFound.includes(w)) ? w : (sWords.includes(rev) && !sFound.includes(rev) ? rev : null); 
-        if(match) { 
-            sFound.push(match); sHigh.forEach(c=>{c.classList.remove('highlight'); c.classList.add('found')}); 
-            let lbl = document.getElementById('w-'+match); if(lbl) { lbl.style.background="#27ae60"; lbl.style.color="white"; lbl.style.textDecoration="line-through"; } 
-            if(sFound.length === sWords.length) { stopGame(); fireConfetti(); setTimeout(()=>checkRecord('sopa', timeElapsed), 500); } 
-        } else { sHigh.forEach(c=>c.classList.remove('highlight')); } 
-        sHigh=[]; sStart=null; 
-    }
-
-    /* ================= 4. SUDOKU ================= */
-    let suSol=[], suPuz=[], suSel=null;
-    function initSudoku() { 
-        showScreen('screen-sudoku'); startTimer('timer-sudoku'); 
-        let b=[[1,2,3,4,5,6,7,8,9],[4,5,6,7,8,9,1,2,3],[7,8,9,1,2,3,4,5,6],[2,3,4,5,6,7,8,9,1],[5,6,7,8,9,1,2,3,4],[8,9,1,2,3,4,5,6,7],[3,4,5,6,7,8,9,1,2],[6,7,8,9,1,2,3,4,5],[9,1,2,3,4,5,6,7,8]]; 
-        let m=[1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-0.5); 
-        suSol=b.map(r=>r.map(n=>m[n-1])); suPuz=suSol.map(r=>[...r]); 
-        let h=40; while(h>0){ let r=Math.floor(Math.random()*9),c=Math.floor(Math.random()*9); if(suPuz[r][c]!==0){suPuz[r][c]=0;h--;}} 
-        const db=document.getElementById('sudoku-board'); db.innerHTML=''; suSel=null; 
-        for(let i=0; i<81; i++) { 
-            let d=document.createElement('div'); d.className='sudo-cell'; let r=Math.floor(i/9), c=i%9, v=suPuz[r][c]; 
-            if(v!==0) { d.textContent=v; d.classList.add('fixed'); } 
-            else d.onclick=()=>{ if(suSel) suSel.classList.remove('selected'); suSel=d; d.classList.add('selected'); }; 
-            db.appendChild(d); 
-        } 
-    }
-    function fillSudoku(n) { if(suSel) { suSel.textContent=n?n:''; suSel.classList.remove('error'); } }
-    function checkSudoku() { 
-        let err=0, mt=0, cells=document.querySelectorAll('.sudo-cell'); 
-        cells.forEach((c,i)=>{ 
-            let v=parseInt(c.textContent)||0; 
-            if(v===0) mt++; 
-            else if(v!==suSol[Math.floor(i/9)][i%9] && !c.classList.contains('fixed')) { 
-                c.style.background='rgba(231,76,60,0.3)'; err++; 
-            } 
-        }); 
-        if(err===0 && mt===0) { stopGame(); fireConfetti(); setTimeout(()=>checkRecord('sudoku', timeElapsed), 500); } 
-        else alert(`Errores: ${err}, Vacíos: ${mt}`); 
-    }
-
-    /* ================= 5. MEMORIA (Fixed 4x4) ================= */
-    const memThemes = {
-        frutas: ["🍎","🍌","🍒","🍇","🍉","🍓","🍑","🍍"],
-        deportes: ["⚽","🏀","🏈","🎾","🎱","🎳","⛳","🥊"],
-        animales: ["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼"],
-        caras: ["😀","😎","😍","🤔","😴","🤢","🤡","👻"],
-        clima: ["☀️","🌤️","☁️","🌧️","⛈️","❄️","🌪️","🌈"],
-        vehiculos: ["🚗","🚕","🚙","🚌","🏎️","🚓","🚑","🚲"]
-    };
-    let memCards=[], memLock=false;
-    function initMemory() { 
-        showScreen('screen-memory'); startTimer('timer-memory'); 
-        const g=document.getElementById('memory-grid'); g.innerHTML=''; memCards=[]; memLock=false; 
-        const keys = Object.keys(memThemes); const themeKey = keys[Math.floor(Math.random() * keys.length)]; 
-        document.getElementById('memo-theme-label').textContent = "Tema: " + themeKey.charAt(0).toUpperCase() + themeKey.slice(1);
-        let deck = [...memThemes[themeKey], ...memThemes[themeKey]].sort(()=>Math.random()-0.5); 
-        deck.forEach(icon => { 
-            let c = document.createElement('div'); c.className = 'card'; c.textContent = icon; 
-            c.onclick = () => { 
-                if(memLock || c.classList.contains('flipped')) return; 
-                c.classList.add('flipped'); memCards.push({ el: c, icon: icon }); 
-                if(memCards.length === 2) { 
-                    memLock = true; 
-                    if(memCards[0].icon === memCards[1].icon) { 
-                        memCards = []; memLock = false; 
-                        if(document.querySelectorAll('.card.flipped').length === deck.length) { stopGame(); fireConfetti(); setTimeout(()=>checkRecord('memo', timeElapsed), 500); } 
-                    } else { 
-                        setTimeout(() => { memCards[0].el.classList.remove('flipped'); memCards[1].el.classList.remove('flipped'); memCards = []; memLock = false; }, 1000); 
-                    } 
-                } 
-            }; 
-            g.appendChild(c); 
-        }); 
-    }
-
-    /* ================= 6. MATH ================= */
-    let mScore=0, mTime=30, mAns=0, mathTimer=null;
-    function initMath() { stopGame(); showScreen('screen-math'); mScore=0; mTime=30; document.getElementById('math-score').textContent="0"; document.getElementById('math-time').textContent="30"; nextMath(); mathTimer = setInterval(() => { mTime--; document.getElementById('math-time').textContent=mTime; if(mTime<=0) { stopGame(); alert("Tiempo!"); checkRecord('math', mScore); goHome(); } }, 1000); }
-    function nextMath() { 
-        let a=Math.floor(Math.random()*12)+1, b=Math.floor(Math.random()*12)+1, op=Math.random()<0.5?'+':'-'; if(Math.random()>0.7) op='*'; if(op==='*'){a=Math.floor(Math.random()*9)+1; b=Math.floor(Math.random()*9)+1;} 
-        mAns = eval(`${a}${op}${b}`); document.getElementById('math-eq').textContent = `${a} ${op} ${b}`; 
-        let opts = [mAns]; while(opts.length<4) { let f=mAns+Math.floor(Math.random()*10)-5; if(f!==mAns && !opts.includes(f)) opts.push(f); } opts.sort(()=>Math.random()-0.5); 
-        const c = document.getElementById('math-opts'); c.innerHTML=''; 
-        opts.forEach(o => { 
-            let b=document.createElement('button'); b.className='btn'; b.style.background='var(--card-bg)'; b.textContent=o; b.style.fontSize="1.5rem"; 
-            b.onclick=()=>{ 
-                if(o===mAns) { mScore+=10; document.getElementById('math-score').textContent=mScore; nextMath(); } 
-                else { mScore=Math.max(0,mScore-5); document.getElementById('math-score').textContent=mScore; } 
-            }; 
-            c.appendChild(b); 
-        }); 
-    }
-
-    updateRecordDisplay();
 </script>
 </body>
 </html>
