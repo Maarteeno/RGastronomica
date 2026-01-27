@@ -2,8 +2,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Brain Buddy - Ultimate 21</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Brain Buddy</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#0f172a">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%236366f1' rx='20'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white'>🧠</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%236366f1' rx='20'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white'>🧠</text></svg>">
+
     <style>
         :root {
             /* Palette Dark Elegant */
@@ -25,11 +34,11 @@
             --danger: #f43f5e;
             
             --radius: 16px;
-            --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             --shadow: 0 10px 40px -10px rgba(0,0,0,0.6);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
             font-family: var(--font-main);
@@ -41,11 +50,15 @@
             overflow-x: hidden;
             overscroll-behavior: none;
             user-select: none;
+            -webkit-user-select: none;
+            /* Safe area for iPhone Notch */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
             padding: 20px;
             flex: 1;
@@ -56,18 +69,19 @@
         /* --- Header --- */
         .header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+            margin-top: 10px;
             animation: fadeInDown 0.8s ease;
         }
         .header h1 { 
-            font-size: 2.8rem; 
+            font-size: 2.2rem; 
             background: linear-gradient(to right, #818cf8, #c084fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 5px; 
             font-weight: 800;
         }
-        .header p { color: var(--text-muted); font-size: 1rem; letter-spacing: 1px; }
+        .header p { color: var(--text-muted); font-size: 0.9rem; letter-spacing: 1px; }
 
         /* --- Card Container --- */
         .card {
@@ -80,14 +94,15 @@
             border: 1px solid var(--glass-border);
             position: relative;
             display: flex; flex-direction: column; align-items: center;
+            flex: 1; /* Fill space */
         }
 
         /* --- Buttons --- */
         .btn {
             border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 0.95rem;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -100,18 +115,19 @@
         }
         .btn:active { transform: scale(0.96); }
         .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
-        .btn-outline { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted); }
+        .btn-outline { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted); padding: 8px 16px; font-size: 0.9rem; }
         .btn-outline:hover { background: rgba(255,255,255,0.1); color: white; border-color: var(--text-main); }
-        .btn-restart { background: rgba(56, 189, 248, 0.15); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.3); }
-        .btn-restart:hover { background: rgba(56, 189, 248, 0.25); }
+        .btn-restart { background: rgba(56, 189, 248, 0.15); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.3); padding: 8px; border-radius: 8px; }
+        .btn-restart:active { background: rgba(56, 189, 248, 0.25); }
 
         /* --- Grid Menu --- */
         .game-grid {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             width: 100%;
+            padding-bottom: 40px;
         }
         .game-card {
             background: rgba(255,255,255,0.03);
@@ -120,14 +136,14 @@
             padding: 15px;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+            transition: transform 0.2s, background 0.2s;
             display: flex; flex-direction: column; justify-content: space-between;
-            width: 140px;
-            height: 160px; 
+            width: 46%; /* 2 cols on mobile */
+            max-width: 150px;
+            height: 140px; 
         }
-        .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        .game-card:active {
+            transform: scale(0.95);
             background: rgba(255,255,255,0.08);
             border-color: var(--primary);
         }
@@ -136,7 +152,7 @@
         .game-desc { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px; line-height: 1.2; }
 
         /* --- Views --- */
-        .view { display: none; animation: fadeIn 0.4s ease; width: 100%; }
+        .view { display: none; animation: fadeIn 0.4s ease; width: 100%; height: 100%; }
         .view.active { display: block; }
 
         /* --- Game Controls --- */
@@ -144,13 +160,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
             gap: 10px;
             padding-bottom: 15px;
             border-bottom: 1px solid var(--glass-border);
-            position: relative;
-            z-index: 50; 
             width: 100%;
         }
         
@@ -158,20 +172,20 @@
 
         .stats-bar {
             background: rgba(15, 23, 42, 0.6);
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 8px;
             font-family: monospace;
             font-size: 1.1rem;
             border: 1px solid var(--glass-border);
             color: var(--accent);
-            min-width: 90px; text-align: center;
+            min-width: 80px; text-align: center;
         }
         
         .time-bonus { animation: flashGreen 0.5s ease; color: var(--success) !important; }
         .time-penalty { animation: flashRed 0.5s ease; color: var(--danger) !important; }
 
         .difficulty-selector select {
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 8px;
             border: 1px solid var(--glass-border);
             background: #1e293b;
@@ -182,18 +196,17 @@
         }
 
         #game-board-area {
-            min-height: 400px;
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            padding: 10px;
-            user-select: none;
+            padding: 10px 0;
+            flex: 1;
         }
 
         /* --- GAME STYLES --- */
-        .memory-grid, .sudoku-grid, .schulte-grid, .matrix-grid, .chimp-grid, .eagle-grid, .hunt-grid, .slide-grid { display: grid; gap: 4px; margin: 0 auto; user-select: none; }
+        .memory-grid, .sudoku-grid, .schulte-grid, .matrix-grid, .chimp-grid, .eagle-grid, .hunt-grid, .slide-grid { display: grid; gap: 5px; margin: 0 auto; user-select: none; }
         
         /* Sliding Puzzle */
         .slide-grid { background: rgba(255,255,255,0.1); padding: 5px; border-radius: 12px; border: 1px solid var(--glass-border); }
@@ -205,30 +218,18 @@
             transition: transform 0.2s;
             background-repeat: no-repeat;
         }
-        .slide-tile:not(.empty):hover { filter: brightness(1.1); transform: scale(0.98); }
+        .slide-tile:not(.empty):active { transform: scale(0.95); }
         .slide-tile.empty { background: transparent !important; box-shadow: none; cursor: default; }
 
-        /* Arkanoid */
-        #arkanoid-canvas {
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 12px;
-            border: 2px solid var(--glass-border);
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            touch-action: none;
-            width: 100%;
-            max-width: 400px; /* Big screen limit */
-            height: auto;
-            aspect-ratio: 360/500;
-        }
-
         /* Equation Game */
-        .eq-container { width: 100%; max-width: 400px; font-size: 1.4rem; display: flex; flex-direction: column; gap: 12px; }
-        .eq-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 12px; font-weight: bold; }
+        .eq-container { width: 100%; max-width: 400px; font-size: 1.3rem; display: flex; flex-direction: column; gap: 10px; }
+        .eq-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 12px; font-weight: bold; }
         .eq-item { display: flex; gap: 10px; align-items: center; }
         
         /* Hunt Game */
         .hunt-cell { font-size: 1.8rem; background: rgba(255,255,255,0.05); border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; aspect-ratio: 1; }
         .hunt-cell.found { background: var(--success); opacity: 0.5; pointer-events: none; transform: scale(0.9); }
+        .hunt-cell:active { background: rgba(255,255,255,0.15); }
         
         /* Eagle Vision */
         .eagle-cell { background-color: var(--primary); border-radius: 6px; cursor: pointer; transition: transform 0.1s; border: none; }
@@ -243,9 +244,10 @@
 
         /* Common Cells */
         .sudoku-cell, .schulte-cell, .matrix-cell, .chimp-cell { background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: bold; cursor: pointer; border: 1px solid var(--glass-border); transition: all 0.1s; }
-        
         .sudoku-grid { grid-template-columns: repeat(9, 1fr); gap: 1px; background: #475569; border: 2px solid #475569; max-width: 400px; width: 100%; }
         .sudoku-cell { background: #1e293b; aspect-ratio: 1; font-size: 1.1rem; }
+        .sudoku-cell:active, .schulte-cell:active, .matrix-cell:active { background: rgba(255,255,255,0.15); }
+
         .sudoku-cell.initial { color: var(--highlight); }
         .sudoku-cell.selected { background: rgba(99, 102, 241, 0.4); }
         .sudoku-cell.error { color: var(--danger); background: rgba(244, 63, 94, 0.2); }
@@ -253,30 +255,27 @@
         .numpad button { background: rgba(255,255,255,0.1); color: white; border: none; font-size: 1.1rem; padding: 10px; border-radius: 8px; cursor: pointer; }
 
         .schulte-cell { font-size: 1.5rem; aspect-ratio: 1; }
-        .schulte-cell:active { background: var(--primary); transform: scale(0.95); }
         .matrix-cell { aspect-ratio: 1; }
         .matrix-cell.active { background: var(--accent); box-shadow: 0 0 15px var(--accent); }
         .matrix-cell.ok { background: var(--success); }
         .matrix-cell.fail { background: var(--danger); }
         .chimp-cell { font-size: 1.8rem; color: white; aspect-ratio: 1; }
         .chimp-cell.covered { color: transparent; background: white; border-color: white; }
-        .chimp-cell.covered:active { background: #e2e8f0; }
         .chimp-cell.hidden { opacity: 0; pointer-events: none; }
 
         /* Sorter */
-        .sorter-container { display: flex; flex-direction: column; align-items: center; gap: 30px; width: 100%; }
+        .sorter-container { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
         .sorter-card { width: 120px; height: 120px; background: #1e293b; border: 2px solid var(--accent); border-radius: 16px; display: flex; justify-content: center; align-items: center; font-size: 3rem; font-weight: bold; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .sorter-controls { display: flex; gap: 40px; }
-        .sorter-btn { width: 100px; height: 100px; border-radius: 50%; border: none; font-weight: bold; font-size: 1rem; color: white; cursor: pointer; transition: transform 0.1s; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .sorter-controls { display: flex; gap: 20px; }
+        .sorter-btn { width: 90px; height: 90px; border-radius: 50%; border: none; font-weight: bold; font-size: 0.9rem; color: white; cursor: pointer; transition: transform 0.1s; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .sorter-btn:active { transform: scale(0.9); }
         .btn-left { background: var(--secondary); box-shadow: 0 8px 0 #7e22ce; }
         .btn-right { background: var(--success); box-shadow: 0 8px 0 #047857; }
-        .key-hint { font-size: 0.7rem; opacity: 0.7; margin-top: 5px; }
 
         /* Stopwatch */
-        .stopwatch-display { font-size: 5rem; font-family: 'Courier New', monospace; font-weight: bold; color: var(--accent); text-shadow: 0 0 20px rgba(56, 189, 248, 0.3); margin: 30px 0; }
-        .stopwatch-target { font-size: 1.5rem; color: var(--text-muted); margin-bottom: 20px; }
-        .stopwatch-btn { width: 140px; height: 140px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.1); background: var(--danger); color: white; font-size: 1.5rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 30px rgba(244, 63, 94, 0.4); transition: all 0.2s; }
+        .stopwatch-display { font-size: 4rem; font-family: 'Courier New', monospace; font-weight: bold; color: var(--accent); text-shadow: 0 0 20px rgba(56, 189, 248, 0.3); margin: 20px 0; }
+        .stopwatch-target { font-size: 1.3rem; color: var(--text-muted); margin-bottom: 20px; }
+        .stopwatch-btn { width: 120px; height: 120px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.1); background: var(--danger); color: white; font-size: 1.5rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 30px rgba(244, 63, 94, 0.4); transition: all 0.2s; }
         .stopwatch-btn:active { transform: scale(0.95); background: #be123c; }
         .stopwatch-btn.running { background: #eab308; box-shadow: 0 0 30px rgba(234, 179, 8, 0.4); }
 
@@ -284,7 +283,7 @@
         .ws-grid { display: grid; gap: 2px; background: #334155; padding: 3px; border-radius: 8px; touch-action: none; }
         .ws-cell { background: #1e293b; width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; font-weight: 600; cursor: pointer; font-size: 0.8rem; color: #cbd5e1; }
         .ws-cell.selected { background: var(--highlight); color: #0f172a; } .ws-cell.found { background: var(--success); color: #0f172a; }
-        .stroop-word { font-size: 3.5rem; font-weight: 900; margin: 20px 0; text-shadow: 0 0 20px rgba(0,0,0,0.5); letter-spacing: 2px; }
+        .stroop-word { font-size: 3rem; font-weight: 900; margin: 20px 0; text-shadow: 0 0 20px rgba(0,0,0,0.5); letter-spacing: 2px; }
         .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; }
         .choice-btn { font-size: 1.3rem; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; border-radius: 12px; }
         .anagram-pool, .anagram-slots { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
@@ -295,7 +294,7 @@
         #confetti-canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 1000; }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2000; }
         .modal-overlay.active { display: flex; }
-        .modal { background: #1e293b; padding: 30px; border-radius: 20px; max-width: 380px; width: 90%; text-align: center; border: 1px solid var(--glass-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal { background: #1e293b; padding: 30px; border-radius: 20px; max-width: 380px; width: 85%; text-align: center; border: 1px solid var(--glass-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal h2 { color: var(--primary); margin-bottom: 10px; font-size: 1.8rem; }
         .modal input { width: 100%; padding: 12px; margin: 10px 0 20px 0; border: 1px solid #334155; border-radius: 10px; font-size: 1.1rem; background: #0f172a; color: white; text-align: center; }
         #ranking-list { max-height: 350px; overflow-y: auto; text-align: left; }
@@ -310,7 +309,6 @@
         @media (max-width: 600px) {
             .header h1 { font-size: 2rem; }
             .game-grid { gap: 10px; }
-            .game-card { width: 45%; height: 150px; }
             .stopwatch-display { font-size: 3.5rem; }
             .stopwatch-btn { width: 110px; height: 110px; }
         }
@@ -323,12 +321,12 @@
     <div class="container">
         <header class="header">
             <h1>🧠 Brain Buddy</h1>
-            <p>17 Juegos Mentales</p>
+            <p>16 Juegos Mentales</p>
         </header>
 
         <div id="view-menu" class="view active">
             <div class="game-grid"></div>
-            <div style="margin-top: 40px; text-align: center; width: 100%;">
+            <div style="margin-top: 20px; text-align: center; width: 100%;">
                  <button class="btn btn-outline" onclick="App.showRankingGlobal()">🏆 Ver Récords</button>
             </div>
         </div>
@@ -354,7 +352,7 @@
                     </div>
                 </div>
                 
-                <div id="game-title-display" style="text-align: center; margin-bottom: 20px; color: var(--primary); font-size: 1.5rem; font-weight: 700; letter-spacing: 1px;"></div>
+                <div id="game-title-display" style="text-align: center; margin-bottom: 10px; color: var(--primary); font-size: 1.3rem; font-weight: 700; letter-spacing: 1px;"></div>
                 <div id="game-board-area"></div>
             </div>
         </div>
@@ -384,7 +382,7 @@
     </div>
 
 <script>
-/** BRAIN BUDDY CORE v21 */
+/** BRAIN BUDDY CORE v23 (iOS Edition) */
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
@@ -402,14 +400,12 @@ const Sound = {
     win: () => { Sound.play(400,'sine',0.1); setTimeout(()=>Sound.play(600,'sine',0.1),100); setTimeout(()=>Sound.play(800,'triangle',0.4,0.2),200); },
     click: () => Sound.play(300,'sine',0.05,0.05),
     error: () => Sound.play(150,'sawtooth',0.3,0.08),
-    merge: () => Sound.play(500,'square',0.05,0.05),
-    brick: () => Sound.play(600, 'square', 0.05, 0.1),
-    paddle: () => Sound.play(200, 'triangle', 0.1, 0.1)
+    merge: () => Sound.play(500,'square',0.05,0.05)
 };
 
 const Storage = {
-    get: () => JSON.parse(localStorage.getItem('brainBuddy_v21')) || {},
-    save: (d) => localStorage.setItem('brainBuddy_v21', JSON.stringify(d)),
+    get: () => JSON.parse(localStorage.getItem('brainBuddy_v23')) || {},
+    save: (d) => localStorage.setItem('brainBuddy_v23', JSON.stringify(d)),
     check: (id, diff, score, mode) => {
         const d = Storage.get();
         const cur = d[`${id}_${diff}`];
@@ -546,159 +542,6 @@ class SlidingGame {
     }
 }
 
-// 17. Arkanoid (INFINITE PROGRESSIVE)
-class ArkanoidGame {
-    constructor() {
-        this.score = 0; 
-        this.level = 1;
-        this.lives = 3; 
-        this.active = false;
-        // Config
-        this.speedBase = 3.5; // Start comfortable
-        this.paddleW = 80;
-    }
-    init(c) {
-        // Bigger canvas: 360x500 to fit most mobile screens nice and tall
-        c.innerHTML = `<canvas id="arkanoid-canvas" width="360" height="500"></canvas><div style="margin-top:10px;color:#aaa;font-size:0.9rem">Desliza para mover</div>`;
-        this.cvs = document.getElementById('arkanoid-canvas');
-        this.ctx = this.cvs.getContext('2d');
-        this.resetBall();
-        this.genBricks();
-        this.active = true;
-        
-        // Controls
-        const move = (e) => {
-            const rect = this.cvs.getBoundingClientRect();
-            // Scaling factor for canvas display size vs internal size
-            const scaleX = this.cvs.width / rect.width;
-            
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            let x = (clientX - rect.left) * scaleX;
-            this.paddle.x = Math.max(0, Math.min(this.cvs.width - this.paddle.w, x - this.paddle.w/2));
-        };
-        this.cvs.addEventListener('mousemove', move);
-        this.cvs.addEventListener('touchmove', (e)=>{e.preventDefault(); move(e);}, {passive:false});
-        
-        this.loop();
-    }
-    resetBall() {
-        this.paddle = { x: 140, y: 460, w: this.paddleW, h: 10 };
-        // Increase speed slightly with levels, maxing out eventually
-        const lvlSpeed = this.speedBase + (this.level * 0.3); 
-        this.ball = { x: 180, y: 440, r: 6, dx: lvlSpeed * (Math.random()>.5?1:-1), dy: -lvlSpeed };
-    }
-    nextLevel() {
-        this.level++;
-        Sound.merge(); // Level up sound
-        this.resetBall();
-        this.genBricks();
-    }
-    genBricks() {
-        this.bricks = [];
-        const rows = Math.min(8, 3 + Math.floor(this.level / 2)); // More rows as you progress
-        const cols = 6;
-        const pad = 8;
-        const w = (this.cvs.width - (pad * (cols+1))) / cols;
-        const h = 20;
-        const offY = 40;
-        
-        // Color per row
-        const colors = ['#f87171', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa'];
-        
-        for(let c=0; c<cols; c++) {
-            for(let r=0; r<rows; r++) {
-                this.bricks.push({
-                    x: pad + c*(w+pad), 
-                    y: offY + r*(h+pad), 
-                    w:w, h:h, s:1, 
-                    c: colors[r % colors.length]
-                });
-            }
-        }
-    }
-    stop() { this.active = false; }
-    loop() {
-        if(!this.active) return;
-        
-        // Update
-        this.ball.x += this.ball.dx;
-        this.ball.y += this.ball.dy;
-        
-        // Walls
-        if(this.ball.x + this.ball.r > this.cvs.width || this.ball.x - this.ball.r < 0) this.ball.dx *= -1;
-        if(this.ball.y - this.ball.r < 0) this.ball.dy *= -1;
-        
-        // Paddle
-        if(this.ball.y + this.ball.r > this.paddle.y && 
-           this.ball.x > this.paddle.x && this.ball.x < this.paddle.x + this.paddle.w) {
-            this.ball.dy = -Math.abs(this.ball.dy); // Always go up
-            // Curve logic
-            let hit = (this.ball.x - (this.paddle.x + this.paddle.w/2)) / (this.paddle.w/2);
-            let speed = Math.sqrt(this.ball.dx*this.ball.dx + this.ball.dy*this.ball.dy);
-            this.ball.dx = hit * speed * 0.8; 
-            Sound.paddle();
-        }
-        
-        // Bricks
-        for(let b of this.bricks) {
-            if(b.s && this.ball.x > b.x && this.ball.x < b.x+b.w && this.ball.y > b.y && this.ball.y < b.y+b.h) {
-                this.ball.dy *= -1;
-                b.s = 0;
-                this.score += 10;
-                Sound.brick();
-            }
-        }
-        
-        // Level Clear
-        if(this.bricks.every(b=>!b.s)) {
-            this.nextLevel();
-            return; // Loop will restart on next frame
-        }
-
-        // Death
-        if(this.ball.y > this.cvs.height) {
-            this.lives--;
-            Sound.error();
-            if(this.lives > 0) {
-                this.resetBall();
-            } else {
-                this.active = false;
-                App.endGame(true); // End game, save score
-                return;
-            }
-        }
-        
-        // Draw
-        this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
-        
-        // Paddle
-        this.ctx.fillStyle = '#6366f1';
-        this.ctx.shadowBlur = 10; this.ctx.shadowColor = '#6366f1';
-        this.ctx.fillRect(this.paddle.x, this.paddle.y, this.paddle.w, this.paddle.h);
-        this.ctx.shadowBlur = 0;
-        
-        // Ball
-        this.ctx.beginPath();
-        this.ctx.arc(this.ball.x, this.ball.y, this.ball.r, 0, Math.PI*2);
-        this.ctx.fillStyle = '#38bdf8';
-        this.ctx.fill();
-        this.ctx.closePath();
-        
-        // Bricks
-        this.bricks.forEach(b => {
-            if(b.s) {
-                this.ctx.fillStyle = b.c || '#a855f7';
-                this.ctx.fillRect(b.x, b.y, b.w, b.h);
-            }
-        });
-        
-        // Stats Overlay
-        $('#stat-2').textContent = `Nivel ${this.level} | ❤️${this.lives} | Pts: ${this.score}`;
-        
-        requestAnimationFrame(()=>this.loop());
-    }
-}
-
 // 14. Emoji Equation
 class EquationGame {
     constructor(diff) {
@@ -788,7 +631,6 @@ const App = {
     list: [
         { id:'mem', t:'Memoria', i:'🧩', d:'Parejas', c:MemoryGame, mode:'time' },
         { id:'mat', t:'Cálculo', i:'✖️', d:'Arcade', c:MathGame, mode:'score' },
-        { id:'ark', t:'Arkanoid', i:'🧱', d:'Arcade', c:ArkanoidGame, mode:'score' }, // NEW
         { id:'sld', t:'Puzzle', i:'🖼️', d:'Imagen', c:SlidingGame, mode:'time' }, // FIXED
         { id:'ana', t:'Anagrama', i:'🔡', d:'Arcade', c:AnagramGame, mode:'score' },
         { id:'eq', t:'Ecuación', i:'🧮', d:'Emoji', c:EquationGame, mode:'score' },
@@ -830,7 +672,7 @@ const App = {
         App.moves = 0;
         $('#game-board-area').innerHTML = '';
         
-        if(App.type.mode === 'score' && App.type.id !== 'chp' && App.type.id !== 'stw' && App.type.id !== 'ark') {
+        if(App.type.mode === 'score' && App.type.id !== 'chp' && App.type.id !== 'stw') {
             App.time = 60; 
         } else {
             App.time = 0; 
@@ -840,7 +682,7 @@ const App = {
         App.curr = new App.type.c(App.diff);
         App.curr.init($('#game-board-area'));
         
-        if(App.type.id === 'stw' || App.type.id === 'ark') return;
+        if(App.type.id === 'stw') return;
 
         App.timer = setInterval(() => {
             if(App.type.mode === 'score' && App.type.id !== 'chp') {
@@ -871,7 +713,7 @@ const App = {
     },
 
     updateTimerDisplay: () => {
-        if(App.type.id === 'stw' || App.type.id === 'ark') return;
+        if(App.type.id === 'stw') return;
         if (App.type.mode === 'score' && App.type.id !== 'chp') {
             $('#stat-1').textContent = `${App.time}s`;
         } else {
