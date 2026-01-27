@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Brain Buddy - Arcade Ultimate</title>
+    <title>Brain Buddy - Ultimate 12</title>
     <style>
         :root {
             /* Palette Dark Elegant */
@@ -120,8 +120,8 @@
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
             display: flex; flex-direction: column; justify-content: space-between;
-            width: 160px;
-            height: 180px; 
+            width: 150px; /* Un poco más pequeño para que quepan bien */
+            height: 170px; 
         }
         .game-card:hover {
             transform: translateY(-5px);
@@ -130,8 +130,8 @@
             border-color: var(--primary);
         }
         .game-icon { font-size: 2.5rem; margin-bottom: 10px; display: block; filter: drop-shadow(0 0 8px rgba(255,255,255,0.1)); }
-        .game-title { font-size: 1.1rem; margin-bottom: 5px; color: var(--text-main); font-weight: 700; }
-        .game-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.2; }
+        .game-title { font-size: 1rem; margin-bottom: 5px; color: var(--text-main); font-weight: 700; }
+        .game-desc { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.2; }
 
         /* --- Views --- */
         .view { display: none; animation: fadeIn 0.4s ease; width: 100%; }
@@ -162,7 +162,6 @@
             min-width: 90px; text-align: center;
         }
         
-        /* Animación para bonus de tiempo */
         .time-bonus { animation: flashGreen 0.5s ease; color: var(--success) !important; }
         .time-penalty { animation: flashRed 0.5s ease; color: var(--danger) !important; }
 
@@ -187,10 +186,14 @@
             user-select: none;
         }
 
-        /* --- GAME SPECIFIC STYLES --- */
+        /* --- SHARED & SPECIFIC GAME STYLES --- */
+        
+        /* Grids */
+        .memory-grid, .sudoku-grid, .schulte-grid, .matrix-grid, .chimp-grid {
+            display: grid; gap: 4px; margin: 0 auto; user-select: none;
+        }
         
         /* Memory */
-        .memory-grid { display: grid; gap: 8px; perspective: 1000px; margin: 0 auto; }
         .memory-card {
             width: 60px; height: 60px; position: relative;
             transform-style: preserve-3d; transition: transform 0.4s; cursor: pointer;
@@ -200,82 +203,86 @@
             width: 100%; height: 100%; position: absolute;
             backface-visibility: hidden; border-radius: 10px;
             display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2); border: 1px solid var(--glass-border);
         }
-        .front { background: #1e293b; transform: rotateY(180deg); border: 1px solid var(--glass-border); font-size: 1.8rem; }
-        .back { background: linear-gradient(135deg, #334155, #475569); border: 1px solid rgba(255,255,255,0.1); }
+        .front { background: #1e293b; transform: rotateY(180deg); font-size: 1.8rem; }
+        .back { background: linear-gradient(135deg, #334155, #475569); }
+
+        /* Cells General */
+        .sudoku-cell, .schulte-cell, .matrix-cell, .chimp-cell {
+            background: rgba(255,255,255,0.05); border-radius: 8px;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: bold; cursor: pointer; border: 1px solid var(--glass-border);
+            transition: all 0.1s;
+        }
 
         /* Sudoku */
-        .sudoku-grid {
-            display: grid; grid-template-columns: repeat(9, 1fr); gap: 1px;
-            background: #475569; border: 2px solid #475569; max-width: 400px; width: 100%;
-            border-radius: 4px; overflow: hidden;
-        }
-        .sudoku-cell {
-            background: #1e293b; aspect-ratio: 1; display: flex; justify-content: center; align-items: center;
-            font-size: 1.1rem; cursor: pointer; color: var(--text-main);
-        }
-        .sudoku-cell.initial { font-weight: bold; color: var(--highlight); background: #0f172a; }
+        .sudoku-grid { grid-template-columns: repeat(9, 1fr); gap: 1px; background: #475569; border: 2px solid #475569; max-width: 400px; width: 100%; }
+        .sudoku-cell { background: #1e293b; aspect-ratio: 1; font-size: 1.1rem; }
+        .sudoku-cell.initial { color: var(--highlight); }
         .sudoku-cell.selected { background: rgba(99, 102, 241, 0.4); }
         .sudoku-cell.error { color: var(--danger); background: rgba(244, 63, 94, 0.2); }
-        .sudoku-cell:nth-child(3n) { border-right: 2px solid #64748b; } .sudoku-cell:nth-child(9n) { border-right: none; }
-        .sudoku-grid .sudoku-cell:nth-child(n+19):nth-child(-n+27), .sudoku-grid .sudoku-cell:nth-child(n+46):nth-child(-n+54) { border-bottom: 2px solid #64748b; }
         .numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 20px; max-width: 400px; width: 100%; }
         .numpad button { background: rgba(255,255,255,0.1); color: white; border: none; font-size: 1.1rem; padding: 10px; border-radius: 8px; cursor: pointer; }
 
-        /* Word Search */
-        .ws-grid { display: grid; gap: 2px; background: #334155; padding: 3px; border-radius: 8px; touch-action: none; }
-        .ws-cell {
-            background: #1e293b; width: 28px; height: 28px; display: flex; justify-content: center; align-items: center;
-            font-weight: 600; cursor: pointer; font-size: 0.8rem; color: #cbd5e1;
-        }
-        .ws-cell.selected { background: var(--highlight); color: #0f172a; } .ws-cell.found { background: var(--success); color: #0f172a; }
-        .ws-word { padding: 4px 8px; background: rgba(255,255,255,0.1); border-radius: 12px; font-size: 0.8rem; color: var(--text-muted); display: inline-block; margin: 2px; }
-        .ws-word.done { text-decoration: line-through; color: var(--success); opacity: 0.5; }
+        /* Schulte */
+        .schulte-cell { font-size: 1.5rem; aspect-ratio: 1; }
+        .schulte-cell:active { background: var(--primary); transform: scale(0.95); }
 
-        /* Stroop & Math */
+        /* Matrix */
+        .matrix-cell { aspect-ratio: 1; }
+        .matrix-cell.active { background: var(--accent); box-shadow: 0 0 15px var(--accent); }
+        .matrix-cell.ok { background: var(--success); }
+        .matrix-cell.fail { background: var(--danger); }
+
+        /* Chimp */
+        .chimp-cell { font-size: 1.8rem; color: white; aspect-ratio: 1; }
+        .chimp-cell.covered { color: transparent; background: white; border-color: white; }
+        .chimp-cell.covered:active { background: #e2e8f0; }
+        .chimp-cell.hidden { opacity: 0; pointer-events: none; }
+
+        /* Sorter */
+        .sorter-container { display: flex; flex-direction: column; align-items: center; gap: 30px; width: 100%; }
+        .sorter-card { 
+            width: 120px; height: 120px; background: #1e293b; border: 2px solid var(--accent);
+            border-radius: 16px; display: flex; justify-content: center; align-items: center;
+            font-size: 3rem; font-weight: bold; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .sorter-controls { display: flex; gap: 40px; }
+        .sorter-btn { 
+            width: 100px; height: 100px; border-radius: 50%; border: none; font-weight: bold; font-size: 1rem; color: white;
+            cursor: pointer; transition: transform 0.1s; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .sorter-btn:active { transform: scale(0.9); }
+        .btn-left { background: var(--secondary); box-shadow: 0 8px 0 #7e22ce; }
+        .btn-right { background: var(--success); box-shadow: 0 8px 0 #047857; }
+        .key-hint { font-size: 0.7rem; opacity: 0.7; margin-top: 5px; }
+
+        /* Stopwatch */
+        .stopwatch-display { 
+            font-size: 5rem; font-family: 'Courier New', monospace; font-weight: bold; 
+            color: var(--accent); text-shadow: 0 0 20px rgba(56, 189, 248, 0.3); margin: 30px 0;
+        }
+        .stopwatch-target { font-size: 1.5rem; color: var(--text-muted); margin-bottom: 20px; }
+        .stopwatch-btn { 
+            width: 140px; height: 140px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.1);
+            background: var(--danger); color: white; font-size: 1.5rem; font-weight: bold; cursor: pointer;
+            box-shadow: 0 0 30px rgba(244, 63, 94, 0.4); transition: all 0.2s;
+        }
+        .stopwatch-btn:active { transform: scale(0.95); background: #be123c; }
+        .stopwatch-btn.running { background: #eab308; box-shadow: 0 0 30px rgba(234, 179, 8, 0.4); }
+
+        /* Word Search & Diff & Stroop */
+        .ws-grid { display: grid; gap: 2px; background: #334155; padding: 3px; border-radius: 8px; touch-action: none; }
+        .ws-cell { background: #1e293b; width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; font-weight: 600; cursor: pointer; font-size: 0.8rem; color: #cbd5e1; }
+        .ws-cell.selected { background: var(--highlight); color: #0f172a; } .ws-cell.found { background: var(--success); color: #0f172a; }
+        .stroop-word { font-size: 3.5rem; font-weight: 900; margin: 20px 0; text-shadow: 0 0 20px rgba(0,0,0,0.5); letter-spacing: 2px; }
         .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; }
         .choice-btn { font-size: 1.3rem; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; border-radius: 12px; }
-        .stroop-word { font-size: 3.5rem; font-weight: 900; margin: 20px 0; text-shadow: 0 0 20px rgba(0,0,0,0.5); letter-spacing: 2px; }
-
-        /* 2048 Game */
-        .g2048-container {
-            background: #0f172a; padding: 10px; border-radius: 12px; touch-action: none;
-            display: grid; gap: 8px; position: relative; user-select: none;
-            border: 2px solid var(--glass-border);
-        }
-        .g2048-cell {
-            background: rgba(255,255,255,0.05); border-radius: 8px; width: 70px; height: 70px;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 2rem; font-weight: 800; color: white;
-            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
-        }
-        .tile-2 { background: #6366f1; box-shadow: 0 4px 0 #4338ca; border: 1px solid rgba(255,255,255,0.2); }
-        .tile-4 { background: #38bdf8; box-shadow: 0 4px 0 #0284c7; border: 1px solid rgba(255,255,255,0.2); }
-        .tile-8 { background: #22c55e; box-shadow: 0 4px 0 #15803d; border: 1px solid rgba(255,255,255,0.2); }
-        .tile-16 { background: #fbbf24; box-shadow: 0 4px 0 #b45309; border: 1px solid rgba(255,255,255,0.2); }
-        .tile-32 { background: #f472b6; box-shadow: 0 4px 0 #be185d; }
-        .tile-64 { background: #ef4444; box-shadow: 0 4px 0 #b91c1c; }
-        .tile-128 { background: #a855f7; box-shadow: 0 0 15px #a855f7; z-index: 2; }
-        .tile-256 { background: #3b82f6; box-shadow: 0 0 20px #3b82f6; z-index: 2; }
-        .tile-512 { background: #ec4899; box-shadow: 0 0 25px #ec4899; z-index: 2; }
-        .tile-1024 { background: #eab308; box-shadow: 0 0 30px #eab308; font-size: 1.6rem; z-index: 2; }
-
-        /* Anagram Game */
-        .anagram-pool { display: flex; gap: 8px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
-        .anagram-slots { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; min-height: 50px; }
-        .letter-btn {
-            width: 45px; height: 45px; border-radius: 8px; font-size: 1.5rem; font-weight: bold;
-            display: flex; justify-content: center; align-items: center; cursor: pointer;
-            background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); color: white;
-        }
-        .letter-btn.empty { background: rgba(0,0,0,0.2); border: 2px dashed rgba(255,255,255,0.1); cursor: default; }
-        .letter-btn:active { transform: scale(0.9); background: var(--primary); }
-
-        /* Diff Game */
+        .anagram-pool, .anagram-slots { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+        .letter-btn { width: 45px; height: 45px; border-radius: 8px; font-size: 1.5rem; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         .diff-cell { background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 1.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; aspect-ratio: 1; }
-        .diff-cell:active { transform: scale(0.9); }
 
         /* --- Modals --- */
         #confetti-canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 1000; }
@@ -309,13 +316,10 @@
 
         @media (max-width: 600px) {
             .header h1 { font-size: 2rem; }
-            .g2048-cell { width: 55px; height: 55px; font-size: 1.4rem; }
-            .memory-card { width: 50px; height: 50px; }
-            .ws-cell { width: 24px; height: 24px; font-size: 0.7rem; }
-            .stroop-word { font-size: 2.5rem; }
-            .controls-left, .controls-right { width: 100%; justify-content: center; margin-bottom: 5px; }
             .game-grid { gap: 10px; }
-            .game-card { width: 45%; } 
+            .game-card { width: 45%; height: 150px; }
+            .stopwatch-display { font-size: 3.5rem; }
+            .stopwatch-btn { width: 110px; height: 110px; }
         }
     </style>
 </head>
@@ -326,12 +330,11 @@
     <div class="container">
         <header class="header">
             <h1>🧠 Brain Buddy</h1>
-            <p>Arcade Edition</p>
+            <p>12 Juegos Mentales</p>
         </header>
 
         <div id="view-menu" class="view active">
-            <div class="game-grid">
-                </div>
+            <div class="game-grid"></div>
             <div style="margin-top: 40px; text-align: center; width: 100%;">
                  <button class="btn btn-outline" onclick="App.showRankingGlobal()">🏆 Ver Récords</button>
             </div>
@@ -352,9 +355,7 @@
                         </div>
                     </div>
                     <div class="controls-right">
-                        <div class="stats-bar">
-                            <span id="stat-1">30s</span>
-                        </div>
+                        <div class="stats-bar"><span id="stat-1">00:00</span></div>
                         <span id="stat-2" style="font-weight:bold; color:var(--highlight)"></span>
                         <button class="btn btn-restart" onclick="App.restartGame()" title="Reiniciar Juego">↻ Reiniciar</button>
                     </div>
@@ -362,15 +363,14 @@
                 
                 <div id="game-title-display" style="text-align: center; margin-bottom: 20px; color: var(--primary); font-size: 1.5rem; font-weight: 700; letter-spacing: 1px;"></div>
                 
-                <div id="game-board-area">
-                    </div>
+                <div id="game-board-area"></div>
             </div>
         </div>
     </div>
 
     <div id="modal-win" class="modal-overlay">
         <div class="modal">
-            <h2>🎉 ¡Fin del Juego!</h2>
+            <h2>🎉 Fin del Juego</h2>
             <p id="win-message">Resultados.</p>
             <div id="record-section" style="display:none; margin-top:15px;">
                 <p style="color: var(--success); font-weight: bold; margin-bottom: 5px;">¡NUEVO RÉCORD!</p>
@@ -392,10 +392,7 @@
     </div>
 
 <script>
-/**
- * BRAIN BUDDY ARCADE
- */
-
+/** BRAIN BUDDY CORE v11 */
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
@@ -417,15 +414,14 @@ const Sound = {
 };
 
 const Storage = {
-    get: () => JSON.parse(localStorage.getItem('brainBuddy_v9')) || {},
-    save: (d) => localStorage.setItem('brainBuddy_v9', JSON.stringify(d)),
+    get: () => JSON.parse(localStorage.getItem('brainBuddy_v11')) || {},
+    save: (d) => localStorage.setItem('brainBuddy_v11', JSON.stringify(d)),
     check: (id, diff, score, mode) => {
         const d = Storage.get();
         const cur = d[`${id}_${diff}`];
         if(!cur) return true;
-        // If mode is 'score', Higher is better. Else 'time', Lower is better.
         if (mode === 'score') return score > cur.score;
-        return score < cur.score;
+        return score < cur.score; // time
     },
     set: (id, diff, name, score) => {
         const d = Storage.get();
@@ -442,423 +438,322 @@ const Confetti = {
     start: function() {
         this.resize(); this.particles=[];
         const colors = ['#6366f1', '#a855f7', '#38bdf8', '#10b981', '#fbbf24'];
-        for(let i=0; i<100; i++) this.particles.push({
-            x: Math.random()*this.canvas.width, y: Math.random()*this.canvas.height-this.canvas.height,
-            c: colors[Math.floor(Math.random()*colors.length)],
-            vx: Math.random()*2-1, vy: Math.random()*3+2, s: Math.random()*8+4
-        });
-        this.active=true; this.loop();
-        setTimeout(()=>this.stop(), 3000);
+        for(let i=0; i<100; i++) this.particles.push({ x: Math.random()*this.canvas.width, y: Math.random()*this.canvas.height-this.canvas.height, c: colors[Math.floor(Math.random()*colors.length)], vx: Math.random()*2-1, vy: Math.random()*3+2, s: Math.random()*8+4 });
+        this.active=true; this.loop(); setTimeout(()=>this.stop(), 3000);
     },
     stop: function() { this.active=false; this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height); },
     loop: function() {
         if(!this.active) return;
         this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
-        this.particles.forEach(p=>{
-            p.y+=p.vy; p.x+=p.vx;
-            this.ctx.fillStyle=p.c; this.ctx.fillRect(p.x,p.y,p.s,p.s);
-            if(p.y>this.canvas.height) p.y=-10;
-        });
+        this.particles.forEach(p=>{ p.y+=p.vy; p.x+=p.vx; this.ctx.fillStyle=p.c; this.ctx.fillRect(p.x,p.y,p.s,p.s); if(p.y>this.canvas.height) p.y=-10; });
         requestAnimationFrame(()=>this.loop());
     }
 };
 
-// --- GAMES ---
+/* --- NEW GAMES --- */
 
-// 1. Memory Game
-class MemoryGame {
+// 10. Chimp Test
+class ChimpGame {
     constructor(diff) {
         this.diff = diff;
-        this.cards = []; this.flipped = []; this.locked = false; this.matched = 0;
-        this.streak = 0;
-        
-        if (diff === 'easy') { this.cols = 4; this.rows = 4; }
-        else if (diff === 'medium') { this.cols = 5; this.rows = 4; }
-        else { this.cols = 6; this.rows = 6; }
-        
-        const themes = {
-            faces: ['😀','😂','😍','😎','🤬','🤢','🤡','👻','👽','🤖','💩','👺','💀','🤕','🤠','🥸','😇','🎃'],
-            transport: ['🚀','🚗','🚓','🚑','🚒','🚲','🛵','🚂','✈️','🛸','🚁','🛶','⛵','🚤','🚜','🚛','🚌','🏎️'],
-            sports: ['⚽','🏀','🏈','⚾','🎾','🏐','🏉','🎱','🏓','🏸','🥅','🥊','🥋','⛳','⛸','🎣','🤿','🏄'],
-            fruits: ['🍏','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🥑']
-        };
-
-        const totalPairs = (this.cols * this.rows) / 2;
-        let pool = [];
-
-        if (diff === 'extreme') {
-            const all = [...themes.faces, ...themes.transport, ...themes.sports, ...themes.fruits];
-            pool = all.sort(() => 0.5 - Math.random()).slice(0, totalPairs);
-        } else {
-            const keys = Object.keys(themes);
-            const key = keys[Math.floor(Math.random() * keys.length)];
-            pool = themes[key].sort(() => 0.5 - Math.random()).slice(0, totalPairs);
-        }
-        this.cards = [...pool, ...pool].sort(() => 0.5 - Math.random());
+        this.level = 4; // Start numbers
+        this.maxLevel = diff==='easy'?8:(diff==='medium'?12:(diff==='hard'?18:36));
+        this.lives = 3;
+        this.nums = [];
+        this.current = 1;
+        this.isCovered = false;
     }
-    init(c) {
-        c.innerHTML = `<div class="memory-grid" style="grid-template-columns: repeat(${this.cols}, 1fr);">
-            ${this.cards.map((e, i) => `<div class="memory-card" onclick="App.curr.flip(${i})" id="c-${i}"><div class="front">${e}</div><div class="back"></div></div>`).join('')}</div>`;
-    }
-    flip(i) {
-        const card = $(`#c-${i}`);
-        if (this.locked || card.classList.contains('flip') || this.flipped.some(c=>c.id===i)) return;
-        card.classList.add('flip'); Sound.click(); this.flipped.push({ id: i, val: this.cards[i], el: card });
-        if (this.flipped.length === 2) {
-            this.locked = true; App.moves++; $('#stat-2').textContent = `Mov: ${App.moves}`;
-            if (this.flipped[0].val === this.flipped[1].val) {
-                this.matched++; this.flipped = []; this.locked = false; 
-                this.streak++;
-                if (this.streak >= 2) {
-                    App.addTime(5, false);
-                    this.streak = 0;
-                }
-                if (this.matched === this.cards.length / 2) App.endGame(true);
-            } else {
-                this.streak = 0;
-                Sound.error(); setTimeout(() => { this.flipped.forEach(c => c.el.classList.remove('flip')); this.flipped = []; this.locked = false; }, 800);
-            }
-        }
-    }
-}
-
-// 2. Math
-class MathGame {
-    constructor(diff) { 
-        this.diff=diff; this.score=0; this.combo=0; 
-        this.bonus = diff==='easy'?2:(diff==='medium'?3:5);
-    }
-    init(c) { c.innerHTML=`<div style="text-align:center"><div class="math-problem" id="mt-p"></div><div class="choice-grid" id="mt-o"></div></div>`; this.next(); }
-    next() {
-        const ops=['+','-','*']; let op=ops[Math.floor(Math.random()*(this.diff==='easy'?2:3))];
-        let a,b,res,lim=this.diff==='easy'?10:50;
-        if(op==='*'){ a=Math.floor(Math.random()*10)+2; b=Math.floor(Math.random()*10)+2; res=a*b; }
-        else { a=Math.floor(Math.random()*lim)+1; b=Math.floor(Math.random()*lim)+1; if(op==='-'){if(a<b)[a,b]=[b,a]; res=a-b;} else res=a+b; }
-        $('#mt-p').textContent=`${a} ${op} ${b} = ?`; $('#stat-2').textContent=`Pts: ${this.score}`;
-        let o=[res]; while(o.length<4){ let f=res+(Math.floor(Math.random()*20)-10); if(f>=0 && !o.includes(f)) o.push(f); }
-        $('#mt-o').innerHTML=o.sort(()=>0.5-Math.random()).map(v=>`<button class="btn choice-btn" onclick="App.curr.ans(${v},${res})">${v}</button>`).join('');
-    }
-    ans(v,r) { 
-        if(v===r){
-            this.score+=10; this.combo++; Sound.click(); 
-            if(this.combo % 3 === 0) App.addTime(this.bonus, true); 
-            this.next();
-        } else {
-            this.score = Math.max(0, this.score-5); this.combo=0; Sound.error(); App.visualPenalty(); this.next();
-        } 
-    }
-}
-
-// 3. Anagram (Updated with Large Dictionary & No Repeats)
-class AnagramGame {
-    constructor(diff) {
-        this.diff = diff; this.score = 0; this.combo = 0;
-        this.bonus = diff==='easy'?2:(diff==='medium'?3:5);
-        this.len = diff==='easy'?4:(diff==='medium'?5:(diff==='hard'?6:8));
-        
-        // Expanded Dictionary
-        const easyWords = [
-            'SOL', 'MAR', 'LUZ', 'PAN', 'OJO', 'SAL', 'OLA', 'ORO', 'RIO', 'SUR', 'DOS', 'TREN', 'FLOR', 'PIE', 'UVA', 'VOS', 'TIA',
-            'GATO', 'PATO', 'LUNA', 'CASA', 'AGUA', 'ROJO', 'MESA', 'MANO', 'BOCA', 
-            'CARA', 'NUBE', 'AIRE', 'VIDA', 'AMOR', 'RISA', 'BESO', 'HOJA', 'LAGO', 
-            'COPA', 'CAJA', 'BOLA', 'LEON', 'LOBO', 'MONO', 'VACA', 'PISO', 'TORO', 
-            'DADO', 'ROPA', 'TELA', 'VINO', 'AZUL', 'ARCO', 'DEDO', 'PINT', 'PELO'
-        ];
-        
-        const medWords = ['ARBOL','PERRO','LIBRO','PLAYA','NORTE','QUESO','VERDE','RELOJ','FUEGO','NIEVE','LAPIZ','SILLA','PIZZA','RADIO','COCHE'];
-        const hardWords = ['PLANETA','MUSICA','DOCTOR','CODIGO','FUTURO','JARDIN','ESPACIO','GUITARRA','PROGRAMA','SILENCIO','ELEFANTE','EDIFICIO'];
-        
-        this.words = diff==='easy' ? easyWords : (diff==='medium' ? medWords : hardWords);
-        
-        this.target = []; // Stack for unique selection
-        this.curWord=''; this.pool=[]; this.slots=[];
-    }
-    init(c) {
-        this.cont = c; this.load();
-        
-        document.onkeydown = (e) => {
-            const key = e.key.toUpperCase();
-            if (key === 'BACKSPACE') {
-                const lastIdx = this.slots.map((s, i) => s ? i : -1).filter(i => i !== -1).pop();
-                if (lastIdx !== undefined) this.clkSlot(lastIdx);
-            } else if (key.length === 1 && key.match(/[A-ZÑ]/)) {
-                const found = this.pool.find(p => p.l === key);
-                if (found) this.clkPool(found.id);
-            }
-        };
-    }
+    init(c) { this.cont = c; this.load(); }
     load() {
-        // Refill pool if empty
-        if(this.target.length === 0) {
-            this.target = [...this.words].sort(() => 0.5 - Math.random());
+        this.nums = [];
+        this.current = 1;
+        this.isCovered = false;
+        $('#stat-2').textContent = `Nivel: ${this.level} | ❤️ ${this.lives}`;
+        
+        // Grid size depends on level
+        const sz = this.level <= 9 ? 5 : 6;
+        const positions = [];
+        while(positions.length < this.level) {
+            const p = Math.floor(Math.random() * (sz*sz));
+            if(!positions.includes(p)) positions.push(p);
         }
         
-        // Pop word to ensure no repeats until full cycle
-        this.curWord = this.target.pop();
-        
-        this.pool = this.curWord.split('').sort(()=>0.5-Math.random()).map((l,i)=>({l, id:i}));
-        this.slots = Array(this.curWord.length).fill(null);
-        this.render();
-    }
-    render() {
-        $('#stat-2').textContent = `Pts: ${this.score}`;
         this.cont.innerHTML = `
-            <div style="text-align:center; margin-bottom:20px">Ordena las letras:</div>
-            <div class="anagram-slots">
-                ${this.slots.map((s,i)=> s ? `<div class="letter-btn" onclick="App.curr.clkSlot(${i})">${s.l}</div>` : `<div class="letter-btn empty"></div>`).join('')}
+            <div class="chimp-grid" style="grid-template-columns:repeat(${sz},1fr); width:${sz*60}px;">
+                ${Array(sz*sz).fill(0).map((_,i) => {
+                    const idx = positions.indexOf(i);
+                    return idx !== -1 
+                        ? `<div class="chimp-cell" id="ch-${i}" onclick="App.curr.click(${i}, ${idx+1})">${idx+1}</div>` 
+                        : `<div class="chimp-cell hidden"></div>`
+                }).join('')}
             </div>
-            <div class="anagram-pool">
-                ${this.pool.map(p=> `<div class="letter-btn" onclick="App.curr.clkPool(${p.id})">${p.l}</div>`).join('')}
+            <div style="margin-top:20px; text-align:center; color:var(--text-muted)">Memoriza y pulsa en orden</div>
+        `;
+    }
+    click(id, num) {
+        if(num !== this.current) {
+            this.lives--;
+            Sound.error();
+            if(this.lives <= 0) App.endGame(true);
+            else { 
+                $('#stat-2').textContent = `Nivel: ${this.level} | ❤️ ${this.lives}`;
+                alert("¡Fallo! Reintentando nivel...");
+                this.load(); 
+            }
+            return;
+        }
+
+        Sound.click();
+        
+        // Logic: If click '1', hide others
+        if(this.current === 1) {
+            this.isCovered = true;
+            $$('.chimp-cell').forEach(el => {
+                if(!el.classList.contains('hidden') && el.textContent !== '1') {
+                    el.classList.add('covered');
+                }
+            });
+        }
+        
+        // Hide clicked
+        $(`#ch-${id}`).classList.add('hidden');
+        this.current++;
+        
+        if(this.current > this.level) {
+            Sound.merge();
+            this.level++;
+            setTimeout(()=>this.load(), 500);
+        }
+    }
+    get score() { return this.level; }
+}
+
+// 11. Speed Sorter
+class SorterGame {
+    constructor(diff) {
+        this.diff = diff;
+        this.score = 0;
+        this.mode = (diff==='easy'||diff==='medium') ? 'nums' : 'chars';
+        this.currentVal = null;
+        this.currentType = null; // 0: Left, 1: Right
+    }
+    init(c) {
+        this.cont = c;
+        // Keyboard support
+        document.onkeydown = (e) => {
+            if(e.key === 'ArrowLeft') this.check(0);
+            if(e.key === 'ArrowRight') this.check(1);
+        };
+        this.next();
+    }
+    next() {
+        $('#stat-2').textContent = `Pts: ${this.score}`;
+        let txt = '', type = 0; // 0 left, 1 right
+        
+        if(this.mode === 'nums') {
+            const n = Math.floor(Math.random() * 100);
+            txt = n;
+            type = (n % 2 === 0) ? 0 : 1; // 0: Par, 1: Impar
+        } else {
+            const vowels = "AEIOU";
+            const cons = "BCDFGHJKLMNPQRSTVWXYZ";
+            if(Math.random() > 0.5) {
+                txt = vowels[Math.floor(Math.random()*vowels.length)];
+                type = 0; // Vocal
+            } else {
+                txt = cons[Math.floor(Math.random()*cons.length)];
+                type = 1; // Consonante
+            }
+        }
+        
+        const labelL = this.mode === 'nums' ? 'PAR' : 'VOCAL';
+        const labelR = this.mode === 'nums' ? 'IMPAR' : 'CONST';
+        
+        this.currentType = type;
+        this.cont.innerHTML = `
+            <div class="sorter-container">
+                <div class="sorter-card">${txt}</div>
+                <div class="sorter-controls">
+                    <button class="sorter-btn btn-left" onclick="App.curr.check(0)">
+                        ${labelL} <span class="key-hint">⬅</span>
+                    </button>
+                    <button class="sorter-btn btn-right" onclick="App.curr.check(1)">
+                        ${labelR} <span class="key-hint">➡</span>
+                    </button>
+                </div>
             </div>
         `;
     }
-    clkPool(id) {
-        const pIdx = this.pool.findIndex(p=>p.id===id);
-        const sIdx = this.slots.findIndex(s=>s===null);
-        if(pIdx>-1 && sIdx>-1) {
-            this.slots[sIdx] = this.pool[pIdx];
-            this.pool.splice(pIdx,1);
-            Sound.click(); this.render(); this.check();
+    check(side) {
+        if(side === this.currentType) {
+            this.score += 5;
+            Sound.click();
+        } else {
+            this.score = Math.max(0, this.score - 5);
+            Sound.error();
+            App.visualPenalty();
         }
-    }
-    clkSlot(i) {
-        if(this.slots[i]) {
-            this.pool.push(this.slots[i]);
-            this.slots[i] = null;
-            Sound.click(); this.render();
-        }
-    }
-    check() {
-        if(!this.slots.includes(null)) {
-            const w = this.slots.map(s=>s.l).join('');
-            if(w === this.curWord) {
-                Sound.merge(); 
-                this.score += 10;
-                this.combo++;
-                if(this.combo % 3 === 0) App.addTime(this.bonus, true);
-                setTimeout(()=>{ this.load(); }, 300);
-            } else {
-                Sound.error();
-                this.score = Math.max(0, this.score-5);
-                this.combo = 0;
-                App.visualPenalty();
-                this.pool = this.curWord.split('').sort(()=>0.5-Math.random()).map((l,i)=>({l, id:i}));
-                this.slots = Array(this.curWord.length).fill(null);
-                setTimeout(()=>this.render(), 300);
-            }
-        }
+        this.next();
     }
 }
 
-// 4. Sudoku
-class Sudoku {
-    constructor(diff) { this.diff = diff; this.board = []; this.sol = []; }
-    init(c) {
-        c.innerHTML = `<div class="sudoku-grid" id="sdk-b"></div><div class="numpad" id="sdk-p"></div>`;
-        this.gen();
-        const b = $('#sdk-b');
-        this.board.forEach((r, i) => r.forEach((v, j) => {
-            const d = document.createElement('div'); d.className = `sudoku-cell ${v?'initial':''}`; d.textContent = v||'';
-            d.onclick = () => { if(!v) this.sel(d, i, j); }; b.appendChild(d);
-        }));
-        [1,2,3,4,5,6,7,8,9,'⌫'].forEach(n=>{
-            const btn=document.createElement('button'); btn.textContent=n; btn.onclick=()=>this.inp(n); $('#sdk-p').appendChild(btn);
-        });
-    }
-    sel(el, r, c) { $$('.selected').forEach(x=>x.classList.remove('selected')); this.cur = { el, r, c }; el.classList.add('selected'); }
-    inp(v) {
-        if (!this.cur) return;
-        if (v==='⌫') { this.cur.el.textContent=''; this.board[this.cur.r][this.cur.c]=0; return; }
-        this.cur.el.textContent=v; this.board[this.cur.r][this.cur.c]=v;
-        if (v!=this.sol[this.cur.r][this.cur.c]) { this.cur.el.classList.add('error'); Sound.error(); }
-        else { this.cur.el.classList.remove('error'); Sound.click(); if (this.check()) App.endGame(true); }
-    }
-    check() { return this.board.every((r,i)=>r.every((c,j)=>c===this.sol[i][j])); }
-    gen() {
-        this.sol = Array(9).fill().map(()=>Array(9).fill(0));
-        const fill=(r,c)=>{
-            const n=[1,2,3,4,5,6,7,8,9].sort(()=>0.5-Math.random());
-            for(let x of n) if(this.valid(r,c,x)){ this.sol[r][c]=x; if(c===8?(r===8?true:fill(r+1,0)):fill(r,c+1)) return true; this.sol[r][c]=0; }
-            return false;
-        }; fill(0,0);
-        this.board=JSON.parse(JSON.stringify(this.sol));
-        let rem = this.diff==='easy'?30:(this.diff==='medium'?40:(this.diff==='hard'?50:58));
-        while(rem>0){ let r=Math.floor(Math.random()*9),c=Math.floor(Math.random()*9); if(this.board[r][c]!==0){this.board[r][c]=0;rem--;} }
-    }
-    valid(r,c,v){
-        for(let k=0;k<9;k++) if(this.sol[r][k]===v || this.sol[k][c]===v) return false;
-        let br=Math.floor(r/3)*3, bc=Math.floor(c/3)*3;
-        for(let i=0;i<3;i++) for(let j=0;j<3;j++) if(this.sol[br+i][bc+j]===v) return false;
-        return true;
-    }
-}
-
-// 5. Word Search
-class WordSearch {
+// 12. Mental Stopwatch
+class StopwatchGame {
     constructor(diff) {
-        this.diff=diff; this.sz=diff==='easy'?8:(diff==='medium'?10:12);
-        this.words=["JAVA","HTML","CSS","NODE","WIFI","DATA","CODE","BYTE","LINK","PING"];
-        this.target=this.words.sort(()=>0.5-Math.random()).slice(0,Math.floor(this.sz*0.6)); this.found=0;
+        this.diff = diff;
+        // Targets: Easy 10, Med 5, Hard 10, Ext 15
+        this.targetTime = (diff==='medium'||diff==='extreme'&&false) ? 5 : 10; 
+        if(diff==='extreme') this.targetTime = 15;
+        
+        // Visibility limit: Hard=4, Ext=5, others=Infinite
+        this.visLimit = (diff==='hard') ? 4 : ((diff==='extreme') ? 5 : 999);
+        
+        this.startTime = 0;
+        this.running = false;
+        this.score = 0;
+        this.attempts = 3;
+        this.interval = null;
     }
     init(c) {
-        c.innerHTML=`<div style="margin-bottom:10px;text-align:center">Palabras: <span id="ws-c" style="color:var(--highlight)">0</span>/${this.target.length}</div>
-        <div class="ws-grid" style="grid-template-columns:repeat(${this.sz},1fr);max-width:${this.sz*28}px;margin:0 auto;" id="ws-b"></div>
-        <div style="text-align:center;margin-top:15px">${this.target.map(w=>`<span class="ws-word" id="wd-${w}">${w}</span>`).join('')}</div>`;
-        this.gen(); const b=$('#ws-b');
-        this.grid.forEach((r,i)=>r.forEach((l,j)=>{
-            const d=document.createElement('div');d.className='ws-cell';d.textContent=l;d.dataset.r=i;d.dataset.c=j;b.appendChild(d);
-        })); this.evt(b);
+        this.cont = c;
+        this.renderState();
     }
-    gen() {
-        this.grid=Array(this.sz).fill().map(()=>Array(this.sz).fill(''));
-        this.target.forEach(w=>{
-            let p=false,t=0,wp=w;
-            if((this.diff==='hard'||this.diff==='extreme')&&Math.random()>0.5) wp=w.split('').reverse().join('');
-            while(!p && t<100){
-                const d=Math.floor(Math.random()*3), r=Math.floor(Math.random()*this.sz), c=Math.floor(Math.random()*this.sz);
-                if(this.can(wp,r,c,d)){this.put(wp,r,c,d);p=true;}t++;
-            }
-        });
-        const abc="ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"; for(let r=0;r<this.sz;r++)for(let c=0;c<this.sz;c++)if(!this.grid[r][c])this.grid[r][c]=abc[Math.floor(Math.random()*abc.length)];
+    renderState() {
+        $('#stat-2').textContent = `Pts: ${this.score.toFixed(0)} | Turnos: ${this.attempts}`;
+        this.cont.innerHTML = `
+            <div style="text-align:center">
+                <div class="stopwatch-target">META: ${this.targetTime}.00 seg</div>
+                <div class="stopwatch-display">0.00</div>
+                <button class="stopwatch-btn ${this.running?'running':''}" onclick="App.curr.toggle()">
+                    ${this.running ? 'STOP' : 'START'}
+                </button>
+                <div style="margin-top:20px; color:var(--text-muted); font-size:0.9rem">
+                    ${this.diff==='hard'||this.diff==='extreme' ? `(Se oculta a los ${this.visLimit}s)` : '(Visible siempre)'}
+                </div>
+            </div>
+        `;
     }
-    can(w,r,c,d){
-        if((d===0&&c+w.length>this.sz)||(d===1&&r+w.length>this.sz)||(d===2&&(c+w.length>this.sz||r+w.length>this.sz)))return false;
-        for(let i=0;i<w.length;i++) if(this.grid[r+(d>0?i:0)][c+(d!==1?i:0)] && this.grid[r+(d>0?i:0)][c+(d!==1?i:0)]!==w[i]) return false;
-        return true;
-    }
-    put(w,r,c,d){for(let i=0;i<w.length;i++)this.grid[r+(d>0?i:0)][c+(d!==1?i:0)]=w[i];}
-    evt(b){
-        let s=false,st=null,cs=[];
-        const get=(e)=> (e.target.closest('.ws-cell')||(e.touches?document.elementFromPoint(e.touches[0].clientX,e.touches[0].clientY)?.closest('.ws-cell'):null));
-        const up=(e)=>{
-            if(s){s=false;$$('.ws-cell.selected').forEach(x=>x.classList.remove('selected'));
-            const txt=cs.map(p=>this.grid[p.r][p.c]).join(''), rev=txt.split('').reverse().join('');
-            const m=this.target.includes(txt)?txt:(this.target.includes(rev)?rev:null);
-            if(m){
-                const el=$(`#wd-${m}`); if(!el.classList.contains('done')){
-                    el.classList.add('done');this.found++;$('#ws-c').textContent=this.found;
-                    cs.forEach(p=>$(`.ws-cell[data-r="${p.r}"][data-c="${p.c}"]`).classList.add('found'));
-                    Sound.click(); if(this.found===this.target.length)App.endGame(true);
-                }
-            }}
-        };
-        const mv=(e)=>{ if(s){ const c=get(e); if(c){
-            $$('.ws-cell.selected').forEach(x=>x.classList.remove('selected'));
-            const en={r:+c.dataset.r,c:+c.dataset.c}, dr=en.r-st.r, dc=en.c-st.c; cs=[];
-            if(!dr||!dc||Math.abs(dr)===Math.abs(dc)){
-                const stp=Math.max(Math.abs(dr),Math.abs(dc)), sr=dr?dr/Math.abs(dr):0, sc=dc?dc/Math.abs(dc):0;
-                for(let i=0;i<=stp;i++) cs.push({r:st.r+i*sr,c:st.c+i*sc});
-                cs.forEach(p=>$(`.ws-cell[data-r="${p.r}"][data-c="${p.c}"]`)?.classList.add('selected'));
-            }
-        }}};
-        const dn=(e)=>{const c=get(e);if(c){s=true;st={r:+c.dataset.r,c:+c.dataset.c};}};
-        b.onmousedown=dn;b.onmousemove=mv;document.onmouseup=up; b.ontouchstart=dn;b.ontouchmove=mv;document.ontouchend=up;
-    }
-}
-
-// 6. Diff Game
-class DiffGame {
-    constructor(diff) { this.lvl=1; this.max=diff==='easy'?3:5; }
-    init(c) { this.c=c; this.load(); }
-    load() {
-        const sz=Math.min(this.lvl+3,7), em=['😀','😎','🤩','🥶','🤢','👺','💀','👽','🤖','🎃'], b=em[Math.floor(Math.random()*em.length)];
-        let d; do{d=em[Math.floor(Math.random()*em.length)];}while(d===b);
-        this.c.innerHTML=`<div style="text-align:center;margin-bottom:15px">Nivel ${this.lvl} / ${this.max}</div>
-        <div class="diff-grid" style="display:grid;grid-template-columns:repeat(${sz},1fr);gap:6px;max-width:400px;margin:0 auto;"></div>`;
-        const g=$('.diff-grid'), t=Math.floor(Math.random()*(sz*sz));
-        for(let i=0;i<sz*sz;i++){
-            const el=document.createElement('div'); el.className='diff-cell'; el.textContent=i===t?d:b;
-            el.onclick=()=>{if(i===t){Sound.click();this.lvl++;if(this.lvl>this.max)App.endGame(true);else this.load();}else Sound.error();};
-            g.appendChild(el);
+    toggle() {
+        if(!this.running) {
+            if(this.attempts <= 0) return;
+            this.running = true;
+            this.startTime = Date.now();
+            Sound.click();
+            this.renderState();
+            this.loop();
+        } else {
+            this.stop();
         }
     }
-}
-
-// 7. Stroop
-class StroopGame {
-    constructor(diff) { this.sc=0; this.max=diff==='easy'?10:15; this.cols=[{n:'ROJO',h:'#ef4444'},{n:'AZUL',h:'#3b82f6'},{n:'VERDE',h:'#22c55e'},{n:'AMARILLO',h:'#eab308'}]; }
-    init(c) { c.innerHTML=`<div style="text-align:center"><div class="stroop-question" id="st-q"></div><div class="stroop-word" id="st-w"></div><div class="choice-grid" id="st-o"></div></div>`; this.next(); }
-    next() {
-        const t=this.cols[Math.floor(Math.random()*4)]; let c; do{c=this.cols[Math.floor(Math.random()*4)];}while(c.n===t.n);
-        const m=(Math.random()>0.5)?'col':'txt', q=m==='col'?'¿Qué <b>COLOR</b> ves?':'¿Qué <b>DICE</b>?';
-        $('#st-q').innerHTML=q; const w=$('#st-w'); w.textContent=t.n; w.style.color=c.h; $('#stat-2').textContent=`Pts: ${this.sc}/${this.max}`;
-        let o=[m==='col'?c.n:t.n]; while(o.length<4){const r=this.cols[Math.floor(Math.random()*4)].n; if(!o.includes(r))o.push(r);}
-        $('#st-o').innerHTML=o.sort(()=>0.5-Math.random()).map(v=>`<button class="btn choice-btn" onclick="App.curr.ans('${v}','${o[0]}')">${v}</button>`).join('');
-    }
-    ans(v,r){ if(v===r){this.sc++;Sound.click();if(this.sc>=this.max)App.endGame(true);else this.next();}else{Sound.error();this.next();} }
-}
-
-// 8. 2048
-class Game2048 {
-    constructor(diff) {
-        this.sz=diff==='easy'?5:4; this.grid=[]; this.score=0;
-        this.winTile=diff==='easy'?128:(diff==='medium'?256:(diff==='hard'?512:1024));
-    }
-    init(c) {
-        c.innerHTML=`<div style="text-align:center;margin-bottom:10px">Meta: <span style="color:var(--highlight);font-weight:bold">${this.winTile}</span></div>
-        <div class="g2048-container" style="grid-template-columns:repeat(${this.sz},1fr);width:${this.sz*78}px;margin:0 auto;" id="g2048"></div>`;
-        this.grid=Array(this.sz*this.sz).fill(0); this.spawn(); this.spawn(); this.render();
-        document.onkeydown=(e)=>{
-            if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){ e.preventDefault(); this.move(e.key.replace('Arrow','').toLowerCase()); }
-        };
-        const b=$('#g2048'); let tsX, tsY; let mDown=false;
-        b.ontouchstart=(e)=>{tsX=e.touches[0].clientX; tsY=e.touches[0].clientY; e.preventDefault();};
-        b.ontouchend=(e)=>{
-            const dx=e.changedTouches[0].clientX-tsX, dy=e.changedTouches[0].clientY-tsY;
-            this.handleSwipe(dx, dy);
-        };
-        b.onmousedown=(e)=>{ mDown=true; tsX=e.clientX; tsY=e.clientY; };
-        document.onmouseup=(e)=>{
-            if(!mDown) return; mDown=false;
-            const dx=e.clientX-tsX, dy=e.clientY-tsY;
-            this.handleSwipe(dx, dy);
-        };
-    }
-    handleSwipe(dx, dy) {
-        if(Math.abs(dx)>Math.abs(dy)){ if(Math.abs(dx)>30) this.move(dx>0?'right':'left'); }
-        else { if(Math.abs(dy)>30) this.move(dy>0?'down':'up'); }
-    }
-    render() {
-        const b=$('#g2048'); b.innerHTML='';
-        this.grid.forEach(v=>{
-            const d=document.createElement('div'); d.className=`g2048-cell tile-${v}`; d.textContent=v||''; b.appendChild(d);
-        });
-    }
-    spawn() {
-        const emp=this.grid.map((v,i)=>v===0?i:null).filter(v=>v!==null);
-        if(emp.length){ this.grid[emp[Math.floor(Math.random()*emp.length)]] = Math.random()>0.9?4:2; }
-    }
-    move(dir) {
-        let moved=false; const sz=this.sz;
-        const getLine=(i, isRow)=> { let l=[]; for(let k=0;k<sz;k++) l.push(this.grid[isRow ? i*sz+k : k*sz+i]); return l; };
-        const setLine=(i, l, isRow)=> { for(let k=0;k<sz;k++) this.grid[isRow ? i*sz+k : k*sz+i] = l[k]; };
-        const merge=(row)=> {
-            let arr=row.filter(v=>v); if(dir==='right'||dir==='down') arr.reverse();
-            for(let i=0;i<arr.length-1;i++){ if(arr[i]===arr[i+1]){ arr[i]*=2; arr[i+1]=0; Sound.merge(); if(arr[i]===this.winTile) setTimeout(()=>App.endGame(true),300); } }
-            arr=arr.filter(v=>v); while(arr.length<sz) arr.push(0); if(dir==='right'||dir==='down') arr.reverse(); return arr;
-        };
-        for(let i=0;i<sz;i++){
-            const old=getLine(i, dir==='left'||dir==='right'); const nw=merge(old);
-            setLine(i, nw, dir==='left'||dir==='right'); if(old.some((v,k)=>v!==nw[k])) moved=true;
+    loop() {
+        if(!this.running) return;
+        const diff = (Date.now() - this.startTime) / 1000;
+        const disp = $('.stopwatch-display');
+        
+        if(diff > this.visLimit) {
+            disp.textContent = "?.??";
+            disp.style.color = "#555";
+        } else {
+            disp.textContent = diff.toFixed(2);
+            disp.style.color = "var(--accent)";
         }
-        if(moved){ this.spawn(); this.render(); }
+        
+        requestAnimationFrame(()=>this.loop());
+    }
+    stop() {
+        this.running = false;
+        const actual = (Date.now() - this.startTime) / 1000;
+        const delta = Math.abs(actual - this.targetTime);
+        $('.stopwatch-display').textContent = actual.toFixed(3);
+        
+        // Score: Max 100 per round. 
+        // 0.00 diff = 100pts. 1.00 diff = 0pts.
+        let pts = Math.max(0, 100 - (delta * 100));
+        this.score += pts;
+        this.attempts--;
+        
+        Sound.win(); // Ding sound for stop
+        
+        setTimeout(() => {
+            if(this.attempts <= 0) App.endGame(true);
+            else this.renderState();
+        }, 2000);
     }
 }
 
+/* --- EXISTING GAMES (Brief versions) --- */
+class MemoryGame {
+    constructor(diff){this.diff=diff;this.cards=[];this.flipped=[];this.locked=false;this.matched=0;this.streak=0;
+    this.cols=diff==='easy'?4:(diff==='medium'?5:6);this.rows=diff==='easy'?4:(diff==='medium'?4:6);
+    const t=['🍎','🍌','🍒','🍇','🍉','🍋','🥝','🥥','🥑','🍆','🥕','🌽','🥦','🌶️','🍄','🥜','🍞','🧀','🍖','🍗'];
+    let p=[];while(p.length<(this.cols*this.rows)/2)p.push(t[Math.floor(Math.random()*t.length)]);
+    this.cards=[...p,...p].sort(()=>0.5-Math.random());}
+    init(c){c.innerHTML=`<div class="memory-grid" style="grid-template-columns:repeat(${this.cols},1fr)">${this.cards.map((e,i)=>`<div class="memory-card" id="c-${i}" onclick="App.curr.flip(${i})"><div class="front">${e}</div><div class="back"></div></div>`).join('')}</div>`;}
+    flip(i){let c=$(`#c-${i}`);if(this.locked||c.classList.contains('flip'))return;c.classList.add('flip');Sound.click();this.flipped.push({id:i,v:this.cards[i],e:c});
+    if(this.flipped.length===2){this.locked=true;App.moves++;if(this.flipped[0].v===this.flipped[1].v){this.matched++;this.streak++;if(this.streak>=2){App.addTime(5,false);this.streak=0;}this.flipped=[];this.locked=false;if(this.matched===this.cards.length/2)App.endGame(true);}else{this.streak=0;Sound.error();setTimeout(()=>{this.flipped.forEach(x=>x.e.classList.remove('flip'));this.flipped=[];this.locked=false;},800);}}}
+}
+class MathGame {
+    constructor(diff){this.diff=diff;this.score=0;this.combo=0;this.bonus=diff==='easy'?2:(diff==='medium'?3:5);}
+    init(c){c.innerHTML=`<div style="text-align:center"><div class="stroop-word" style="font-size:2.5rem" id="mp"></div><div class="choice-grid" id="mo"></div></div>`;this.next();}
+    next(){let o=['+','-','*'],op=o[Math.floor(Math.random()*(this.diff==='easy'?2:3))],a,b,r;
+    if(op==='*'){a=Math.floor(Math.random()*9)+2;b=Math.floor(Math.random()*9)+2;r=a*b;}else{a=Math.floor(Math.random()*20)+1;b=Math.floor(Math.random()*20)+1;r=op==='+'?a+b:a-b;}
+    $('#mp').textContent=`${a} ${op} ${b}`;$('#stat-2').textContent=`Pts: ${this.score}`;
+    let ch=[r];while(ch.length<4){let x=r+Math.floor(Math.random()*10)-5;if(!ch.includes(x))ch.push(x);}
+    $('#mo').innerHTML=ch.sort(()=>0.5-Math.random()).map(x=>`<button class="choice-btn" onclick="App.curr.chk(${x},${r})">${x}</button>`).join('');}
+    chk(v,r){if(v===r){this.score+=10;this.combo++;Sound.click();if(this.combo%3===0)App.addTime(this.bonus,true);this.next();}else{this.score=Math.max(0,this.score-5);this.combo=0;Sound.error();App.visualPenalty();this.next();}}
+}
+class AnagramGame { constructor(d){this.d=d;this.sc=0;this.cm=0;this.w=['GATO','SOL','LUZ','MAR','PAN','VINO','CASA','ARBOL','TREN'];this.t=[];this.pool=[];this.s=[];}
+    init(c){this.c=c;this.load();document.onkeydown=(e)=>{if(e.key.match(/[a-zñ]/i)){let f=this.pool.find(x=>x.l===e.key.toUpperCase());if(f)this.cp(f.id);}if(e.key==='Backspace'){let i=this.s.map((x,k)=>x?k:-1).filter(x=>x!==-1).pop();if(i!==undefined)this.cs(i);}};}
+    load(){if(!this.t.length)this.t=[...this.w].sort(()=>0.5-Math.random());this.cw=this.t.pop();this.pool=this.cw.split('').sort(()=>0.5-Math.random()).map((l,i)=>({l,id:i}));this.s=Array(this.cw.length).fill(null);this.render();}
+    render(){$('#stat-2').textContent=`Pts: ${this.sc}`;this.c.innerHTML=`<div class="anagram-slots">${this.s.map((x,i)=>x?`<div class="letter-btn" onclick="App.curr.cs(${i})">${x.l}</div>`:`<div class="letter-btn empty"></div>`).join('')}</div><div class="anagram-pool">${this.pool.map(x=>`<div class="letter-btn" onclick="App.curr.cp(${x.id})">${x.l}</div>`).join('')}</div>`;}
+    cp(id){let pi=this.pool.findIndex(x=>x.id===id),si=this.s.findIndex(x=>x===null);if(pi>-1&&si>-1){this.s[si]=this.pool[pi];this.pool.splice(pi,1);Sound.click();this.render();this.chk();}}
+    cs(i){if(this.s[i]){this.pool.push(this.s[i]);this.s[i]=null;Sound.click();this.render();}}
+    chk(){if(!this.s.includes(null)){if(this.s.map(x=>x.l).join('')===this.cw){Sound.merge();this.sc+=10;this.cm++;if(this.cm%3===0)App.addTime(3,true);setTimeout(()=>this.load(),300);}else{Sound.error();this.sc=Math.max(0,this.sc-5);this.cm=0;App.visualPenalty();this.pool=this.cw.split('').sort(()=>0.5-Math.random()).map((l,i)=>({l,id:i}));this.s=Array(this.cw.length).fill(null);setTimeout(()=>this.render(),300);}}}
+}
+class MatrixGame { constructor(d){this.rd=1;this.mx=5;this.cfg=d==='easy'?[3,3]:(d==='medium'?[4,5]:[5,7]);this.sz=this.cfg[0];this.tc=this.cfg[1];this.tg=[];this.sl=[];this.ok=false;}
+    init(c){this.c=c;this.ld();}
+    ld(){if(this.rd>this.mx){App.endGame(true);return;}$('#stat-2').textContent=`Ronda ${this.rd}/${this.mx}`;this.c.innerHTML=`<div class="matrix-grid" style="grid-template-columns:repeat(${this.sz},1fr);width:${this.sz*60}px">${Array(this.sz*this.sz).fill(0).map((_,i)=>`<div class="matrix-cell" id="mt-${i}" onclick="App.curr.ck(${i})"></div>`).join('')}</div>`;this.tg=[];while(this.tg.length<this.tc){let r=Math.floor(Math.random()*this.sz*this.sz);if(!this.tg.includes(r))this.tg.push(r);}setTimeout(()=>{this.tg.forEach(x=>$(`#mt-${x}`).classList.add('active'));Sound.click();},500);setTimeout(()=>{this.tg.forEach(x=>$(`#mt-${x}`).classList.remove('active'));this.ok=true;this.sl=[];},2000);}
+    ck(i){if(!this.ok)return;if(this.sl.includes(i))return;if(this.tg.includes(i)){$(`#mt-${i}`).classList.add('ok');this.sl.push(i);Sound.click();if(this.sl.length===this.tc){this.ok=false;Sound.merge();setTimeout(()=>{this.rd++;this.ld();},800);}}else{$(`#mt-${i}`).classList.add('fail');Sound.error();this.ok=false;this.tg.forEach(x=>$(`#mt-${x}`).classList.add('active'));setTimeout(()=>this.ld(),1500);}}
+}
+class SchulteGame { constructor(d){this.sz=d==='easy'?3:(d==='medium'?4:5);this.mx=this.sz*this.sz;this.cur=1;this.n=[];}
+    init(c){this.n=Array.from({length:this.mx},(_,i)=>i+1).sort(()=>0.5-Math.random());$('#stat-2').textContent=`Busca: 1`;c.innerHTML=`<div class="schulte-grid" style="grid-template-columns:repeat(${this.sz},1fr);width:${this.sz*55}px">${this.n.map(x=>`<div class="schulte-cell" onclick="App.curr.ck(this,${x})">${x}</div>`).join('')}</div>`;}
+    ck(e,v){if(v===this.cur){Sound.click();e.style.opacity='0.3';e.style.pointerEvents='none';this.cur++;if(this.cur>this.mx)App.endGame(true);else $('#stat-2').textContent=`Busca: ${this.cur}`;}else Sound.error();}
+}
+class Sudoku { constructor(d){this.d=d;this.b=[];this.s=[];}
+    init(c){c.innerHTML=`<div class="sudoku-grid" id="sb"></div><div class="numpad" id="sp"></div>`;this.gen();let b=$('#sb');this.b.forEach((r,i)=>r.forEach((v,j)=>{let d=document.createElement('div');d.className=`sudoku-cell ${v?'initial':''}`;d.textContent=v||'';d.onclick=()=>{if(!v)this.sel(d,i,j)};b.appendChild(d);}));[1,2,3,4,5,6,7,8,9,'⌫'].forEach(x=>{let bt=document.createElement('button');bt.textContent=x;bt.onclick=()=>this.inp(x);$('#sp').appendChild(bt);});}
+    sel(e,r,c){$$('.selected').forEach(x=>x.classList.remove('selected'));this.cur={e,r,c};e.classList.add('selected');}
+    inp(v){if(!this.cur)return;let val=v==='⌫'?0:v;this.cur.e.textContent=val||'';this.b[this.cur.r][this.cur.c]=val;if(val&&val!=this.s[this.cur.r][this.cur.c]){this.cur.e.classList.add('error');Sound.error();}else{this.cur.e.classList.remove('error');Sound.click();if(this.b.every((r,i)=>r.every((c,j)=>c===this.s[i][j])))App.endGame(true);}}
+    gen(){this.s=Array(9).fill().map(()=>Array(9).fill(0));const f=(r,c)=>{let n=[1,2,3,4,5,6,7,8,9].sort(()=>0.5-Math.random());for(let x of n)if(this.v(r,c,x)){this.s[r][c]=x;if(c===8?(r===8?1:f(r+1,0)):f(r,c+1))return 1;this.s[r][c]=0;}return 0;};f(0,0);this.b=JSON.parse(JSON.stringify(this.s));let k=this.d==='easy'?30:45;while(k>0){let r=Math.floor(Math.random()*9),c=Math.floor(Math.random()*9);if(this.b[r][c]){this.b[r][c]=0;k--;}}}
+    v(r,c,x){for(let k=0;k<9;k++)if(this.s[r][k]===x||this.s[k][c]===x)return 0;let br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;for(let i=0;i<3;i++)for(let j=0;j<3;j++)if(this.s[br+i][bc+j]===x)return 0;return 1;}
+}
+class WordSearch { constructor(d){this.sz=10;this.w=['JAVA','CODE','BYTE','WEB','APP'];this.bd=[];this.fd=0;}
+    init(c){c.innerHTML=`<div style="text-align:center;margin-bottom:10px">Encuentra: ${this.w.join(', ')}</div><div class="ws-grid" style="grid-template-columns:repeat(${this.sz},1fr);width:${this.sz*28}px" id="wb"></div>`;this.gen();let b=$('#wb');this.bd.forEach((r,i)=>r.forEach((l,j)=>{let d=document.createElement('div');d.className='ws-cell';d.textContent=l;d.dataset.r=i;d.dataset.c=j;b.appendChild(d);}));this.evt(b);}
+    gen(){this.bd=Array(this.sz).fill().map(()=>Array(this.sz).fill(''));this.w.forEach(w=>{let p=0;while(!p){let d=Math.floor(Math.random()*2),r=Math.floor(Math.random()*this.sz),c=Math.floor(Math.random()*this.sz);if(this.ck(w,r,c,d)){for(let i=0;i<w.length;i++)this.bd[r+(d?i:0)][c+(d?0:i)]=w[i];p=1;}}});const a="ABCDEFGHIJKLMNOPQRSTUVWXYZ";for(let i=0;i<this.sz;i++)for(let j=0;j<this.sz;j++)if(!this.bd[i][j])this.bd[i][j]=a[Math.floor(Math.random()*a.length)];}
+    ck(w,r,c,d){if((d&&r+w.length>this.sz)||(!d&&c+w.length>this.sz))return 0;for(let i=0;i<w.length;i++)if(this.bd[r+(d?i:0)][c+(d?0:i)])return 0;return 1;}
+    evt(b){let s=0,st,pth=[];const g=e=>e.target.closest('.ws-cell');
+    b.onmousedown=e=>{let c=g(e);if(c){s=1;st={r:+c.dataset.r,c:+c.dataset.c};}};
+    b.onmousemove=e=>{if(s){let c=g(e);if(c){$$('.selected').forEach(x=>x.classList.remove('selected'));let en={r:+c.dataset.r,c:+c.dataset.c},dr=en.r-st.r,dc=en.c-st.c;pth=[];if(!dr||!dc||Math.abs(dr)===Math.abs(dc)){let mx=Math.max(Math.abs(dr),Math.abs(dc)),ir=dr?dr/Math.abs(dr):0,ic=dc?dc/Math.abs(dc):0;for(let i=0;i<=mx;i++)pth.push({r:st.r+i*ir,c:st.c+i*ic});pth.forEach(p=>$(`.ws-cell[data-r="${p.r}"][data-c="${p.c}"]`)?.classList.add('selected'));}}}};
+    document.onmouseup=()=>{if(s){s=0;let t=pth.map(p=>this.bd[p.r][p.c]).join('');if(this.w.includes(t)){this.fd++;pth.forEach(p=>$(`.ws-cell[data-r="${p.r}"][data-c="${p.c}"]`).classList.add('found'));Sound.click();if(this.fd===this.w.length)App.endGame(true);}$$('.selected').forEach(x=>x.classList.remove('selected'));}};}
+}
+class DiffGame { constructor(d){this.l=1;this.m=d==='easy'?3:5;}init(c){this.c=c;this.ld();}ld(){let s=Math.min(this.l+2,6),e=['😀','😎','👽','🤖'],b=e[Math.floor(Math.random()*4)],d;do{d=e[Math.floor(Math.random()*4)]}while(d===b);let t=Math.floor(Math.random()*s*s);this.c.innerHTML=`<div style="text-align:center;margin-bottom:10px">Nivel ${this.l}/${this.m}</div><div class="diff-grid" style="display:grid;grid-template-columns:repeat(${s},1fr);gap:5px;max-width:300px;margin:0 auto">${Array(s*s).fill(0).map((_,i)=>`<div class="diff-cell" onclick="${i===t?`App.curr.ok()`:`Sound.error()`}">${i===t?d:b}</div>`).join('')}</div>`;}ok(){Sound.click();this.l++;if(this.l>this.m)App.endGame(true);else this.ld();}}
+class StroopGame { constructor(d){this.s=0;this.m=10;this.cl=[{n:'ROJO',c:'#f00'},{n:'AZUL',c:'#00f'},{n:'VERDE',c:'#0f0'}];}init(c){c.innerHTML=`<div style="text-align:center"><div id="sq" style="font-size:1.2rem"></div><div id="sw" style="font-size:3rem;font-weight:bold;margin:20px"></div><div class="choice-grid" id="so"></div></div>`;this.nx();}nx(){let t=this.cl[Math.floor(Math.random()*3)],c;do{c=this.cl[Math.floor(Math.random()*3)]}while(c.n===t.n);let m=Math.random()>.5;$('#sq').innerHTML=m?'¿Qué <b>COLOR</b>?':'¿Qué <b>DICE</b>?';$('#sw').textContent=t.n;$('#sw').style.color=c.c;let a=m?c.n:t.n,o=[a];while(o.length<3){let x=this.cl[Math.floor(Math.random()*3)].n;if(!o.includes(x))o.push(x);}$('#so').innerHTML=o.sort(()=>.5-Math.random()).map(x=>`<button class="choice-btn" onclick="App.curr.ck('${x}','${a}')">${x}</button>`).join('');}ck(v,r){if(v===r){this.s++;Sound.click();if(this.s>=this.m)App.endGame(true);else this.nx();}else{Sound.error();this.nx();}}}
 
-// --- CONTROLLER ---
-
+/* --- APP CONTROLLER --- */
 const App = {
     curr: null, type: null, diff: 'easy', time: 0, timer: null, moves: 0,
     list: [
         { id:'mem', t:'Memoria', i:'🧩', d:'Parejas', c:MemoryGame, mode:'time' },
         { id:'mat', t:'Cálculo', i:'✖️', d:'Arcade', c:MathGame, mode:'score' },
         { id:'ana', t:'Anagrama', i:'🔡', d:'Arcade', c:AnagramGame, mode:'score' },
-        { id:'sud', t:'Sudoku', i:'🔢', d:'Lógica', c:Sudoku, mode:'time' },
+        { id:'chp', t:'Chimpancé', i:'🐵', d:'Memoria', c:ChimpGame, mode:'score' }, // NEW
+        { id:'srt', t:'Clasifica', i:'⚖️', d:'Veloz', c:SorterGame, mode:'score' }, // NEW
+        { id:'stw', t:'Cronómetro', i:'⏱️', d:'Mental', c:StopwatchGame, mode:'score' }, // NEW
+        { id:'mtx', t:'Matriz', i:'🟦', d:'Patrones', c:MatrixGame, mode:'time' },
+        { id:'sch', t:'Schulte', i:'🔢', d:'Atención', c:SchulteGame, mode:'time' },
+        { id:'sud', t:'Sudoku', i:'✏️', d:'Lógica', c:Sudoku, mode:'time' },
         { id:'wrd', t:'Sopa Letras', i:'🔎', d:'Buscar', c:WordSearch, mode:'time' },
         { id:'dif', t:'Intruso', i:'🧐', d:'Visual', c:DiffGame, mode:'time' },
-        { id:'str', t:'Confusión', i:'🎨', d:'Stroop', c:StroopGame, mode:'time' }, // Stroop remains as rounds
-        { id:'2048', t:'2048', i:'🧊', d:'Desliza', c:Game2048, mode:'time' }
+        { id:'str', t:'Confusión', i:'🎨', d:'Stroop', c:StroopGame, mode:'time' }
     ],
 
     init: () => {
@@ -887,21 +782,23 @@ const App = {
         $('#game-board-area').innerHTML = '';
         
         // Init Time based on Mode
-        if(App.type.mode === 'score') {
-            App.time = 30; // Start Countdown
+        if(App.type.mode === 'score' && App.type.id !== 'chp' && App.type.id !== 'stw') {
+            App.time = 30; // Start Countdown for Arcade games
         } else {
-            App.time = 0; // Start Countup
+            App.time = 0; // Countup or Custom logic
         }
         
         App.updateTimerDisplay();
-
         App.curr = new App.type.c(App.diff);
         App.curr.init($('#game-board-area'));
         
+        // Timer Logic
+        if(App.type.id === 'stw') return; // Stopwatch handles its own timing
+
         App.timer = setInterval(() => {
-            if(App.type.mode === 'score') {
+            if(App.type.mode === 'score' && App.type.id !== 'chp') {
                 App.time--;
-                if(App.time <= 0) App.endGame(true); // End on 0
+                if(App.time <= 0) App.endGame(true);
             } else {
                 App.time++;
             }
@@ -911,18 +808,11 @@ const App = {
 
     addTime: (sec, isBonus) => {
         const bar = $('.stats-bar');
-        
-        if (App.type.mode === 'score') {
-            App.time += sec; 
-        } else {
-             App.time = Math.max(0, App.time - sec);
-        }
-        
+        if (App.type.mode === 'score') App.time += sec; 
+        else App.time = Math.max(0, App.time - sec);
         App.updateTimerDisplay();
-        
-        // Visual Feedback
         bar.classList.remove('time-bonus', 'time-penalty');
-        void bar.offsetWidth; // Trigger reflow
+        void bar.offsetWidth; 
         bar.classList.add(isBonus ? 'time-bonus' : 'time-penalty');
     },
 
@@ -934,7 +824,8 @@ const App = {
     },
 
     updateTimerDisplay: () => {
-        if (App.type.mode === 'score') {
+        if(App.type.id === 'stw') return;
+        if (App.type.mode === 'score' && App.type.id !== 'chp') {
             $('#stat-1').textContent = `${App.time}s`;
         } else {
             const m = Math.floor(App.time / 60).toString().padStart(2, '0');
@@ -944,9 +835,7 @@ const App = {
     },
 
     changeDifficulty: (v) => { App.diff = v; App.run(); },
-
     restartGame: () => { Sound.click(); App.run(); },
-
     confirmExit: () => { if(confirm("¿Volver al menú?")) App.toMenu(); },
 
     toMenu: () => {
@@ -954,19 +843,20 @@ const App = {
         $('#view-game').classList.remove('active');
         $('#view-menu').classList.add('active');
         $('#modal-win').classList.remove('active');
-        document.onkeydown = null; document.onmouseup = null;
+        if(App.curr && App.curr.stop) App.curr.stop(); // Stop loop if exists
+        document.onkeydown = null; 
     },
 
     endGame: (win) => {
         if(!win) return;
         clearInterval(App.timer); Sound.win(); Confetti.start();
-        document.onkeydown = null; document.onmouseup = null;
+        document.onkeydown = null; 
         
-        let scoreToSave = App.time; // Default for Time mode
+        let scoreToSave = App.time; 
         let msg = `Tiempo: ${$('#stat-1').textContent}`;
 
         if(App.type.mode === 'score') {
-            scoreToSave = App.curr.score;
+            scoreToSave = App.curr.score || App.curr.level || 0;
             msg = `Puntaje Final: ${scoreToSave}`;
         }
 
@@ -976,8 +866,6 @@ const App = {
         $('#record-section').style.display = rec ? 'block' : 'none';
         if(rec) { $('#player-name').value=''; setTimeout(()=>$('#player-name').focus(), 100); }
         $('#modal-win').classList.add('active');
-        
-        // Save temporary result for modal action
         App.lastScore = scoreToSave;
     },
 
@@ -1002,6 +890,7 @@ const App = {
                         let val = '';
                         if(g.mode === 'score') {
                             val = `${d[k].score} pts`;
+                            if(g.id === 'chp') val = `Nivel ${d[k].score}`;
                         } else {
                             const m = Math.floor(d[k].score/60).toString().padStart(2,'0');
                             const s = (d[k].score%60).toString().padStart(2,'0');
@@ -1018,7 +907,6 @@ const App = {
 };
 
 window.onload = App.init;
-
 </script>
 </body>
 </html>
