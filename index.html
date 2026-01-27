@@ -7,11 +7,37 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BrainBuddy">
     <meta name="format-detection" content="telephone=no">
     <meta name="theme-color" content="#0f172a">
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%236366f1' rx='20'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white'>🧠</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%236366f1' rx='20'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white'>🧠</text></svg>">
+    <link rel="icon" id="favicon" href="">
+    <link rel="apple-touch-icon" id="apple-icon" href="">
+
+    <script>
+        // TRUCO: Generar icono PNG al vuelo para iOS
+        (function() {
+            window.generateIcons = function() {
+                var canvas = document.createElement('canvas');
+                canvas.width = 180; canvas.height = 180;
+                var ctx = canvas.getContext('2d');
+                
+                // Fondo
+                ctx.fillStyle = '#1e1b4b'; 
+                ctx.fillRect(0, 0, 180, 180);
+                
+                // Cerebro
+                ctx.font = '100px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🧠', 90, 96); // Ajuste visual
+                
+                var url = canvas.toDataURL('image/png');
+                document.getElementById('favicon').href = url;
+                document.getElementById('apple-icon').href = url;
+            };
+        })();
+    </script>
 
     <style>
         :root {
@@ -51,7 +77,6 @@
             overscroll-behavior: none;
             user-select: none;
             -webkit-user-select: none;
-            /* Safe area for iPhone Notch */
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
         }
@@ -94,7 +119,7 @@
             border: 1px solid var(--glass-border);
             position: relative;
             display: flex; flex-direction: column; align-items: center;
-            flex: 1; /* Fill space */
+            flex: 1;
         }
 
         /* --- Buttons --- */
@@ -138,7 +163,7 @@
             cursor: pointer;
             transition: transform 0.2s, background 0.2s;
             display: flex; flex-direction: column; justify-content: space-between;
-            width: 46%; /* 2 cols on mobile */
+            width: 46%;
             max-width: 150px;
             height: 140px; 
         }
@@ -382,7 +407,7 @@
     </div>
 
 <script>
-/** BRAIN BUDDY CORE v23 (iOS Edition) */
+/** BRAIN BUDDY CORE v24 (iOS Icon Fix + Haptics) */
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
@@ -398,14 +423,23 @@ const Sound = {
         o.start(); o.stop(this.ctx.currentTime + dur);
     },
     win: () => { Sound.play(400,'sine',0.1); setTimeout(()=>Sound.play(600,'sine',0.1),100); setTimeout(()=>Sound.play(800,'triangle',0.4,0.2),200); },
-    click: () => Sound.play(300,'sine',0.05,0.05),
-    error: () => Sound.play(150,'sawtooth',0.3,0.08),
-    merge: () => Sound.play(500,'square',0.05,0.05)
+    click: () => { 
+        Sound.play(300,'sine',0.05,0.05);
+        if(navigator.vibrate) navigator.vibrate(10); // Haptic
+    },
+    error: () => {
+        Sound.play(150,'sawtooth',0.3,0.08);
+        if(navigator.vibrate) navigator.vibrate([30, 50, 30]); // Haptic Pattern
+    },
+    merge: () => {
+        Sound.play(500,'square',0.05,0.05);
+        if(navigator.vibrate) navigator.vibrate(20);
+    }
 };
 
 const Storage = {
-    get: () => JSON.parse(localStorage.getItem('brainBuddy_v23')) || {},
-    save: (d) => localStorage.setItem('brainBuddy_v23', JSON.stringify(d)),
+    get: () => JSON.parse(localStorage.getItem('brainBuddy_v24')) || {},
+    save: (d) => localStorage.setItem('brainBuddy_v24', JSON.stringify(d)),
     check: (id, diff, score, mode) => {
         const d = Storage.get();
         const cur = d[`${id}_${diff}`];
@@ -656,6 +690,9 @@ const App = {
             g.appendChild(c);
         });
         window.addEventListener('resize', ()=>Confetti.resize());
+        
+        // Generate Icons on Load
+        if(window.generateIcons) window.generateIcons();
     },
 
     load: (type) => {
