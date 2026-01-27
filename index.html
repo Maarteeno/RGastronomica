@@ -30,7 +30,7 @@
                 ctx.font = '100px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText('🧠', 90, 96); // Ajuste visual
+                ctx.fillText('🧠', 90, 96); 
                 
                 var url = canvas.toDataURL('image/png');
                 document.getElementById('favicon').href = url;
@@ -407,7 +407,7 @@
     </div>
 
 <script>
-/** BRAIN BUDDY CORE v24 (iOS Icon Fix + Haptics) */
+/** BRAIN BUDDY CORE v25 (Eagle Fix) */
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
@@ -425,11 +425,11 @@ const Sound = {
     win: () => { Sound.play(400,'sine',0.1); setTimeout(()=>Sound.play(600,'sine',0.1),100); setTimeout(()=>Sound.play(800,'triangle',0.4,0.2),200); },
     click: () => { 
         Sound.play(300,'sine',0.05,0.05);
-        if(navigator.vibrate) navigator.vibrate(10); // Haptic
+        if(navigator.vibrate) navigator.vibrate(10);
     },
     error: () => {
         Sound.play(150,'sawtooth',0.3,0.08);
-        if(navigator.vibrate) navigator.vibrate([30, 50, 30]); // Haptic Pattern
+        if(navigator.vibrate) navigator.vibrate([30, 50, 30]);
     },
     merge: () => {
         Sound.play(500,'square',0.05,0.05);
@@ -438,8 +438,8 @@ const Sound = {
 };
 
 const Storage = {
-    get: () => JSON.parse(localStorage.getItem('brainBuddy_v24')) || {},
-    save: (d) => localStorage.setItem('brainBuddy_v24', JSON.stringify(d)),
+    get: () => JSON.parse(localStorage.getItem('brainBuddy_v25')) || {},
+    save: (d) => localStorage.setItem('brainBuddy_v25', JSON.stringify(d)),
     check: (id, diff, score, mode) => {
         const d = Storage.get();
         const cur = d[`${id}_${diff}`];
@@ -576,6 +576,61 @@ class SlidingGame {
     }
 }
 
+/* --- FIXED EAGLE GAME --- */
+class EagleGame {
+    constructor(diff) {
+        this.diff = diff;
+        this.level = 1;
+        this.score = 0; // Renombrado de 's' a 'score' para guardar correctamente
+        this.baseSize = 2;
+    }
+    init(c) {
+        this.c = c;
+        this.load();
+    }
+    load() {
+        const sz = Math.min(8, this.baseSize + Math.floor(this.level / 2));
+        const tot = sz * sz;
+        const tgt = Math.floor(Math.random() * tot);
+        const h = Math.floor(Math.random() * 360);
+        
+        let dt = Math.max(3, 25 - (this.level * 1.5));
+        if (this.diff === 'medium') dt *= 0.8;
+        if (this.diff === 'hard') dt *= 0.6;
+        
+        const c1 = `hsl(${h}, 80%, 50%)`;
+        const c2 = `hsl(${h}, 80%, ${50 + dt}%)`; // Color ligeramente diferente
+        
+        $('#stat-2').textContent = `Pts: ${this.score}`;
+        
+        // Generar grid
+        this.c.innerHTML = `
+            <div class="eagle-grid" style="grid-template-columns:repeat(${sz}, 1fr); width:${Math.min(350, sz * 60)}px">
+                ${Array(tot).fill(0).map((_, i) => `
+                    <div class="eagle-cell" 
+                         style="background:${i === tgt ? c2 : c1}; aspect-ratio:1" 
+                         onclick="App.curr.ck(${i === tgt})">
+                    </div>
+                `).join('')}
+            </div>
+            <div style="margin-top:15px; color:#999; font-size:0.9rem">Encuentra el diferente</div>
+        `;
+    }
+    ck(isTarget) {
+        if (isTarget) {
+            this.score += 10;
+            this.level++;
+            Sound.click();
+            App.addTime(1, true); // SIEMPRE añade 1 segundo extra
+            this.load();
+        } else {
+            this.score = Math.max(0, this.score - 5);
+            Sound.error();
+            App.visualPenalty();
+        }
+    }
+}
+
 // 14. Emoji Equation
 class EquationGame {
     constructor(diff) {
@@ -645,7 +700,6 @@ class HuntGame {
 }
 
 /* --- OTHER GAMES (Condensed) --- */
-class EagleGame{constructor(d){this.d=d;this.l=1;this.s=0;this.bs=2;}init(c){this.c=c;this.ld();}ld(){const sz=Math.min(8,this.bs+Math.floor(this.l/2)),tot=sz*sz,tgt=Math.floor(Math.random()*tot),h=Math.floor(Math.random()*360);let dt=Math.max(3,25-(this.l*1.5));if(this.d==='medium')dt*=.8;if(this.d==='hard')dt*=.6;const c1=`hsl(${h},80%,50%)`,c2=`hsl(${h},80%,${50+dt}%)`;$('#stat-2').textContent=`Pts: ${this.s}`;this.c.innerHTML=`<div class="eagle-grid" style="grid-template-columns:repeat(${sz},1fr);width:${Math.min(350,sz*60)}px">${Array(tot).fill(0).map((_,i)=>`<div class="eagle-cell" style="background:${i===tgt?c2:c1};aspect-ratio:1" onclick="App.curr.ck(${i===tgt})"></div>`).join('')}</div><div style="margin-top:15px;color:#999;font-size:0.9rem">Encuentra el diferente</div>`;}ck(t){if(t){this.s+=10;this.l++;Sound.click();App.addTime(1,true);this.ld();}else{this.s=Math.max(0,this.s-5);Sound.error();App.visualPenalty();}}}
 class ChimpGame{constructor(d){this.l=4;this.mx=d==='easy'?8:12;this.lv=3;this.c=1;}init(c){this.cn=c;this.ld();}ld(){this.c=1;$('#stat-2').textContent=`Nivel ${this.l} ❤️${this.lv}`;const sz=this.l<=9?5:6,p=[];while(p.length<this.l){let x=Math.floor(Math.random()*sz*sz);if(!p.includes(x))p.push(x);}this.cn.innerHTML=`<div class="chimp-grid" style="grid-template-columns:repeat(${sz},1fr);width:${sz*60}px">${Array(sz*sz).fill(0).map((_,i)=>{let k=p.indexOf(i);return k!=-1?`<div class="chimp-cell" id="ch-${i}" onclick="App.curr.ck(${i},${k+1})">${k+1}</div>`:`<div class="chimp-cell hidden"></div>`}).join('')}</div>`;}ck(i,n){if(n!=this.c){this.lv--;Sound.error();if(this.lv<=0)App.endGame(true);else{alert("¡Fallo!");this.ld();}return;}Sound.click();if(this.c===1)$$('.chimp-cell').forEach(e=>{if(e.textContent!=='1'&&!e.classList.contains('hidden'))e.classList.add('covered')});$(`#ch-${i}`).classList.add('hidden');this.c++;if(this.c>this.l){Sound.merge();this.l++;setTimeout(()=>this.ld(),500);}}get score(){return this.l;}}
 class SorterGame{constructor(d){this.s=0;this.m=d==='easy'||d==='medium'?'n':'c';}init(c){this.c=c;document.onkeydown=e=>{if(e.key==='ArrowLeft')this.ck(0);if(e.key==='ArrowRight')this.ck(1);};this.nx();}nx(){$('#stat-2').textContent=`Pts: ${this.s}`;let t,y;if(this.m==='n'){t=Math.floor(Math.random()*100);y=t%2===0?0:1;}else{let v="AEIOU",k="BCDFGHJKLMNPQRSTVWXYZ";if(Math.random()>.5){t=v[Math.floor(Math.random()*v.length)];y=0;}else{t=k[Math.floor(Math.random()*k.length)];y=1;}}this.cur=y;this.c.innerHTML=`<div class="sorter-container"><div class="sorter-card">${t}</div><div class="sorter-controls"><button class="sorter-btn btn-left" onclick="App.curr.ck(0)">${this.m==='n'?'PAR':'VOCAL'}</button><button class="sorter-btn btn-right" onclick="App.curr.ck(1)">${this.m==='n'?'IMPAR':'CONS'}</button></div></div>`;}ck(s){if(s===this.cur){this.s+=5;Sound.click();}else{this.s=Math.max(0,this.s-5);Sound.error();App.visualPenalty();}this.nx();}}
 class StopwatchGame{constructor(d){this.t=d==='hard'||d==='easy'?10:(d==='extreme'?15:5);this.lm=(d==='hard')?4:((d==='extreme')?5:999);this.s=0;this.r=0;this.at=3;}init(c){this.c=c;this.rn();}rn(){$('#stat-2').textContent=`Pts: ${this.s.toFixed(0)} | ${this.at}`;this.c.innerHTML=`<div style="text-align:center"><div class="stopwatch-target">META: ${this.t}.00s</div><div class="stopwatch-display">0.00</div><button class="stopwatch-btn ${this.r?'running':''}" onclick="App.curr.tg()">${this.r?'STOP':'START'}</button><div style="margin-top:20px;color:#888">${this.lm<99?`Oculto a ${this.lm}s`:''}</div></div>`;}tg(){if(!this.r){if(this.at<=0)return;this.r=1;this.st=Date.now();Sound.click();this.rn();this.lp();}else this.sp();}lp(){if(!this.r)return;let d=(Date.now()-this.st)/1000,dp=$('.stopwatch-display');dp.textContent=d>this.lm?"?.??":d.toFixed(2);if(d>this.lm)dp.style.color='#555';else dp.style.color='var(--accent)';requestAnimationFrame(()=>this.lp());}sp(){this.r=0;let a=(Date.now()-this.st)/1000,df=Math.abs(a-this.t);$('.stopwatch-display').textContent=a.toFixed(3);this.s+=Math.max(0,100-(df*100));this.at--;Sound.win();setTimeout(()=>{if(this.at<=0)App.endGame(true);else this.rn();},2000);}}
