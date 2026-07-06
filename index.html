@@ -108,6 +108,44 @@
         }
         .header p { color: var(--text-muted); font-size: 0.9rem; letter-spacing: 1px; }
 
+        .app-footer {
+            text-align: center;
+            margin-top: auto;
+            padding: 16px 0 8px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .app-version { cursor: default; user-select: none; }
+        .app-copyright { opacity: 0.85; }
+
+        .pin-error { color: var(--danger); font-size: 0.85rem; min-height: 1.2em; margin-top: 4px; }
+        .modal-changelog { max-width: 420px; }
+        #changelog-list {
+            max-height: 400px;
+            overflow-y: auto;
+            text-align: left;
+            margin-top: 10px;
+        }
+        .changelog-entry { margin-bottom: 16px; }
+        .changelog-entry h3 {
+            color: var(--primary);
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+        .changelog-entry ul {
+            list-style: disc;
+            padding-left: 18px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        .changelog-entry li { margin-bottom: 4px; }
+
         /* --- Card Container --- */
         .card {
             background: var(--glass-bg);
@@ -455,6 +493,11 @@
                 <div id="game-board-area"></div>
             </div>
         </div>
+
+        <footer class="app-footer">
+            <span id="app-version" class="app-version" title="Brain Buddy"></span>
+            <span class="app-copyright"></span>
+        </footer>
     </div>
 
     <div id="modal-win" class="modal-overlay">
@@ -512,10 +555,73 @@
         </div>
     </div>
 
+    <div id="modal-pin" class="modal-overlay">
+        <div class="modal">
+            <h2>Acceso restringido</h2>
+            <p style="color:var(--text-muted); margin: 10px 0;">Ingresa el PIN para ver el historial de versiones.</p>
+            <input type="password" id="pin-input" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••">
+            <p id="pin-error" class="pin-error"></p>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="App.submitPin()">Entrar</button>
+                <button class="btn btn-outline" onclick="App.closePin()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-changelog" class="modal-overlay">
+        <div class="modal modal-changelog">
+            <h2>Historial de versiones</h2>
+            <div id="changelog-list"></div>
+            <button class="btn btn-primary" style="margin-top:15px;width:100%" onclick="App.closeChangelog()">Cerrar</button>
+        </div>
+    </div>
+
     <div id="toast"></div>
 
 <script>
-/** BRAIN BUDDY CORE v26 */
+const APP_META = {
+    version: '26',
+    versionLabel: 'v26',
+    author: 'Maarteeno',
+    year: 2026,
+    changelogPin: '2991'
+};
+
+const CHANGELOG = [
+    {
+        version: 'v26',
+        date: '2026',
+        items: [
+            'Corrección de récords en juegos por puntaje',
+            'Modal de detalles por juego con instrucciones y récords',
+            'Modales personalizados en lugar de alert/confirm nativos',
+            'Dificultad en Sudoku, Sopa de letras, Intruso y Stroop',
+            'Estabilidad: cleanup de timers y fin por tiempo en juegos de puntos',
+            'Mejoras visuales en tarjetas del menú y ranking en español'
+        ]
+    },
+    {
+        version: 'v25',
+        date: '2026',
+        items: [
+            'Corrección del guardado de puntaje en Águila',
+            'Puzzle deslizante con imagen generada en canvas',
+            'Temas por dificultad en el puzzle'
+        ]
+    },
+    {
+        version: 'v2',
+        date: '2026',
+        items: [
+            '16 juegos mentales en una sola app',
+            'Sistema de récords con localStorage',
+            'Soporte PWA básico para iOS y Android',
+            'Efectos de sonido, vibración y confeti'
+        ]
+    }
+];
+
+/** BRAIN BUDDY CORE — see APP_META.version */
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
@@ -1332,6 +1438,7 @@ const DIFF_LABELS = { easy: 'Fácil', medium: 'Medio', hard: 'Difícil', extreme
 const App = {
     curr: null, type: null, diff: 'easy', time: 0, timer: null, moves: 0,
     detailGame: null, toastTimer: null, confirmCb: null,
+    versionClicks: 0, versionClickTimer: null,
     list: [
         { id:'mem', t:'Memoria', i:'🧩', d:'Parejas', c:MemoryGame, mode:'time',
           desc:'Encuentra todas las parejas de emojis iguales.',
@@ -1449,6 +1556,10 @@ const App = {
 
     init: () => {
         App.buildMenuCards();
+        $('#app-version').textContent = APP_META.versionLabel;
+        $('.app-copyright').textContent = `© ${APP_META.author} ${APP_META.year}`;
+        $('#app-version').onclick = () => App.onVersionClick();
+        $('#pin-input').onkeydown = (e) => { if (e.key === 'Enter') App.submitPin(); };
         window.addEventListener('resize', () => Confetti.resize());
         $('#confirm-yes').onclick = () => {
             App.closeConfirm();
@@ -1457,6 +1568,57 @@ const App = {
         };
         if (window.generateIcons) window.generateIcons();
     },
+
+    onVersionClick: () => {
+        App.versionClicks++;
+        clearTimeout(App.versionClickTimer);
+        App.versionClickTimer = setTimeout(() => { App.versionClicks = 0; }, 2000);
+        if (App.versionClicks >= 5) {
+            App.versionClicks = 0;
+            App.openPinModal();
+        }
+    },
+
+    openPinModal: () => {
+        $('#pin-input').value = '';
+        $('#pin-error').textContent = '';
+        $('#modal-pin').classList.add('active');
+        setTimeout(() => $('#pin-input').focus(), 100);
+    },
+
+    closePin: () => {
+        $('#modal-pin').classList.remove('active');
+        $('#pin-input').value = '';
+        $('#pin-error').textContent = '';
+    },
+
+    submitPin: () => {
+        if ($('#pin-input').value === APP_META.changelogPin) {
+            App.closePin();
+            App.showChangelog();
+        } else {
+            $('#pin-error').textContent = 'PIN incorrecto';
+            App.showToast('PIN incorrecto');
+            Sound.error();
+        }
+    },
+
+    renderChangelog: () => {
+        const el = $('#changelog-list');
+        el.innerHTML = CHANGELOG.map(entry => `
+            <div class="changelog-entry">
+                <h3>${entry.version}${entry.date ? ` <span style="color:var(--text-muted);font-weight:normal;font-size:0.85rem">(${entry.date})</span>` : ''}</h3>
+                <ul>${entry.items.map(item => `<li>${item}</li>`).join('')}</ul>
+            </div>
+        `).join('');
+    },
+
+    showChangelog: () => {
+        App.renderChangelog();
+        $('#modal-changelog').classList.add('active');
+    },
+
+    closeChangelog: () => { $('#modal-changelog').classList.remove('active'); },
 
     showDetail: (game) => {
         App.detailGame = game;
