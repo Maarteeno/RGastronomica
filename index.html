@@ -11,8 +11,8 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="theme-color" content="#0f172a">
 
-    <link rel="icon" id="favicon" href="">
-    <link rel="apple-touch-icon" id="apple-icon" href="">
+    <link rel="icon" id="favicon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+    <link rel="apple-touch-icon" id="apple-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
 
     <script>
         // TRUCO: Generar icono PNG al vuelo para iOS
@@ -158,23 +158,62 @@
             background: rgba(255,255,255,0.03);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius);
-            padding: 15px;
+            padding: 12px;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
+            transition: transform 0.2s, background 0.2s, border-color 0.2s;
             display: flex; flex-direction: column; justify-content: space-between;
             width: 46%;
             max-width: 150px;
-            height: 140px; 
+            min-height: 155px;
+            position: relative;
+        }
+        .game-card:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
         }
         .game-card:active {
             transform: scale(0.95);
             background: rgba(255,255,255,0.08);
             border-color: var(--primary);
         }
-        .game-icon { font-size: 2.2rem; margin-bottom: 8px; display: block; filter: drop-shadow(0 0 8px rgba(255,255,255,0.1)); }
-        .game-title { font-size: 0.95rem; margin-bottom: 5px; color: var(--text-main); font-weight: 700; }
-        .game-desc { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px; line-height: 1.2; }
+        .game-icon { font-size: 2.2rem; margin-bottom: 6px; display: block; filter: drop-shadow(0 0 8px rgba(255,255,255,0.1)); }
+        .game-title { font-size: 0.95rem; margin-bottom: 4px; color: var(--text-main); font-weight: 700; }
+        .game-desc { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.2; }
+        .game-badge {
+            display: inline-block;
+            font-size: 0.62rem;
+            padding: 2px 6px;
+            border-radius: 6px;
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+        .game-record {
+            font-size: 0.65rem;
+            color: var(--highlight);
+            margin-top: 4px;
+            min-height: 14px;
+        }
+        .game-info-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        .game-info-btn:hover { background: rgba(255,255,255,0.12); color: white; }
 
         /* --- Views --- */
         .view { display: none; animation: fadeIn 0.4s ease; width: 100%; height: 100%; }
@@ -326,6 +365,41 @@
         #ranking-list li { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; display: flex; justify-content: space-between; }
         #ranking-list b { color: var(--accent); }
 
+        .modal-detail .detail-icon { font-size: 3rem; margin-bottom: 8px; }
+        .modal-detail .detail-desc { color: var(--text-muted); font-size: 0.9rem; margin: 8px 0; line-height: 1.4; }
+        .modal-detail .detail-howto {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: left;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 12px 0;
+            line-height: 1.5;
+        }
+        .modal-detail .detail-records { text-align: left; font-size: 0.8rem; margin: 10px 0; max-height: 100px; overflow-y: auto; }
+        .modal-detail .detail-records li { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; }
+        .modal-detail select { width: 100%; padding: 8px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--glass-border); background: #0f172a; color: white; }
+        .modal-actions { display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap; }
+
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid var(--glass-border);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            z-index: 3000;
+            opacity: 0;
+            transition: transform 0.3s, opacity 0.3s;
+            pointer-events: none;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes flashGreen { 0% { background: rgba(16, 185, 129, 0); } 50% { background: rgba(16, 185, 129, 0.3); } 100% { background: transparent; } }
@@ -360,7 +434,7 @@
             <div class="card">
                 <div class="game-header">
                     <div class="controls-left">
-                        <button class="btn btn-outline" onclick="App.confirmExit()" onmousedown="App.confirmExit()">⬅ Menú</button>
+                        <button class="btn btn-outline" onclick="App.confirmExit()">⬅ Menú</button>
                         <div class="difficulty-selector">
                             <select id="difficulty-select" onchange="App.changeDifficulty(this.value)">
                                 <option value="easy">Fácil</option>
@@ -406,8 +480,42 @@
         </div>
     </div>
 
+    <div id="modal-detail" class="modal-overlay">
+        <div class="modal modal-detail">
+            <div class="detail-icon" id="detail-icon"></div>
+            <h2 id="detail-title"></h2>
+            <span class="game-badge" id="detail-mode"></span>
+            <p class="detail-desc" id="detail-desc"></p>
+            <div class="detail-howto" id="detail-howto"></div>
+            <ul class="detail-records" id="detail-records"></ul>
+            <select id="detail-difficulty">
+                <option value="easy">Fácil</option>
+                <option value="medium">Medio</option>
+                <option value="hard">Difícil</option>
+                <option value="extreme">Extremo</option>
+            </select>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="App.startFromDetail()">▶ Jugar</button>
+                <button class="btn btn-outline" onclick="App.closeDetail()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-confirm" class="modal-overlay">
+        <div class="modal">
+            <h2 id="confirm-title">¿Confirmar?</h2>
+            <p id="confirm-message" style="color:var(--text-muted); margin: 10px 0 20px;"></p>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="confirm-yes">Sí</button>
+                <button class="btn btn-outline" onclick="App.closeConfirm()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
 <script>
-/** BRAIN BUDDY CORE v25 (Eagle Fix) */
+/** BRAIN BUDDY CORE v26 */
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
@@ -438,7 +546,13 @@ const Sound = {
 };
 
 const Storage = {
-    get: () => JSON.parse(localStorage.getItem('brainBuddy_v25')) || {},
+    get: () => {
+        try {
+            return JSON.parse(localStorage.getItem('brainBuddy_v25')) || {};
+        } catch {
+            return {};
+        }
+    },
     save: (d) => localStorage.setItem('brainBuddy_v25', JSON.stringify(d)),
     check: (id, diff, score, mode) => {
         const d = Storage.get();
@@ -485,7 +599,7 @@ const PuzzleThemes = {
 class SlidingGame {
     constructor(diff) {
         this.diff = diff; 
-        this.sz = diff==='easy'?3:(diff==='medium'?4:5);
+        this.sz = diff==='easy'?3:(diff==='medium'?4:(diff==='hard'?5:6));
         this.theme = PuzzleThemes[diff] || PuzzleThemes.easy;
         this.board = []; 
         this.emptyIdx = -1;
@@ -652,10 +766,12 @@ class EquationGame {
              if(Math.random() > 0.5) { questionHTML = `${B} + ${A}`; finalAns = valB + valA; }
         }
         const options = [finalAns];
-        while(options.length < 4) {
+        let tries = 0;
+        while(options.length < 4 && tries++ < 50) {
             let fake = finalAns + Math.floor(Math.random()*10)-5;
             if(!options.includes(fake) && fake !== finalAns && fake >= 0) options.push(fake);
         }
+        while(options.length < 4) options.push(finalAns + options.length);
         this.c.innerHTML = `<div class="eq-container"><div class="eq-row"><div class="eq-item">${A} + ${A}</div><div>= ${line1_res}</div></div><div class="eq-row"><div class="eq-item">${A} + ${B}</div><div>= ${line2_res}</div></div><div class="eq-row" style="border:2px solid var(--accent); background:rgba(99, 102, 241, 0.1);"><div class="eq-item">${questionHTML}</div><div>= <span style="color:var(--highlight)">?</span></div></div><div class="choice-grid">${options.sort(()=>0.5-Math.random()).map(o => `<button class="choice-btn" onclick="App.curr.check(${o}, ${finalAns})">${o}</button>`).join('')}</div></div>`;
     }
     check(val, correct) {
@@ -673,7 +789,7 @@ class EquationGame {
 class HuntGame {
     constructor(diff) {
         this.diff = diff; this.score = 0; 
-        this.sz = diff==='easy'?5:(diff==='medium'?6:8);
+        this.sz = diff==='easy'?5:(diff==='medium'?6:(diff==='hard'?8:10));
         this.targetCount = 3; this.found = 0;
         this.pool = ['😀','😂','😍','😎','🤬','🤢','🤡','👻','👽','🤖','💩','👺','💀','🤕','🤠','🥸','😇','🎃','🍎','🍌','🍒','🍕','🚗','🚀','⚽'];
     }
@@ -699,59 +815,702 @@ class HuntGame {
     }
 }
 
-/* --- OTHER GAMES (Condensed) --- */
-class ChimpGame{constructor(d){this.l=4;this.mx=d==='easy'?8:12;this.lv=3;this.c=1;}init(c){this.cn=c;this.ld();}ld(){this.c=1;$('#stat-2').textContent=`Nivel ${this.l} ❤️${this.lv}`;const sz=this.l<=9?5:6,p=[];while(p.length<this.l){let x=Math.floor(Math.random()*sz*sz);if(!p.includes(x))p.push(x);}this.cn.innerHTML=`<div class="chimp-grid" style="grid-template-columns:repeat(${sz},1fr);width:${sz*60}px">${Array(sz*sz).fill(0).map((_,i)=>{let k=p.indexOf(i);return k!=-1?`<div class="chimp-cell" id="ch-${i}" onclick="App.curr.ck(${i},${k+1})">${k+1}</div>`:`<div class="chimp-cell hidden"></div>`}).join('')}</div>`;}ck(i,n){if(n!=this.c){this.lv--;Sound.error();if(this.lv<=0)App.endGame(true);else{alert("¡Fallo!");this.ld();}return;}Sound.click();if(this.c===1)$$('.chimp-cell').forEach(e=>{if(e.textContent!=='1'&&!e.classList.contains('hidden'))e.classList.add('covered')});$(`#ch-${i}`).classList.add('hidden');this.c++;if(this.c>this.l){Sound.merge();this.l++;setTimeout(()=>this.ld(),500);}}get score(){return this.l;}}
-class SorterGame{constructor(d){this.s=0;this.m=d==='easy'||d==='medium'?'n':'c';}init(c){this.c=c;document.onkeydown=e=>{if(e.key==='ArrowLeft')this.ck(0);if(e.key==='ArrowRight')this.ck(1);};this.nx();}nx(){$('#stat-2').textContent=`Pts: ${this.s}`;let t,y;if(this.m==='n'){t=Math.floor(Math.random()*100);y=t%2===0?0:1;}else{let v="AEIOU",k="BCDFGHJKLMNPQRSTVWXYZ";if(Math.random()>.5){t=v[Math.floor(Math.random()*v.length)];y=0;}else{t=k[Math.floor(Math.random()*k.length)];y=1;}}this.cur=y;this.c.innerHTML=`<div class="sorter-container"><div class="sorter-card">${t}</div><div class="sorter-controls"><button class="sorter-btn btn-left" onclick="App.curr.ck(0)">${this.m==='n'?'PAR':'VOCAL'}</button><button class="sorter-btn btn-right" onclick="App.curr.ck(1)">${this.m==='n'?'IMPAR':'CONS'}</button></div></div>`;}ck(s){if(s===this.cur){this.s+=5;Sound.click();}else{this.s=Math.max(0,this.s-5);Sound.error();App.visualPenalty();}this.nx();}}
-class StopwatchGame{constructor(d){this.t=d==='hard'||d==='easy'?10:(d==='extreme'?15:5);this.lm=(d==='hard')?4:((d==='extreme')?5:999);this.s=0;this.r=0;this.at=3;}init(c){this.c=c;this.rn();}rn(){$('#stat-2').textContent=`Pts: ${this.s.toFixed(0)} | ${this.at}`;this.c.innerHTML=`<div style="text-align:center"><div class="stopwatch-target">META: ${this.t}.00s</div><div class="stopwatch-display">0.00</div><button class="stopwatch-btn ${this.r?'running':''}" onclick="App.curr.tg()">${this.r?'STOP':'START'}</button><div style="margin-top:20px;color:#888">${this.lm<99?`Oculto a ${this.lm}s`:''}</div></div>`;}tg(){if(!this.r){if(this.at<=0)return;this.r=1;this.st=Date.now();Sound.click();this.rn();this.lp();}else this.sp();}lp(){if(!this.r)return;let d=(Date.now()-this.st)/1000,dp=$('.stopwatch-display');dp.textContent=d>this.lm?"?.??":d.toFixed(2);if(d>this.lm)dp.style.color='#555';else dp.style.color='var(--accent)';requestAnimationFrame(()=>this.lp());}sp(){this.r=0;let a=(Date.now()-this.st)/1000,df=Math.abs(a-this.t);$('.stopwatch-display').textContent=a.toFixed(3);this.s+=Math.max(0,100-(df*100));this.at--;Sound.win();setTimeout(()=>{if(this.at<=0)App.endGame(true);else this.rn();},2000);}}
-class MemoryGame{constructor(d){this.c=[];this.f=[];this.l=0;this.m=0;this.sk=0;let sz=d==='easy'?4:5;if(d==='hard')sz=6;this.rw=sz===5?4:sz;let t=['🍎','🍌','🍒','🍇','🍉','🍋','🥝','🥥','🥑','🍆','🥕','🌽'];let p=[];while(p.length<(sz*this.rw)/2)p.push(t[Math.floor(Math.random()*t.length)]);this.c=[...p,...p].sort(()=>.5-Math.random());this.sz=sz;}init(c){c.innerHTML=`<div class="memory-grid" style="grid-template-columns:repeat(${this.sz},1fr)">${this.c.map((e,i)=>`<div class="memory-card" id="mc-${i}" onclick="App.curr.fl(${i})"><div class="front">${e}</div><div class="back"></div></div>`).join('')}</div>`;}fl(i){let e=$(`#mc-${i}`);if(this.l||e.classList.contains('flip'))return;e.classList.add('flip');Sound.click();this.f.push({id:i,v:this.c[i],e:e});if(this.f.length===2){this.l=1;App.moves++;if(this.f[0].v===this.f[1].v){this.m++;this.sk++;if(this.sk>=2){App.addTime(5,0);this.sk=0;}this.f=[];this.l=0;if(this.m===this.c.length/2)App.endGame(true);}else{this.sk=0;Sound.error();setTimeout(()=>{this.f.forEach(x=>x.e.classList.remove('flip'));this.f=[];this.l=0;},800);}}}}
-class MathGame{constructor(d){this.d=d;this.s=0;this.c=0;}init(c){c.innerHTML=`<div style="text-align:center"><div class="stroop-word" id="mq"></div><div class="choice-grid" id="mo"></div></div>`;this.nx();}nx(){let o=['+','-','*'],op=o[Math.floor(Math.random()*3)],a=Math.floor(Math.random()*9)+2,b=Math.floor(Math.random()*9)+2,r=op==='+'?a+b:(op==='-'?a-b:a*b);$('#mq').textContent=`${a} ${op} ${b}`;$('#stat-2').textContent=`Pts: ${this.s}`;let ch=[r];while(ch.length<4){let x=r+Math.floor(Math.random()*10)-5;if(!ch.includes(x))ch.push(x);}$('#mo').innerHTML=ch.sort(()=>.5-Math.random()).map(x=>`<button class="choice-btn" onclick="App.curr.ck(${x},${r})">${x}</button>`).join('');}ck(v,r){if(v===r){this.s+=10;this.c++;Sound.click();if(this.c%3===0)App.addTime(2,1);this.nx();}else{this.s=Math.max(0,this.s-5);this.c=0;Sound.error();App.visualPenalty();this.nx();}}}
-class AnagramGame{constructor(d){this.s=0;this.c=0;this.w=['SOL','MAR','LUZ','PAN','RIO','GATO','PATO','CASA','AGUA','MESA','ARBOL','LIBRO','PLAYA'];this.t=[];this.sl=[];this.pl=[];}init(c){this.cn=c;this.ld();document.onkeydown=e=>{if(e.key.match(/[a-z]/i)){let f=this.pl.find(x=>x.l===e.key.toUpperCase());if(f)this.cp(f.id);}if(e.key==='Backspace'){let i=this.sl.map((x,k)=>x?k:-1).filter(x=>x!==-1).pop();if(i!==undefined)this.cs(i);}};}ld(){if(!this.t.length)this.t=[...this.w].sort(()=>.5-Math.random());this.cw=this.t.pop();this.pl=this.cw.split('').sort(()=>.5-Math.random()).map((l,i)=>({l,id:i}));this.sl=Array(this.cw.length).fill(null);this.rn();}rn(){$('#stat-2').textContent=`Pts: ${this.s}`;this.cn.innerHTML=`<div class="anagram-slots">${this.sl.map((x,i)=>x?`<div class="letter-btn" onclick="App.curr.cs(${i})">${x.l}</div>`:`<div class="letter-btn empty"></div>`).join('')}</div><div class="anagram-pool">${this.pl.map(x=>`<div class="letter-btn" onclick="App.curr.cp(${x.id})">${x.l}</div>`).join('')}</div>`;}cp(id){let p=this.pl.findIndex(x=>x.id===id),s=this.sl.findIndex(x=>x===null);if(p>-1&&s>-1){this.sl[s]=this.pl[p];this.pl.splice(p,1);Sound.click();this.rn();this.chk();}}cs(i){if(this.sl[i]){this.pl.push(this.sl[i]);this.sl[i]=null;Sound.click();this.rn();}}chk(){if(!this.sl.includes(null)){if(this.sl.map(x=>x.l).join('')===this.cw){Sound.merge();this.s+=10;this.c++;if(this.c%3===0)App.addTime(3,1);setTimeout(()=>this.ld(),300);}else{Sound.error();this.s=Math.max(0,this.s-5);this.c=0;App.visualPenalty();this.pl=this.cw.split('').sort(()=>.5-Math.random()).map((l,i)=>({l,id:i}));this.sl=Array(this.cw.length).fill(null);setTimeout(()=>this.rn(),300);}}}}
-class MatrixGame{constructor(d){this.r=1;this.mx=5;this.sz=d==='easy'?3:d==='medium'?4:5;this.tc=this.sz===3?3:this.sz===4?5:7;this.ok=0;this.sl=[];this.tg=[];}init(c){this.c=c;this.ld();}ld(){if(this.r>this.mx){App.endGame(true);return;}$('#stat-2').textContent=`Ronda ${this.r}/${this.mx}`;this.c.innerHTML=`<div class="matrix-grid" style="grid-template-columns:repeat(${this.sz},1fr);width:${this.sz*60}px">${Array(this.sz*this.sz).fill(0).map((_,i)=>`<div class="matrix-cell" id="mt-${i}" onclick="App.curr.ck(${i})"></div>`).join('')}</div>`;this.tg=[];while(this.tg.length<this.tc){let x=Math.floor(Math.random()*this.sz*this.sz);if(!this.tg.includes(x))this.tg.push(x);}setTimeout(()=>{this.tg.forEach(x=>$(`#mt-${x}`).classList.add('active'));Sound.click();},500);setTimeout(()=>{this.tg.forEach(x=>$(`#mt-${x}`).classList.remove('active'));this.ok=1;this.sl=[];},2000);}ck(i){if(!this.ok||this.sl.includes(i))return;if(this.tg.includes(i)){$(`#mt-${i}`).classList.add('ok');this.sl.push(i);Sound.click();if(this.sl.length===this.tc){this.ok=0;Sound.merge();setTimeout(()=>{this.r++;this.ld();},800);}}else{$(`#mt-${i}`).classList.add('fail');Sound.error();this.ok=0;this.tg.forEach(x=>$(`#mt-${x}`).classList.add('active'));setTimeout(()=>this.ld(),1500);}}}
-class SchulteGame{constructor(d){this.sz=d==='easy'?3:d==='medium'?4:5;this.cur=1;}init(c){let n=Array.from({length:this.sz*this.sz},(_,i)=>i+1).sort(()=>.5-Math.random());$('#stat-2').textContent='Busca: 1';c.innerHTML=`<div class="schulte-grid" style="grid-template-columns:repeat(${this.sz},1fr);width:${this.sz*55}px">${n.map(x=>`<div class="schulte-cell" onclick="App.curr.ck(this,${x})">${x}</div>`).join('')}</div>`;}ck(e,v){if(v===this.cur){Sound.click();e.style.opacity=.3;e.style.pointerEvents='none';this.cur++;if(this.cur>this.sz*this.sz)App.endGame(true);else $('#stat-2').textContent=`Busca: ${this.cur}`;}else Sound.error();}}
-class Sudoku{constructor(){this.s=[];this.b=[];}init(c){c.innerHTML=`<div class="sudoku-grid" id="sb"></div><div class="numpad" id="sp"></div>`;this.gn();let b=$('#sb');this.b.forEach((r,i)=>r.forEach((v,j)=>{let d=document.createElement('div');d.className=`sudoku-cell ${v?'initial':''}`;d.textContent=v||'';d.onclick=()=>!v&&this.sl(d,i,j);b.appendChild(d);}));[1,2,3,4,5,6,7,8,9,'⌫'].forEach(x=>{let btn=document.createElement('button');btn.textContent=x;btn.onclick=()=>this.inp(x);$('#sp').appendChild(btn);});}sl(e,r,c){$$('.selected').forEach(x=>x.classList.remove('selected'));this.cr={e,r,c};e.classList.add('selected');}inp(v){if(this.cr){let n=v==='⌫'?0:v;this.cr.e.textContent=n||'';this.b[this.cr.r][this.cr.c]=n;if(n&&n!=this.s[this.cr.r][this.cr.c]){this.cr.e.classList.add('error');Sound.error();}else{this.cr.e.classList.remove('error');Sound.click();if(this.b.every((r,i)=>r.every((c,j)=>c===this.s[i][j])))App.endGame(true);}}}gn(){this.s=Array(9).fill().map(()=>Array(9).fill(0));const f=(r,c)=>{let n=[1,2,3,4,5,6,7,8,9].sort(()=>.5-Math.random());for(let x of n){let ok=1;for(let k=0;k<9;k++)if(this.s[r][k]===x||this.s[k][c]===x)ok=0;let br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;for(let i=0;i<3;i++)for(let j=0;j<3;j++)if(this.s[br+i][bc+j]===x)ok=0;if(ok){this.s[r][c]=x;if(c===8?(r===8?1:f(r+1,0)):f(r,c+1))return 1;this.s[r][c]=0;}}return 0;};f(0,0);this.b=JSON.parse(JSON.stringify(this.s));let k=30;while(k>0){let r=Math.floor(Math.random()*9),c=Math.floor(Math.random()*9);if(this.b[r][c]){this.b[r][c]=0;k--;}}}}
-class WordSearch{constructor(){this.sz=10;this.w=['JAVA','WEB','CODE','DATA','APP'];this.bd=[];this.fd=0;}init(c){c.innerHTML=`<div style="text-align:center;margin-bottom:10px">${this.w.join(' ')}</div><div class="ws-grid" style="grid-template-columns:repeat(10,1fr);width:280px" id="wb"></div>`;this.gn();let b=$('#wb');this.bd.forEach((r,i)=>r.forEach((l,j)=>{let d=document.createElement('div');d.className='ws-cell';d.textContent=l;d.dataset.r=i;d.dataset.c=j;b.appendChild(d);}));this.ev(b);}gn(){this.bd=Array(10).fill().map(()=>Array(10).fill(''));this.w.forEach(w=>{let p=0;while(!p){let d=Math.floor(Math.random()*2),r=Math.floor(Math.random()*10),c=Math.floor(Math.random()*10);if((d&&r+w.length<=10)||(!d&&c+w.length<=10)){let ok=1;for(let i=0;i<w.length;i++)if(this.bd[r+(d?i:0)][c+(d?0:i)])ok=0;if(ok){for(let i=0;i<w.length;i++)this.bd[r+(d?i:0)][c+(d?0:i)]=w[i];p=1;}}}});let a="ABCDEFGHIJKLMNOPQRSTUVWXYZ";for(let i=0;i<10;i++)for(let j=0;j<10;j++)if(!this.bd[i][j])this.bd[i][j]=a[Math.floor(Math.random()*a.length)];}ev(b){let s=0,st,ph=[];const g=e=>e.target.closest('.ws-cell')||(e.touches?document.elementFromPoint(e.touches[0].clientX,e.touches[0].clientY)?.closest('.ws-cell'):null);b.onmousedown=e=>{let c=g(e);if(c){s=1;st={r:+c.dataset.r,c:+c.dataset.c};}};b.onmousemove=e=>{if(s){let c=g(e);if(c){$$('.selected').forEach(x=>x.classList.remove('selected'));let en={r:+c.dataset.r,c:+c.dataset.c},dr=en.r-st.r,dc=en.c-st.c;ph=[];if(!dr||!dc||Math.abs(dr)===Math.abs(dc)){let mx=Math.max(Math.abs(dr),Math.abs(dc)),ir=dr?dr/Math.abs(dr):0,ic=dc?dc/Math.abs(dc):0;for(let i=0;i<=mx;i++)ph.push({r:st.r+i*ir,c:st.c+i*ic});ph.forEach(p=>$(`.ws-cell[data-r="${p.r}"][data-c="${p.c}"]`)?.classList.add('selected'));}}}};document.onmouseup=()=>{if(s){s=0;let t=ph.map(p=>this.bd[p.r][p.c]).join('');if(this.w.includes(t)){this.fd++;ph.forEach(p=>$(`.ws-cell[data-r="${p.r}"][data-c="${p.c}"]`).classList.add('found'));Sound.click();if(this.fd===this.w.length)App.endGame(true);}$$('.selected').forEach(x=>x.classList.remove('selected'));}};b.ontouchstart=b.onmousedown;b.ontouchmove=b.onmousemove;document.ontouchend=document.onmouseup;}}
-class DiffGame{constructor(){this.l=1;}init(c){this.c=c;this.ld();}ld(){let sz=Math.min(this.l+2,6),e=['😀','😎','👽'],b=e[0],d=e[1],t=Math.floor(Math.random()*sz*sz);this.c.innerHTML=`<div class="diff-grid" style="grid-template-columns:repeat(${sz},1fr);gap:4px;max-width:300px;margin:0 auto">${Array(sz*sz).fill(0).map((_,i)=>`<div class="diff-cell" onclick="${i===t?'App.curr.ok()':'Sound.error()'}">${i===t?d:b}</div>`).join('')}</div>`;}ok(){Sound.click();this.l++;if(this.l>5)App.endGame(true);else this.ld();}}
-class StroopGame{constructor(){this.s=0;}init(c){c.innerHTML=`<div style="text-align:center"><div id="sq"></div><div id="sw" style="font-size:3rem;font-weight:bold;margin:20px"></div><div class="choice-grid" id="so"></div></div>`;this.nx();}nx(){let cl=[{n:'ROJO',c:'#f00'},{n:'AZUL',c:'#00f'}],t=cl[Math.floor(Math.random()*2)],c=cl[t.n==='ROJO'?1:0],m=Math.random()>.5;$('#sq').textContent=m?'¿COLOR?':'¿DICE?';$('#sw').textContent=t.n;$('#sw').style.color=c.c;let a=m?c.n:t.n,o=[a,'VERDE'];$('#so').innerHTML=o.sort(()=>.5-Math.random()).map(x=>`<button class="choice-btn" onclick="App.curr.ck('${x}','${a}')">${x}</button>`).join('');}ck(v,r){if(v===r){this.s++;Sound.click();if(this.s>9)App.endGame(true);else this.nx();}else Sound.error();}}
+/* --- OTHER GAMES --- */
+class ChimpGame {
+    constructor(d) {
+        this.l = 4;
+        this.mx = d === 'easy' ? 8 : (d === 'medium' ? 10 : (d === 'hard' ? 12 : 14));
+        this.lv = 3;
+        this.c = 1;
+        this.timers = [];
+    }
+    init(c) { this.cn = c; this.ld(); }
+    stop() { this.timers.forEach(clearTimeout); this.timers = []; }
+    ld() {
+        this.c = 1;
+        $('#stat-2').textContent = `Nivel ${this.l} ❤️${this.lv}`;
+        const sz = this.l <= 9 ? 5 : 6;
+        const maxCells = sz * sz;
+        const count = Math.min(this.l, maxCells);
+        const p = [];
+        let tries = 0;
+        while (p.length < count && tries++ < 200) {
+            const x = Math.floor(Math.random() * maxCells);
+            if (!p.includes(x)) p.push(x);
+        }
+        this.cn.innerHTML = `<div class="chimp-grid" style="grid-template-columns:repeat(${sz},1fr);width:${sz*60}px">${Array(maxCells).fill(0).map((_, i) => {
+            const k = p.indexOf(i);
+            return k !== -1
+                ? `<div class="chimp-cell" id="ch-${i}" onclick="App.curr.ck(${i},${k+1})">${k+1}</div>`
+                : `<div class="chimp-cell hidden"></div>`;
+        }).join('')}</div>`;
+        this.cellCount = count;
+    }
+    ck(i, n) {
+        if (n !== this.c) {
+            this.lv--;
+            Sound.error();
+            if (this.lv <= 0) App.endGame(true);
+            else {
+                App.showToast('¡Fallo! Intenta de nuevo');
+                this.ld();
+            }
+            return;
+        }
+        Sound.click();
+        if (this.c === 1) $$('.chimp-cell').forEach(e => {
+            if (e.textContent !== '1' && !e.classList.contains('hidden')) e.classList.add('covered');
+        });
+        $(`#ch-${i}`).classList.add('hidden');
+        this.c++;
+        if (this.c > this.cellCount) {
+            Sound.merge();
+            this.l++;
+            if (this.l > this.mx) { App.endGame(true); return; }
+            this.timers.push(setTimeout(() => this.ld(), 500));
+        }
+    }
+    get score() { return this.l; }
+}
+
+class SorterGame {
+    constructor(d) { this.s = 0; this.m = d === 'easy' || d === 'medium' ? 'n' : 'c'; }
+    get score() { return this.s; }
+    init(c) {
+        this.c = c;
+        document.onkeydown = e => {
+            if (e.key === 'ArrowLeft') this.ck(0);
+            if (e.key === 'ArrowRight') this.ck(1);
+        };
+        this.nx();
+    }
+    nx() {
+        $('#stat-2').textContent = `Pts: ${this.s}`;
+        let t, y;
+        if (this.m === 'n') { t = Math.floor(Math.random() * 100); y = t % 2 === 0 ? 0 : 1; }
+        else {
+            const v = "AEIOU", k = "BCDFGHJKLMNPQRSTVWXYZ";
+            if (Math.random() > 0.5) { t = v[Math.floor(Math.random() * v.length)]; y = 0; }
+            else { t = k[Math.floor(Math.random() * k.length)]; y = 1; }
+        }
+        this.cur = y;
+        this.c.innerHTML = `<div class="sorter-container"><div class="sorter-card">${t}</div><div class="sorter-controls"><button class="sorter-btn btn-left" onclick="App.curr.ck(0)">${this.m === 'n' ? 'PAR' : 'VOCAL'}</button><button class="sorter-btn btn-right" onclick="App.curr.ck(1)">${this.m === 'n' ? 'IMPAR' : 'CONS'}</button></div></div>`;
+    }
+    ck(s) {
+        if (s === this.cur) { this.s += 5; Sound.click(); }
+        else { this.s = Math.max(0, this.s - 5); Sound.error(); App.visualPenalty(); }
+        this.nx();
+    }
+}
+
+class StopwatchGame {
+    constructor(d) {
+        this.t = d === 'hard' || d === 'easy' ? 10 : (d === 'extreme' ? 15 : 5);
+        this.lm = d === 'hard' ? 4 : (d === 'extreme' ? 5 : 999);
+        this.s = 0; this.r = 0; this.at = 3;
+        this.timers = [];
+    }
+    get score() { return Math.round(this.s); }
+    stop() { this.r = 0; this.timers.forEach(clearTimeout); this.timers = []; }
+    init(c) { this.c = c; this.rn(); }
+    rn() {
+        $('#stat-2').textContent = `Pts: ${this.s.toFixed(0)} | ${this.at}`;
+        this.c.innerHTML = `<div style="text-align:center"><div class="stopwatch-target">META: ${this.t}.00s</div><div class="stopwatch-display">0.00</div><button class="stopwatch-btn ${this.r ? 'running' : ''}" onclick="App.curr.tg()">${this.r ? 'STOP' : 'START'}</button><div style="margin-top:20px;color:#888">${this.lm < 99 ? `Oculto a ${this.lm}s` : ''}</div></div>`;
+    }
+    tg() {
+        if (!this.r) {
+            if (this.at <= 0) return;
+            this.r = 1; this.st = Date.now(); Sound.click(); this.rn(); this.lp();
+        } else this.sp();
+    }
+    lp() {
+        if (!this.r) return;
+        const d = (Date.now() - this.st) / 1000;
+        const dp = $('.stopwatch-display');
+        if (dp) {
+            dp.textContent = d > this.lm ? '?.??' : d.toFixed(2);
+            dp.style.color = d > this.lm ? '#555' : 'var(--accent)';
+        }
+        requestAnimationFrame(() => this.lp());
+    }
+    sp() {
+        this.r = 0;
+        const a = (Date.now() - this.st) / 1000;
+        const df = Math.abs(a - this.t);
+        const dp = $('.stopwatch-display');
+        if (dp) dp.textContent = a.toFixed(3);
+        this.s += Math.max(0, 100 - (df * 100));
+        this.at--;
+        Sound.win();
+        this.timers.push(setTimeout(() => {
+            if (this.at <= 0) App.endGame(true);
+            else this.rn();
+        }, 2000));
+    }
+}
+
+class MemoryGame {
+    constructor(d) {
+        this.f = []; this.l = 0; this.m = 0; this.sk = 0;
+        let sz = d === 'easy' ? 4 : 5;
+        if (d === 'hard' || d === 'extreme') sz = 6;
+        this.rw = sz === 5 ? 4 : sz;
+        const t = ['🍎','🍌','🍒','🍇','🍉','🍋','🥝','🥥','🥑','🍆','🥕','🌽'];
+        const p = [];
+        while (p.length < (sz * this.rw) / 2) p.push(t[Math.floor(Math.random() * t.length)]);
+        this.c = [...p, ...p].sort(() => 0.5 - Math.random());
+        this.sz = sz;
+    }
+    init(c) {
+        $('#stat-2').textContent = 'Mov: 0';
+        c.innerHTML = `<div class="memory-grid" style="grid-template-columns:repeat(${this.sz},1fr)">${this.c.map((e, i) => `<div class="memory-card" id="mc-${i}" onclick="App.curr.fl(${i})"><div class="front">${e}</div><div class="back"></div></div>`).join('')}</div>`;
+    }
+    fl(i) {
+        const e = $(`#mc-${i}`);
+        if (this.l || e.classList.contains('flip')) return;
+        e.classList.add('flip'); Sound.click();
+        this.f.push({ id: i, v: this.c[i], e });
+        if (this.f.length === 2) {
+            this.l = 1; App.moves++;
+            $('#stat-2').textContent = `Mov: ${App.moves}`;
+            if (this.f[0].v === this.f[1].v) {
+                this.m++; this.sk++;
+                if (this.sk >= 2) { App.addTime(5, 1); this.sk = 0; }
+                this.f = []; this.l = 0;
+                if (this.m === this.c.length / 2) App.endGame(true);
+            } else {
+                this.sk = 0; Sound.error();
+                setTimeout(() => { this.f.forEach(x => x.e.classList.remove('flip')); this.f = []; this.l = 0; }, 800);
+            }
+        }
+    }
+}
+
+class MathGame {
+    constructor(d) { this.d = d; this.s = 0; this.c = 0; }
+    get score() { return this.s; }
+    init(c) { c.innerHTML = `<div style="text-align:center"><div class="stroop-word" id="mq"></div><div class="choice-grid" id="mo"></div></div>`; this.nx(); }
+    nx() {
+        const o = ['+','-','*'], op = o[Math.floor(Math.random() * 3)];
+        const a = Math.floor(Math.random() * 9) + 2, b = Math.floor(Math.random() * 9) + 2;
+        const r = op === '+' ? a + b : (op === '-' ? a - b : a * b);
+        $('#mq').textContent = `${a} ${op} ${b}`;
+        $('#stat-2').textContent = `Pts: ${this.s}`;
+        const ch = [r];
+        let tries = 0;
+        while (ch.length < 4 && tries++ < 50) {
+            const x = r + Math.floor(Math.random() * 10) - 5;
+            if (!ch.includes(x)) ch.push(x);
+        }
+        while (ch.length < 4) ch.push(r + ch.length);
+        $('#mo').innerHTML = ch.sort(() => 0.5 - Math.random()).map(x => `<button class="choice-btn" onclick="App.curr.ck(${x},${r})">${x}</button>`).join('');
+    }
+    ck(v, r) {
+        if (v === r) { this.s += 10; this.c++; Sound.click(); if (this.c % 3 === 0) App.addTime(2, 1); this.nx(); }
+        else { this.s = Math.max(0, this.s - 5); this.c = 0; Sound.error(); App.visualPenalty(); this.nx(); }
+    }
+}
+
+class AnagramGame {
+    constructor(d) { this.s = 0; this.c = 0; this.w = ['SOL','MAR','LUZ','PAN','RIO','GATO','PATO','CASA','AGUA','MESA','ARBOL','LIBRO','PLAYA']; this.t = []; this.sl = []; this.pl = []; }
+    get score() { return this.s; }
+    init(c) {
+        this.cn = c; this.ld();
+        document.onkeydown = e => {
+            if (e.key.match(/[a-z]/i)) { const f = this.pl.find(x => x.l === e.key.toUpperCase()); if (f) this.cp(f.id); }
+            if (e.key === 'Backspace') { const i = this.sl.map((x, k) => x ? k : -1).filter(x => x !== -1).pop(); if (i !== undefined) this.cs(i); }
+        };
+    }
+    ld() {
+        if (!this.t.length) this.t = [...this.w].sort(() => 0.5 - Math.random());
+        this.cw = this.t.pop();
+        this.pl = this.cw.split('').sort(() => 0.5 - Math.random()).map((l, i) => ({ l, id: i }));
+        this.sl = Array(this.cw.length).fill(null);
+        this.rn();
+    }
+    rn() {
+        $('#stat-2').textContent = `Pts: ${this.s}`;
+        this.cn.innerHTML = `<div class="anagram-slots">${this.sl.map((x, i) => x ? `<div class="letter-btn" onclick="App.curr.cs(${i})">${x.l}</div>` : `<div class="letter-btn empty"></div>`).join('')}</div><div class="anagram-pool">${this.pl.map(x => `<div class="letter-btn" onclick="App.curr.cp(${x.id})">${x.l}</div>`).join('')}</div>`;
+    }
+    cp(id) {
+        const p = this.pl.findIndex(x => x.id === id), s = this.sl.findIndex(x => x === null);
+        if (p > -1 && s > -1) { this.sl[s] = this.pl[p]; this.pl.splice(p, 1); Sound.click(); this.rn(); this.chk(); }
+    }
+    cs(i) { if (this.sl[i]) { this.pl.push(this.sl[i]); this.sl[i] = null; Sound.click(); this.rn(); } }
+    chk() {
+        if (!this.sl.includes(null)) {
+            if (this.sl.map(x => x.l).join('') === this.cw) {
+                Sound.merge(); this.s += 10; this.c++;
+                if (this.c % 3 === 0) App.addTime(3, 1);
+                setTimeout(() => this.ld(), 300);
+            } else {
+                Sound.error(); this.s = Math.max(0, this.s - 5); this.c = 0; App.visualPenalty();
+                this.pl = this.cw.split('').sort(() => 0.5 - Math.random()).map((l, i) => ({ l, id: i }));
+                this.sl = Array(this.cw.length).fill(null);
+                setTimeout(() => this.rn(), 300);
+            }
+        }
+    }
+}
+
+class MatrixGame {
+    constructor(d) {
+        this.r = 1;
+        this.mx = d === 'extreme' ? 7 : 5;
+        this.sz = d === 'easy' ? 3 : (d === 'medium' ? 4 : (d === 'hard' ? 5 : 6));
+        this.tc = this.sz === 3 ? 3 : (this.sz === 4 ? 5 : (this.sz === 5 ? 7 : 9));
+        this.ok = 0; this.sl = []; this.tg = []; this.timers = [];
+    }
+    stop() { this.timers.forEach(clearTimeout); this.timers = []; }
+    init(c) { this.c = c; this.ld(); }
+    ld() {
+        if (this.r > this.mx) { App.endGame(true); return; }
+        $('#stat-2').textContent = `Ronda ${this.r}/${this.mx}`;
+        this.c.innerHTML = `<div class="matrix-grid" style="grid-template-columns:repeat(${this.sz},1fr);width:${this.sz*60}px">${Array(this.sz * this.sz).fill(0).map((_, i) => `<div class="matrix-cell" id="mt-${i}" onclick="App.curr.ck(${i})"></div>`).join('')}</div>`;
+        this.tg = [];
+        let tries = 0;
+        while (this.tg.length < this.tc && tries++ < 50) {
+            const x = Math.floor(Math.random() * this.sz * this.sz);
+            if (!this.tg.includes(x)) this.tg.push(x);
+        }
+        this.timers.push(setTimeout(() => { this.tg.forEach(x => $(`#mt-${x}`)?.classList.add('active')); Sound.click(); }, 500));
+        this.timers.push(setTimeout(() => { this.tg.forEach(x => $(`#mt-${x}`)?.classList.remove('active')); this.ok = 1; this.sl = []; }, 2000));
+    }
+    ck(i) {
+        if (!this.ok || this.sl.includes(i)) return;
+        if (this.tg.includes(i)) {
+            $(`#mt-${i}`).classList.add('ok'); this.sl.push(i); Sound.click();
+            if (this.sl.length === this.tc) {
+                this.ok = 0; Sound.merge();
+                this.timers.push(setTimeout(() => { this.r++; this.ld(); }, 800));
+            }
+        } else {
+            $(`#mt-${i}`).classList.add('fail'); Sound.error(); this.ok = 0;
+            this.tg.forEach(x => $(`#mt-${x}`)?.classList.add('active'));
+            this.timers.push(setTimeout(() => this.ld(), 1500));
+        }
+    }
+}
+
+class SchulteGame {
+    constructor(d) {
+        this.sz = d === 'easy' ? 3 : (d === 'medium' ? 4 : (d === 'hard' ? 5 : 6));
+        this.cur = 1;
+    }
+    init(c) {
+        const n = Array.from({ length: this.sz * this.sz }, (_, i) => i + 1).sort(() => 0.5 - Math.random());
+        $('#stat-2').textContent = 'Busca: 1';
+        c.innerHTML = `<div class="schulte-grid" style="grid-template-columns:repeat(${this.sz},1fr);width:${this.sz*55}px">${n.map(x => `<div class="schulte-cell" onclick="App.curr.ck(this,${x})">${x}</div>`).join('')}</div>`;
+    }
+    ck(e, v) {
+        if (v === this.cur) {
+            Sound.click(); e.style.opacity = 0.3; e.style.pointerEvents = 'none';
+            this.cur++;
+            if (this.cur > this.sz * this.sz) App.endGame(true);
+            else $('#stat-2').textContent = `Busca: ${this.cur}`;
+        } else Sound.error();
+    }
+}
+
+class Sudoku {
+    constructor(d) {
+        this.diff = d || 'easy';
+        this.holes = { easy: 30, medium: 40, hard: 50, extreme: 55 }[this.diff] || 30;
+        this.s = []; this.b = [];
+    }
+    init(c) {
+        c.innerHTML = `<div class="sudoku-grid" id="sb"></div><div class="numpad" id="sp"></div>`;
+        this.gn();
+        const b = $('#sb');
+        this.b.forEach((r, i) => r.forEach((v, j) => {
+            const d = document.createElement('div');
+            d.className = `sudoku-cell ${v ? 'initial' : ''}`;
+            d.textContent = v || '';
+            d.onclick = () => !v && this.sl(d, i, j);
+            b.appendChild(d);
+        }));
+        [1,2,3,4,5,6,7,8,9,'⌫'].forEach(x => {
+            const btn = document.createElement('button');
+            btn.textContent = x;
+            btn.onclick = () => this.inp(x);
+            $('#sp').appendChild(btn);
+        });
+    }
+    sl(e, r, c) { $$('.selected').forEach(x => x.classList.remove('selected')); this.cr = { e, r, c }; e.classList.add('selected'); }
+    inp(v) {
+        if (!this.cr) return;
+        const n = v === '⌫' ? 0 : v;
+        this.cr.e.textContent = n || '';
+        this.b[this.cr.r][this.cr.c] = n;
+        if (n && n != this.s[this.cr.r][this.cr.c]) { this.cr.e.classList.add('error'); Sound.error(); }
+        else {
+            this.cr.e.classList.remove('error'); Sound.click();
+            if (this.b.every((r, i) => r.every((c, j) => c === this.s[i][j]))) App.endGame(true);
+        }
+    }
+    gn() {
+        this.s = Array(9).fill().map(() => Array(9).fill(0));
+        const f = (r, c) => {
+            const nums = [1,2,3,4,5,6,7,8,9].sort(() => 0.5 - Math.random());
+            for (const x of nums) {
+                let ok = 1;
+                for (let k = 0; k < 9; k++) if (this.s[r][k] === x || this.s[k][c] === x) ok = 0;
+                const br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
+                for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) if (this.s[br + i][bc + j] === x) ok = 0;
+                if (ok) {
+                    this.s[r][c] = x;
+                    if (c === 8 ? (r === 8 ? 1 : f(r + 1, 0)) : f(r, c + 1)) return 1;
+                    this.s[r][c] = 0;
+                }
+            }
+            return 0;
+        };
+        f(0, 0);
+        this.b = JSON.parse(JSON.stringify(this.s));
+        let k = this.holes;
+        while (k > 0) {
+            const r = Math.floor(Math.random() * 9), c = Math.floor(Math.random() * 9);
+            if (this.b[r][c]) { this.b[r][c] = 0; k--; }
+        }
+    }
+}
+
+class WordSearch {
+    constructor(d) {
+        this.diff = d || 'easy';
+        const cfg = {
+            easy: { sz: 8, w: ['SOL','MAR','LUZ','PAN','RIO'] },
+            medium: { sz: 10, w: ['JAVA','WEB','CODE','DATA','APP','HTML'] },
+            hard: { sz: 12, w: ['BRAIN','LOGIC','MEMORY','FOCUS','SPEED','MIND'] },
+            extreme: { sz: 14, w: ['NEURON','CORTEX','PUZZLE','MENTAL','TRAIN','SKILL','GENIUS'] }
+        };
+        const c = cfg[this.diff] || cfg.easy;
+        this.sz = c.sz; this.w = c.w;
+        this.bd = []; this.fd = 0;
+    }
+    init(c) {
+        c.innerHTML = `<div style="text-align:center;margin-bottom:10px;font-size:0.85rem">${this.w.join(' ')}</div><div class="ws-grid" style="grid-template-columns:repeat(${this.sz},1fr);width:${this.sz*26}px" id="wb"></div>`;
+        this.gn();
+        const b = $('#wb');
+        this.bd.forEach((r, i) => r.forEach((l, j) => {
+            const d = document.createElement('div');
+            d.className = 'ws-cell';
+            d.textContent = l;
+            d.dataset.r = i; d.dataset.c = j;
+            b.appendChild(d);
+        }));
+        this.ev(b);
+    }
+    gn() {
+        this.bd = Array(this.sz).fill().map(() => Array(this.sz).fill(''));
+        this.w.forEach(w => {
+            let placed = false, tries = 0;
+            while (!placed && tries++ < 100) {
+                const horiz = Math.floor(Math.random() * 2);
+                const r = Math.floor(Math.random() * this.sz), c = Math.floor(Math.random() * this.sz);
+                if ((horiz && c + w.length <= this.sz) || (!horiz && r + w.length <= this.sz)) {
+                    let ok = 1;
+                    for (let i = 0; i < w.length; i++) if (this.bd[r + (horiz ? 0 : i)][c + (horiz ? i : 0)]) ok = 0;
+                    if (ok) {
+                        for (let i = 0; i < w.length; i++) this.bd[r + (horiz ? 0 : i)][c + (horiz ? i : 0)] = w[i];
+                        placed = true;
+                    }
+                }
+            }
+        });
+        const a = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        for (let i = 0; i < this.sz; i++) for (let j = 0; j < this.sz; j++) if (!this.bd[i][j]) this.bd[i][j] = a[Math.floor(Math.random() * a.length)];
+    }
+    matchWord(t) {
+        const rev = t.split('').reverse().join('');
+        return this.w.includes(t) || this.w.includes(rev);
+    }
+    ev(b) {
+        let s = 0, st, ph = [];
+        const g = e => e.target.closest('.ws-cell') || (e.touches ? document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)?.closest('.ws-cell') : null);
+        b.onmousedown = e => { const c = g(e); if (c) { s = 1; st = { r: +c.dataset.r, c: +c.dataset.c }; } };
+        b.onmousemove = e => {
+            if (!s) return;
+            const c = g(e);
+            if (!c) return;
+            $$('.selected').forEach(x => x.classList.remove('selected'));
+            const en = { r: +c.dataset.r, c: +c.dataset.c }, dr = en.r - st.r, dc = en.c - st.c;
+            ph = [];
+            if (!dr || !dc || Math.abs(dr) === Math.abs(dc)) {
+                const mx = Math.max(Math.abs(dr), Math.abs(dc));
+                const ir = dr ? dr / Math.abs(dr) : 0, ic = dc ? dc / Math.abs(dc) : 0;
+                for (let i = 0; i <= mx; i++) ph.push({ r: st.r + i * ir, c: st.c + i * ic });
+                ph.forEach(p => $(`.ws-cell[data-r="${p.r}"][data-c="${p.c}"]`)?.classList.add('selected'));
+            }
+        };
+        const endSel = () => {
+            if (!s) return;
+            s = 0;
+            const t = ph.map(p => this.bd[p.r][p.c]).join('');
+            if (this.matchWord(t)) {
+                this.fd++;
+                ph.forEach(p => $(`.ws-cell[data-r="${p.r}"][data-c="${p.c}"]`)?.classList.add('found'));
+                Sound.click();
+                if (this.fd === this.w.length) App.endGame(true);
+            }
+            $$('.selected').forEach(x => x.classList.remove('selected'));
+        };
+        document.onmouseup = endSel;
+        b.ontouchstart = b.onmousedown;
+        b.ontouchmove = b.onmousemove;
+        document.ontouchend = endSel;
+    }
+}
+
+class DiffGame {
+    constructor(d) {
+        this.diff = d || 'easy';
+        this.startLvl = { easy: 1, medium: 2, hard: 3, extreme: 4 }[this.diff] || 1;
+        this.l = this.startLvl;
+        this.maxLvl = this.startLvl + 5;
+    }
+    init(c) { this.c = c; this.ld(); }
+    ld() {
+        const sz = Math.min(this.l + 2, 8);
+        const e = ['😀','😎','👽','🤖','👻'];
+        const b = e[0], d = e[Math.min(this.l, e.length - 1)];
+        const t = Math.floor(Math.random() * sz * sz);
+        $('#stat-2').textContent = `Nivel ${this.l - this.startLvl + 1}/${this.maxLvl - this.startLvl + 1}`;
+        this.c.innerHTML = `<div class="diff-grid" style="grid-template-columns:repeat(${sz},1fr);gap:4px;max-width:320px;margin:0 auto">${Array(sz * sz).fill(0).map((_, i) => `<div class="diff-cell" onclick="${i === t ? 'App.curr.ok()' : 'Sound.error()'}">${i === t ? d : b}</div>`).join('')}</div>`;
+    }
+    ok() {
+        Sound.click(); this.l++;
+        if (this.l > this.maxLvl) App.endGame(true);
+        else this.ld();
+    }
+}
+
+class StroopGame {
+    constructor(d) {
+        this.diff = d || 'easy';
+        this.s = 0;
+        this.colors = [
+            { n: 'ROJO', c: '#f00' }, { n: 'AZUL', c: '#00f' },
+            { n: 'VERDE', c: '#0a0' }, { n: 'AMARILLO', c: '#da0' }
+        ];
+        this.rounds = { easy: 8, medium: 12, hard: 16, extreme: 20 }[this.diff] || 8;
+        this.pool = this.diff === 'easy' ? this.colors.slice(0, 2) : (this.diff === 'medium' ? this.colors.slice(0, 3) : this.colors);
+    }
+    init(c) {
+        c.innerHTML = `<div style="text-align:center"><div id="sq"></div><div id="sw" style="font-size:3rem;font-weight:bold;margin:20px"></div><div class="choice-grid" id="so"></div></div>`;
+        this.nx();
+    }
+    nx() {
+        $('#stat-2').textContent = `Ronda ${this.s + 1}/${this.rounds}`;
+        const t = this.pool[Math.floor(Math.random() * this.pool.length)];
+        let c = this.pool[Math.floor(Math.random() * this.pool.length)];
+        while (c.n === t.n) c = this.pool[Math.floor(Math.random() * this.pool.length)];
+        const m = Math.random() > 0.5;
+        $('#sq').textContent = m ? '¿COLOR?' : '¿DICE?';
+        $('#sw').textContent = t.n;
+        $('#sw').style.color = c.c;
+        const a = m ? c.n : t.n;
+        const opts = [a];
+        while (opts.length < Math.min(4, this.pool.length + 1)) {
+            const pick = this.pool[Math.floor(Math.random() * this.pool.length)].n;
+            if (!opts.includes(pick)) opts.push(pick);
+        }
+        $('#so').innerHTML = opts.sort(() => 0.5 - Math.random()).map(x => `<button class="choice-btn" onclick="App.curr.ck('${x}','${a}')">${x}</button>`).join('');
+    }
+    ck(v, r) {
+        if (v === r) {
+            this.s++; Sound.click();
+            if (this.s >= this.rounds) App.endGame(true);
+            else this.nx();
+        } else Sound.error();
+    }
+}
 
 /* --- CONTROLLER --- */
+const DIFF_LABELS = { easy: 'Fácil', medium: 'Medio', hard: 'Difícil', extreme: 'Extremo' };
+
 const App = {
     curr: null, type: null, diff: 'easy', time: 0, timer: null, moves: 0,
+    detailGame: null, toastTimer: null, confirmCb: null,
     list: [
-        { id:'mem', t:'Memoria', i:'🧩', d:'Parejas', c:MemoryGame, mode:'time' },
-        { id:'mat', t:'Cálculo', i:'✖️', d:'Arcade', c:MathGame, mode:'score' },
-        { id:'sld', t:'Puzzle', i:'🖼️', d:'Imagen', c:SlidingGame, mode:'time' }, // FIXED
-        { id:'ana', t:'Anagrama', i:'🔡', d:'Arcade', c:AnagramGame, mode:'score' },
-        { id:'eq', t:'Ecuación', i:'🧮', d:'Emoji', c:EquationGame, mode:'score' },
-        { id:'hnt', t:'Caza', i:'🕵️', d:'Emojis', c:HuntGame, mode:'score' },
-        { id:'eag', t:'Águila', i:'🦅', d:'Visión', c:EagleGame, mode:'score' },
-        { id:'chp', t:'Chimpancé', i:'🐵', d:'Memoria', c:ChimpGame, mode:'score' },
-        { id:'srt', t:'Clasifica', i:'⚖️', d:'Veloz', c:SorterGame, mode:'score' },
-        { id:'stw', t:'Cronómetro', i:'⏱️', d:'Mental', c:StopwatchGame, mode:'score' },
-        { id:'mtx', t:'Matriz', i:'🟦', d:'Patrones', c:MatrixGame, mode:'time' },
-        { id:'sch', t:'Schulte', i:'🔢', d:'Atención', c:SchulteGame, mode:'time' },
-        { id:'sud', t:'Sudoku', i:'✏️', d:'Lógica', c:Sudoku, mode:'time' },
-        { id:'wrd', t:'Sopa Letras', i:'🔎', d:'Buscar', c:WordSearch, mode:'time' },
-        { id:'dif', t:'Intruso', i:'🧐', d:'Visual', c:DiffGame, mode:'time' },
-        { id:'str', t:'Confusión', i:'🎨', d:'Stroop', c:StroopGame, mode:'time' }
+        { id:'mem', t:'Memoria', i:'🧩', d:'Parejas', c:MemoryGame, mode:'time',
+          desc:'Encuentra todas las parejas de emojis iguales.',
+          howTo:'Toca dos cartas. Si coinciden, permanecen volteadas. Racha de 2 parejas da bonus de tiempo.',
+          diffInfo:{ easy:'4×4', medium:'5×4', hard:'6×6', extreme:'6×6' } },
+        { id:'mat', t:'Cálculo', i:'✖️', d:'Arcade', c:MathGame, mode:'score',
+          desc:'Resuelve operaciones matemáticas lo más rápido posible.',
+          howTo:'Elige la respuesta correcta. Cada 3 aciertos ganas tiempo extra.',
+          diffInfo:{ easy:'Básico', medium:'Básico', hard:'Básico', extreme:'Básico' } },
+        { id:'sld', t:'Puzzle', i:'🖼️', d:'Imagen', c:SlidingGame, mode:'time',
+          desc:'Reconstruye la imagen moviendo las piezas.',
+          howTo:'Toca una pieza adyacente al hueco para moverla.',
+          diffInfo:{ easy:'3×3', medium:'4×4', hard:'5×5', extreme:'6×6' } },
+        { id:'ana', t:'Anagrama', i:'🔡', d:'Arcade', c:AnagramGame, mode:'score',
+          desc:'Ordena las letras para formar la palabra correcta.',
+          howTo:'Toca letras del pool o usa el teclado. Backspace para borrar.',
+          diffInfo:{ easy:'Cortas', medium:'Cortas', hard:'Cortas', extreme:'Cortas' } },
+        { id:'eq', t:'Ecuación', i:'🧮', d:'Emoji', c:EquationGame, mode:'score',
+          desc:'Descifra ecuaciones con emojis.',
+          howTo:'Usa las pistas para calcular el valor del emoji desconocido.',
+          diffInfo:{ easy:'Simple', medium:'Simple', hard:'Mixto', extreme:'Mixto' } },
+        { id:'hnt', t:'Caza', i:'🕵️', d:'Emojis', c:HuntGame, mode:'score',
+          desc:'Encuentra todos los emojis objetivo en la cuadrícula.',
+          howTo:'Toca el emoji correcto. Completa la ronda para avanzar.',
+          diffInfo:{ easy:'5×5', medium:'6×6', hard:'8×8', extreme:'10×10' } },
+        { id:'eag', t:'Águila', i:'🦅', d:'Visión', c:EagleGame, mode:'score',
+          desc:'Detecta el cuadrado de color ligeramente diferente.',
+          howTo:'Toca el cuadrado distinto. La diferencia se reduce con cada nivel.',
+          diffInfo:{ easy:'Amplia', medium:'Media', hard:'Fina', extreme:'Fina' } },
+        { id:'chp', t:'Chimpancé', i:'🐵', d:'Memoria', c:ChimpGame, mode:'score',
+          desc:'Memoriza la posición de los números como un chimpancé.',
+          howTo:'Toca los números en orden ascendente. Tras el 1, los demás se ocultan.',
+          diffInfo:{ easy:'Nivel 8', medium:'Nivel 10', hard:'Nivel 12', extreme:'Nivel 14' } },
+        { id:'srt', t:'Clasifica', i:'⚖️', d:'Veloz', c:SorterGame, mode:'score',
+          desc:'Clasifica números o letras con rapidez.',
+          howTo:'Usa los botones o flechas ← →. Fácil/Medio: par/impar. Difícil/Extremo: vocal/consonante.',
+          diffInfo:{ easy:'Números', medium:'Números', hard:'Letras', extreme:'Letras' } },
+        { id:'stw', t:'Cronómetro', i:'⏱️', d:'Mental', c:StopwatchGame, mode:'score',
+          desc:'Detén el cronómetro en el tiempo exacto.',
+          howTo:'Pulsa START y STOP lo más cerca posible de la meta.',
+          diffInfo:{ easy:'10s visible', medium:'5s visible', hard:'4s oculto', extreme:'5s oculto' } },
+        { id:'mtx', t:'Matriz', i:'🟦', d:'Patrones', c:MatrixGame, mode:'time',
+          desc:'Memoriza y repite el patrón de celdas iluminadas.',
+          howTo:'Observa las celdas activas y tócalas en el mismo orden.',
+          diffInfo:{ easy:'3×3', medium:'4×4', hard:'5×5', extreme:'6×6' } },
+        { id:'sch', t:'Schulte', i:'🔢', d:'Atención', c:SchulteGame, mode:'time',
+          desc:'Tabla de Schulte: encuentra números en orden.',
+          howTo:'Toca del 1 al último número lo más rápido posible.',
+          diffInfo:{ easy:'3×3', medium:'4×4', hard:'5×5', extreme:'6×6' } },
+        { id:'sud', t:'Sudoku', i:'✏️', d:'Lógica', c:Sudoku, mode:'time',
+          desc:'Completa el sudoku clásico 9×9.',
+          howTo:'Selecciona una celda y usa el teclado numérico.',
+          diffInfo:{ easy:'30 huecos', medium:'40 huecos', hard:'50 huecos', extreme:'55 huecos' } },
+        { id:'wrd', t:'Sopa Letras', i:'🔎', d:'Buscar', c:WordSearch, mode:'time',
+          desc:'Encuentra todas las palabras ocultas.',
+          howTo:'Arrastra sobre las letras en línea recta. También valen al revés.',
+          diffInfo:{ easy:'8×8 / 5', medium:'10×10 / 6', hard:'12×12 / 6', extreme:'14×14 / 7' } },
+        { id:'dif', t:'Intruso', i:'🧐', d:'Visual', c:DiffGame, mode:'time',
+          desc:'Encuentra el emoji diferente entre muchos iguales.',
+          howTo:'Toca el emoji que no coincide con los demás.',
+          diffInfo:{ easy:'6 rondas', medium:'7 rondas', hard:'8 rondas', extreme:'9 rondas' } },
+        { id:'str', t:'Confusión', i:'🎨', d:'Stroop', c:StroopGame, mode:'time',
+          desc:'Test de Stroop: color vs palabra.',
+          howTo:'Responde según la pregunta: el color escrito o la palabra mostrada.',
+          diffInfo:{ easy:'8 / 2 col.', medium:'12 / 3 col.', hard:'16 / 4 col.', extreme:'20 / 4 col.' } }
     ],
 
-    init: () => {
+    getGameScore: () => {
+        if (!App.curr) return 0;
+        if (typeof App.curr.score === 'number') return App.curr.score;
+        if (typeof App.curr.s === 'number') return App.curr.s;
+        if (typeof App.curr.level === 'number') return App.curr.level;
+        return 0;
+    },
+
+    formatRecord: (game, diff, data) => {
+        if (!data) return null;
+        if (game.mode === 'score') {
+            if (game.id === 'chp') return `Nivel ${data.score}`;
+            return `${data.score} pts`;
+        }
+        const m = Math.floor(data.score / 60).toString().padStart(2, '0');
+        const s = (data.score % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    },
+
+    getBestRecord: (game, diff) => {
+        const d = Storage.get();
+        return d[`${game.id}_${diff}`] || null;
+    },
+
+    buildMenuCards: () => {
         const g = $('.game-grid');
+        g.innerHTML = '';
         App.list.forEach(i => {
-            const c = document.createElement('div'); c.className = 'game-card';
-            c.innerHTML = `<div><span class="game-icon">${i.i}</span><div class="game-title">${i.t}</div><div class="game-desc">${i.d}</div></div>`;
-            c.onclick = () => App.load(i);
+            const rec = App.getBestRecord(i, 'easy');
+            const recText = rec ? `🏆 ${rec.name}: ${App.formatRecord(i, 'easy', rec)}` : '';
+            const modeBadge = i.mode === 'score' ? '🎯 Puntos' : '⏱ Tiempo';
+            const c = document.createElement('div');
+            c.className = 'game-card';
+            c.innerHTML = `
+                <button class="game-info-btn" title="Detalles">ℹ️</button>
+                <div>
+                    <span class="game-icon">${i.i}</span>
+                    <div class="game-title">${i.t}</div>
+                    <div class="game-desc">${i.d}</div>
+                    <span class="game-badge">${modeBadge}</span>
+                    <div class="game-record">${recText}</div>
+                </div>`;
+            c.querySelector('.game-info-btn').onclick = (e) => { e.stopPropagation(); App.showDetail(i); };
+            c.onclick = () => App.showDetail(i);
             g.appendChild(c);
         });
-        window.addEventListener('resize', ()=>Confetti.resize());
-        
-        // Generate Icons on Load
-        if(window.generateIcons) window.generateIcons();
+    },
+
+    init: () => {
+        App.buildMenuCards();
+        window.addEventListener('resize', () => Confetti.resize());
+        $('#confirm-yes').onclick = () => {
+            App.closeConfirm();
+            if (App.confirmCb) App.confirmCb();
+            App.confirmCb = null;
+        };
+        if (window.generateIcons) window.generateIcons();
+    },
+
+    showDetail: (game) => {
+        App.detailGame = game;
+        $('#detail-icon').textContent = game.i;
+        $('#detail-title').textContent = game.t;
+        $('#detail-mode').textContent = game.mode === 'score' ? '🎯 Por puntos' : '⏱ Por tiempo';
+        $('#detail-desc').textContent = game.desc || game.d;
+        $('#detail-howto').textContent = game.howTo || '';
+        const rl = $('#detail-records');
+        rl.innerHTML = '';
+        ['easy','medium','hard','extreme'].forEach(lvl => {
+            const rec = App.getBestRecord(game, lvl);
+            if (rec) {
+                rl.innerHTML += `<li><span>${DIFF_LABELS[lvl]}</span><b>${rec.name} — ${App.formatRecord(game, lvl, rec)}</b></li>`;
+            }
+        });
+        if (!rl.innerHTML) rl.innerHTML = '<li style="color:#888">Sin récords aún</li>';
+        if (game.diffInfo) {
+            rl.innerHTML += `<li style="margin-top:8px;color:var(--text-muted);font-size:0.75rem">Fácil: ${game.diffInfo.easy} · Medio: ${game.diffInfo.medium} · Difícil: ${game.diffInfo.hard} · Extremo: ${game.diffInfo.extreme}</li>`;
+        }
+        $('#detail-difficulty').value = 'easy';
+        $('#modal-detail').classList.add('active');
+    },
+
+    closeDetail: () => { $('#modal-detail').classList.remove('active'); App.detailGame = null; },
+
+    startFromDetail: () => {
+        if (!App.detailGame) return;
+        const game = App.detailGame;
+        App.diff = $('#detail-difficulty').value;
+        App.closeDetail();
+        App.load(game);
+    },
+
+    showConfirm: (title, message, onYes) => {
+        $('#confirm-title').textContent = title;
+        $('#confirm-message').textContent = message;
+        App.confirmCb = onYes;
+        $('#modal-confirm').classList.add('active');
+    },
+
+    closeConfirm: () => { $('#modal-confirm').classList.remove('active'); },
+
+    showToast: (msg) => {
+        const t = $('#toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(App.toastTimer);
+        App.toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
     },
 
     load: (type) => {
-        App.type = type; 
-        App.diff = 'easy'; $('#difficulty-select').value = 'easy';
+        App.type = type;
+        $('#difficulty-select').value = App.diff;
         $('#view-menu').classList.remove('active');
         $('#view-game').classList.add('active');
         $('#game-title-display').textContent = type.t;
@@ -759,26 +1518,27 @@ const App = {
     },
 
     run: () => {
-        clearInterval(App.timer); 
+        clearInterval(App.timer);
+        if (App.curr && App.curr.stop) App.curr.stop();
         App.moves = 0;
         $('#game-board-area').innerHTML = '';
-        
-        if(App.type.mode === 'score' && App.type.id !== 'chp' && App.type.id !== 'stw') {
-            App.time = 60; 
+
+        if (App.type.mode === 'score' && App.type.id !== 'chp' && App.type.id !== 'stw') {
+            App.time = 60;
         } else {
-            App.time = 0; 
+            App.time = 0;
         }
-        
+
         App.updateTimerDisplay();
         App.curr = new App.type.c(App.diff);
         App.curr.init($('#game-board-area'));
-        
-        if(App.type.id === 'stw') return;
+
+        if (App.type.id === 'stw') return;
 
         App.timer = setInterval(() => {
-            if(App.type.mode === 'score' && App.type.id !== 'chp') {
+            if (App.type.mode === 'score' && App.type.id !== 'chp') {
                 App.time--;
-                if(App.time <= 0) App.endGame(true);
+                if (App.time <= 0) App.endGame('timeout');
             } else {
                 App.time++;
             }
@@ -820,75 +1580,91 @@ const App = {
         Sound.click(); App.run(); 
     },
     
-    confirmExit: (e) => { 
-        if(e) e.preventDefault();
-        if(confirm("¿Volver al menú?")) App.toMenu(); 
+    confirmExit: (e) => {
+        if (e) e.preventDefault();
+        App.showConfirm('¿Volver al menú?', 'Se perderá el progreso de la partida actual.', () => App.toMenu());
     },
 
     toMenu: () => {
         clearInterval(App.timer);
-        if(App.curr && App.curr.stop) App.curr.stop();
+        if (App.curr && App.curr.stop) App.curr.stop();
         $('#view-game').classList.remove('active');
         $('#view-menu').classList.add('active');
         $('#modal-win').classList.remove('active');
-        document.onkeydown = null; 
+        document.onkeydown = null;
         document.onmouseup = null;
         document.ontouchend = null;
+        App.buildMenuCards();
     },
 
     endGame: (win) => {
-        if(!win) return;
-        clearInterval(App.timer); Sound.win(); Confetti.start();
-        document.onkeydown = null; document.onmouseup = null; document.ontouchend = null;
-        
-        let scoreToSave = App.time; 
-        let msg = `Tiempo: ${$('#stat-1').textContent}`;
+        if (win === false) return;
+        clearInterval(App.timer);
+        document.onkeydown = null;
+        document.onmouseup = null;
+        document.ontouchend = null;
 
-        if(App.type.mode === 'score') {
-            scoreToSave = App.curr.score || App.curr.level || 0;
-            msg = `Puntaje Final: ${scoreToSave}`;
+        const isTimeout = win === 'timeout';
+        const isVictory = win === true;
+
+        let scoreToSave = App.time;
+        let msg = `Tiempo: ${$('#stat-1').textContent}`;
+        const winTitle = $('#modal-win h2');
+
+        if (App.type.mode === 'score') {
+            scoreToSave = App.getGameScore();
+            if (isTimeout) {
+                msg = `¡Tiempo! Puntaje: ${scoreToSave}`;
+                winTitle.textContent = '⏱ Fin del Tiempo';
+            } else {
+                msg = `Puntaje Final: ${scoreToSave}`;
+                winTitle.textContent = '🎉 Fin del Juego';
+            }
+        } else if (isVictory) {
+            winTitle.textContent = '🎉 Fin del Juego';
         }
 
-        const rec = Storage.check(App.type.id, App.diff, scoreToSave, App.type.mode);
+        if (isVictory) {
+            Sound.win();
+            Confetti.start();
+        } else {
+            Sound.error();
+        }
+
+        const rec = scoreToSave > 0 && Storage.check(App.type.id, App.diff, scoreToSave, App.type.mode);
         $('#win-message').textContent = msg;
-        
         $('#record-section').style.display = rec ? 'block' : 'none';
-        if(rec) { $('#player-name').value=''; setTimeout(()=>$('#player-name').focus(), 100); }
+        if (rec) { $('#player-name').value = ''; setTimeout(() => $('#player-name').focus(), 100); }
         $('#modal-win').classList.add('active');
         App.lastScore = scoreToSave;
     },
 
     handleWinAction: (act) => {
         const inp = $('#player-name');
-        if($('#record-section').style.display !== 'none' && inp.value.trim()) {
+        if ($('#record-section').style.display !== 'none' && inp.value.trim()) {
             Storage.set(App.type.id, App.diff, inp.value.trim(), App.lastScore);
         }
         $('#modal-win').classList.remove('active');
-        if(act === 'replay') App.run(); else App.toMenu();
+        if (act === 'replay') App.run();
+        else App.toMenu();
     },
 
     showRankingGlobal: () => {
-        const d = Storage.get(); const l = $('#ranking-list'); l.innerHTML = '';
-        if(Object.keys(d).length === 0) l.innerHTML = '<p style="color:#aaa;text-align:center">Sin récords.</p>';
+        const d = Storage.get();
+        const l = $('#ranking-list');
+        l.innerHTML = '';
+        if (Object.keys(d).length === 0) l.innerHTML = '<p style="color:#aaa;text-align:center">Sin récords.</p>';
         else {
             App.list.forEach(g => {
                 let html = '';
                 ['easy','medium','hard','extreme'].forEach(lvl => {
                     const k = `${g.id}_${lvl}`;
-                    if(d[k]) {
-                        let val = '';
-                        if(g.mode === 'score') {
-                            val = `${d[k].score} pts`;
-                            if(g.id === 'chp') val = `Nivel ${d[k].score}`;
-                        } else {
-                            const m = Math.floor(d[k].score/60).toString().padStart(2,'0');
-                            const s = (d[k].score%60).toString().padStart(2,'0');
-                            val = `${m}:${s}`;
-                        }
-                        html += `<li><span>${lvl.toUpperCase()}</span> <b>${d[k].name} (${val})</b></li>`;
+                    if (d[k]) {
+                        const val = App.formatRecord(g, lvl, d[k]);
+                        html += `<li><span>${DIFF_LABELS[lvl]}</span> <b>${d[k].name} (${val})</b></li>`;
                     }
                 });
-                if(html) l.innerHTML += `<h3 style="color:var(--primary);margin-top:15px;font-size:1rem">${g.i} ${g.t}</h3><ul>${html}</ul>`;
+                if (html) l.innerHTML += `<h3 style="color:var(--primary);margin-top:15px;font-size:1rem">${g.i} ${g.t}</h3><ul>${html}</ul>`;
             });
         }
         $('#modal-ranking').classList.add('active');
